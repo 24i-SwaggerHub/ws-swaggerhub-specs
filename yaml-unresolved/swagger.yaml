@@ -1,0 +1,152 @@
+openapi: 3.0.0
+info:
+  version: 'v4.0.0'
+  title: 'Catchup API'
+  description: 'Catchup are broadcast slots that have aired but can still be viewed on-demand.'
+servers:
+  - description: Testing server
+    url: https://testing.booxmedia.xyz/api/catchup/v4
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/24i-API/Catchup/v4.0.0
+    
+paths:
+  /broadcast_slots/{channel_id}:
+    get:
+      summary: Get an index of Catchup
+      description: "Returns all catchup items for a given channel. All related series are included in the response, which can be used for grouping."
+      tags:
+      - Catchup
+      operationId: GetCatchupIndex
+      parameters:
+        - in: path
+          name: channel_id
+          required: true
+          description: The ID of the channel to fetch Catchup for.
+          schema:
+            type: string
+        - $ref: 'https://api.swaggerhub.com/domains/24i-API/Snippets/v1.0.0#/components/parameters/language'
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                required:
+                - data
+                - included
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: 'https://api.swaggerhub.com/domains/24i-API/Snippets/v1.0.0#/components/schemas/BroadcastSlotResource'
+                  included:
+                    type: array
+                    items:
+                      $ref: 'https://api.swaggerhub.com/domains/24i-API/Snippets/v1.0.0#/components/schemas/SeriesResource'
+        400:
+          description: Invalid request
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                required:
+                  - errors
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      allOf:
+                        - $ref: 'https://api.swaggerhub.com/domains/24i-API/Snippets/v1.0.0#/components/schemas/Error'
+                        - example:
+                            status: '400'
+                            code: '10100'
+                            title: 'Bad Request'
+                            detail: 'language must be a 3 character ISO 639-2 string'
+        403:
+          description: Catchup not available for channel
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                required:
+                  - errors
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      allOf:
+                        - $ref: 'https://api.swaggerhub.com/domains/24i-API/Snippets/v1.0.0#/components/schemas/Error'
+                        - example:
+                            status: '403'
+                            code: 'NNNNN'
+                            title: 'Forbidden'
+                            detail: 'Catchup is not available for the requested channel'
+        404:
+          description: Channel does not exist
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                required:
+                  - errors
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      allOf:
+                        - $ref: 'https://api.swaggerhub.com/domains/24i-API/Snippets/v1.0.0#/components/schemas/Error'
+                        - example:
+                            status: '404'
+                            code: 'NNNNN'
+                            title: 'Not Found'
+                            detail: 'The requested channel does not exist'
+
+  /broadcast_slots/most_popular:
+    get:
+      summary: Get an list of the most watched Catchup
+      description: "This endpoint returns the most viewed catchup items across all channels ordered by view count in descending order. All related series are included in the response, which can be used for grouping"
+      tags:
+      - Catchup
+      operationId: GetPopularCatchupIndex
+      parameters:
+        - $ref: 'https://api.swaggerhub.com/domains/24i-API/Snippets/v1.0.0#/components/parameters/language'
+      responses:
+        200:
+          description: Successful response
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                required:
+                - data
+                - included
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: 'https://api.swaggerhub.com/domains/24i-API/Snippets/v1.0.0#/components/schemas/BroadcastSlotResource'
+                  included:
+                    type: array
+                    items:
+                      $ref: 'https://api.swaggerhub.com/domains/24i-API/Snippets/v1.0.0#/components/schemas/SeriesResource'
+        400:
+          description: Invalid request
+          content:
+            application/vnd.api+json:
+              schema:
+                type: object
+                required:
+                  - errors
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      allOf:
+                        - $ref: 'https://api.swaggerhub.com/domains/24i-API/Snippets/v1.0.0#/components/schemas/Error'
+                        - example:
+                            status: '400'
+                            code: '10100'
+                            title: 'Bad Request'
+                            detail: 'language must be a 3 character ISO 639-2 string'
