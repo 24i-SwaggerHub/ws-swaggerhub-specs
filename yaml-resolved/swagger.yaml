@@ -1,0 +1,494 @@
+openapi: 3.0.0
+info:
+  title: Metadata API
+  description: The Metadata API returns metadata related to the video content provided
+    by the SmartVideo APIs.
+  version: v1.0.0
+servers:
+- url: https://testing.booxmedia.xyz/api/metadata/v1
+  description: Testing server
+- url: https://virtserver.swaggerhub.com/24i-API/Metadata_API/v1.0.0
+  description: SwaggerHub API Auto Mocking
+paths:
+  /broadcast_slots/{channel_id}/{yyyy-mm-dd}:
+    get:
+      tags:
+      - Broadcast Slots
+      summary: Get an index of BroadcastSlots
+      description: |
+        * We do not support including related resources in the index view.
+      operationId: GetBroadcastSlotsIndex
+      parameters:
+      - name: channel_id
+        in: path
+        description: The ID of the channel to fetch EPG for.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: yyyy-mm-dd
+        in: path
+        description: Date for which to get EPG for. The API returns EPG within a window
+          starting from 04:00 AM on the given date until 04:00 AM on the following
+          date.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: 2020-02-21
+      - name: language
+        in: query
+        description: 'The PK of the language to use, which will be a 3 character ISO
+          639-2 string (e.g.: fin). If this is omitted the system defined default
+          will be used. If the requested language is not available then the system
+          will return translations in order of the system defined preferences'
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200'
+        "400":
+          description: Error response
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400'
+        "404":
+          description: Not Found
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404'
+components:
+  schemas:
+    BroadcastSlotResource:
+      allOf:
+      - $ref: '#/components/schemas/BroadcastSlotResourceIdentifier'
+      - required:
+        - attributes
+        - relationships
+        type: object
+        properties:
+          attributes:
+            allOf:
+            - $ref: '#/components/schemas/Attributes'
+            - required:
+              - end_time_unix
+              - program
+              - program_duration_seconds
+              - start_time_unix
+              type: object
+              properties:
+                start_time_unix:
+                  type: integer
+                  description: The Unix epoch timestamp denoting the start of the
+                    timeslot
+                  example: 1523268666
+                end_time_unix:
+                  type: integer
+                  description: 'The Unix epoch timestamp denoting the end of the timeslot.
+                    Note: end_time_unix - start_time_unix = program_duration_seconds
+                    + commercial_break_duration_seconds'
+                  example: 1523270886
+                advertising_enabled:
+                  type: boolean
+                  description: This will be true if ad insertion is enabled for this
+                    slot (the program duration will be shorter than the slot duration)
+                  example: true
+                program_duration_seconds:
+                  type: integer
+                  description: The duration (in seconds) of the program sans adverts
+                  example: 2100
+                commercial_break_duration_seconds:
+                  type: integer
+                  description: How much time is devoted to adverts.  The length of
+                    the program plus the commercial breaks should total the seconds
+                    betwen start_time and end_time
+                  example: 120
+                metadata_provider_information:
+                  type: array
+                  items:
+                    required:
+                    - external_id
+                    - provider
+                    type: object
+                    properties:
+                      provider:
+                        type: string
+                        example: ERICSSON
+                      external_id:
+                        type: string
+                        description: This is used by recommendation engines (like
+                          xroadmedia)
+                        example: "724693092"
+                broadcast_languages:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      audio_language_iso639_2:
+                        type: integer
+                        description: The ISO 639-2 three letter code for the language
+                          that the audio is in
+                subtitle_languages:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      language_iso639_2:
+                        type: string
+                        description: The ISO 639-2 three letter code for a subitle
+                          language that is available
+                        example: fin
+                services_blacklisted:
+                  type: array
+                  description: An array of the service types that are blacklisted
+                    for this broadcast slot.
+                  example:
+                  - npvr
+                  - catchup
+                  items:
+                    type: string
+                    enum:
+                    - live
+                    - npvr
+                    - catchup
+                    - startover
+                    - pause
+                program:
+                  required:
+                  - title
+                  type: object
+                  properties:
+                    title:
+                      type: string
+                      description: This may be different from the Program title, to
+                        allow broadcasters flexibility, for example to add prefixes
+                      example: 'Movie: Die Hard'
+                    images:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/Image'
+                    content_flags:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/ContentFlag'
+          relationships:
+            allOf:
+            - $ref: '#/components/schemas/Relationships'
+            - type: object
+              properties:
+                channel:
+                  required:
+                  - data
+                  type: object
+                  properties:
+                    data:
+                      $ref: '#/components/schemas/ChannelResourceIdentifier'
+                program:
+                  required:
+                  - data
+                  type: object
+                  properties:
+                    data:
+                      $ref: '#/components/schemas/ProgramResourceIdentifier'
+                genres:
+                  required:
+                  - data
+                  type: object
+                  properties:
+                    data:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/GenreResourceIdentifier'
+                series:
+                  required:
+                  - data
+                  type: object
+                  properties:
+                    data:
+                      nullable: true
+                      allOf:
+                      - $ref: '#/components/schemas/SeriesResourceIdentifier'
+              additionalProperties: false
+    BroadcastSlotResourceIdentifier:
+      allOf:
+      - $ref: '#/components/schemas/ResourceIdentifier'
+      - type: object
+        properties:
+          id:
+            pattern: uuid
+            type: string
+            example: f50a8a6b-e96a-4eb7-8d87-a14c1a991b96
+          type:
+            pattern: ^BroadcastSlot$
+            type: string
+            example: BroadcastSlot
+    ResourceIdentifier:
+      required:
+      - id
+      - type
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        type:
+          $ref: '#/components/schemas/Type'
+      discriminator:
+        propertyName: type
+    Id:
+      type: string
+      description: The id of the resource being referenced
+      example: e022f021-11f5-4cd6-89f2-02535d89eed6
+    Type:
+      type: string
+      description: Used to describe resource objects that share common attributes
+        and relationships.
+      example: ResourceOject
+    Attributes:
+      type: object
+      additionalProperties: true
+      description: An attributes object representing some of the resource’s data.
+    Image:
+      required:
+      - alternate_access_description
+      - height_pixels
+      - image_type
+      - iso3_language
+      - url
+      - width_pixels
+      type: object
+      properties:
+        image_type:
+          type: string
+          description: This is part of the PK and forms an identifying relationship
+            with the ImageType sub-table
+          nullable: true
+          example: Thumbnail
+        alternate_access_description:
+          type: string
+          nullable: true
+          example: Bruce Willis shooting a big gun at some bad guys, pew pew pew
+        width_pixels:
+          type: integer
+          nullable: true
+          example: 320
+        height_pixels:
+          type: integer
+          nullable: true
+          example: 200
+        iso_639-2_lang:
+          type: string
+          nullable: true
+          example: fin
+        url:
+          type: string
+          example: https://www.demo.com/assets/img/thumbnails/movies/diehard.png
+    ContentFlag:
+      required:
+      - content_rating_flag
+      - country_code_iso_alpha2
+      type: object
+      properties:
+        content_rating_authority:
+          type: string
+          description: This can be either a rating system (like PEGI) or some national
+            authority (in which case the ISO2 country code is used)
+          example: fi
+        content_rating_flag:
+          type: string
+          description: The freeform text value of the flag
+          example: "13"
+        pictogram_url:
+          type: string
+          description: The full url to a pictagram that can be used to represent this
+            content flag
+          example: https://cdn.pixabay.com/photo/2017/06/13/15/35/18-2399207_960_720.png
+        is_adult_rated:
+          type: boolean
+          description: Different countries use different flags, the middleware must
+            compute whether the flag being used is adult or not to standardize this
+            for clients
+          example: false
+    Relationships:
+      type: object
+      additionalProperties:
+        required:
+        - data
+        type: object
+        properties:
+          data:
+            oneOf:
+            - $ref: '#/components/schemas/ResourceIdentifier'
+            - type: array
+              items:
+                $ref: '#/components/schemas/ResourceIdentifier'
+      description: A relationships object describing relationships between the resource
+        and other JSON:API resources.
+    ChannelResourceIdentifier:
+      allOf:
+      - $ref: '#/components/schemas/ResourceIdentifier'
+      - type: object
+        properties:
+          id:
+            type: string
+            example: "42"
+          type:
+            pattern: ^Channel$
+            type: string
+            example: Channel
+    ProgramResourceIdentifier:
+      allOf:
+      - $ref: '#/components/schemas/ResourceIdentifier'
+      - type: object
+        properties:
+          id:
+            pattern: uuid
+            type: string
+            example: 530a08c0-3fd7-4d0d-b799-712ed9c07573
+          type:
+            pattern: ^Program$
+            type: string
+            example: Program
+    GenreResourceIdentifier:
+      allOf:
+      - $ref: '#/components/schemas/ResourceIdentifier'
+      - type: object
+        properties:
+          id:
+            pattern: uuid
+            type: string
+            example: 6dfc6d52-6c6c-4274-a037-a9331280aa41
+          type:
+            pattern: ^Genre$
+            type: string
+            example: Genre
+    SeriesResourceIdentifier:
+      allOf:
+      - $ref: '#/components/schemas/ResourceIdentifier'
+      - type: object
+        properties:
+          id:
+            pattern: uuid
+            type: string
+            example: abdf8785-cb23-445b-946f-69e8770500a1
+          type:
+            pattern: ^Series$
+            type: string
+            example: Series
+    ChannelResource:
+      allOf:
+      - $ref: '#/components/schemas/ChannelResourceIdentifier'
+      - required:
+        - attributes
+        type: object
+        properties:
+          attributes:
+            $ref: '#/components/schemas/ChannelResource_attributes'
+    Error:
+      required:
+      - code
+      - details
+      - id
+      - status
+      - title
+      type: object
+      properties:
+        id:
+          type: string
+          description: A unique identifier for this particular occurrence of the problem.
+        status:
+          type: string
+          description: The HTTP status code applicable to this problem, expressed
+            as a string value.
+        code:
+          type: string
+          description: An application-specific error code, expressed as a string value.
+        title:
+          type: string
+          description: A short, human-readable summary of the problem that SHOULD
+            NOT change from occurrence to occurrence of the problem.
+        details:
+          type: string
+          description: A human-readable explanation specific to this occurrence of
+            the problem.
+      example:
+        id: 6de7da3e-8877-4f2b-a670-16e18e5d79a0
+        status: "400"
+        code: "31201"
+        title: Bad Request
+        detail: Parameter 'Foo' is invalid
+    inline_response_200:
+      required:
+      - data
+      - included
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/BroadcastSlotResource'
+        included:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChannelResource'
+    inline_response_400:
+      required:
+      - errors
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            allOf:
+            - $ref: '#/components/schemas/Error'
+            - example:
+                status: "400"
+                code: "10100"
+                title: Bad Request
+                detail: language must be a 3 character ISO 639-2 string
+    inline_response_404:
+      required:
+      - errors
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            allOf:
+            - $ref: '#/components/schemas/Error'
+            - example:
+                status: "404"
+                code: "30301"
+                title: Not found
+                detail: Channel with ID "3333" not found
+    ChannelResource_attributes:
+      required:
+      - name
+      - services_enabled
+      type: object
+      properties:
+        services_enabled:
+          type: array
+          description: An array of the service types that are available for this channel.
+          example:
+          - live
+          - npvr
+          - catchup
+          items:
+            type: string
+            enum:
+            - live
+            - npvr
+            - catchup
+            - startover
+            - pause
