@@ -1,0 +1,317 @@
+openapi: 3.0.0
+info:
+  title: License API
+  description: License API used for managing user licenses and related products.
+  version: 4.0.0
+servers:
+- url: https://virtserver.swaggerhub.com/24i-API/License/4.0.0
+  description: SwaggerHub API Auto Mocking
+- url: https://testing.booxmedia.xyz/api/license/v4
+  description: Testing server
+paths:
+  /users/{user_id}/licenses:
+    get:
+      tags:
+      - license
+      summary: Get user licenses index
+      description: |
+        Returns all licenses for a given user. All related products are included in the response, which can be used for grouping.
+        * We do not support including related resources in the index view.
+      operationId: GetUserLicenses
+      parameters:
+      - name: user_id
+        in: path
+        description: The ID of the user to fetch licenses for.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200'
+        "404":
+          description: User does not exist
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404'
+    post:
+      tags:
+      - license
+      summary: Purchase new license
+      description: |
+        Creates new license associated with user and product
+      operationId: PurchaseUserLicense
+      parameters:
+      - name: user_id
+        in: path
+        description: The ID of the user to create license for.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreateLicenseResource'
+        required: true
+      responses:
+        "204":
+          description: Successful response on created resource
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_204'
+components:
+  schemas:
+    UserLicenseResource:
+      allOf:
+      - $ref: '#/components/schemas/UserLicenseResourceIdentifier'
+      - required:
+        - attributes
+        - relationships
+        type: object
+        properties:
+          attributes:
+            allOf:
+            - $ref: '#/components/schemas/UserLicenseResourceAttributes'
+            - required:
+              - start_date
+              - status
+              - stop_date
+              type: object
+          relationships:
+            $ref: '#/components/schemas/UserLicenseResourceRelationships'
+    UserLicenseResourceIdentifier:
+      allOf:
+      - $ref: '#/components/schemas/ResourceIdentifier'
+      - type: object
+        properties:
+          id:
+            type: string
+            example: "42"
+          type:
+            pattern: ^License$
+            type: string
+            example: License
+    ResourceIdentifier:
+      required:
+      - id
+      - type
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        type:
+          $ref: '#/components/schemas/Type'
+      discriminator:
+        propertyName: type
+    Id:
+      type: string
+      description: The id of the resource being referenced
+      example: e022f021-11f5-4cd6-89f2-02535d89eed6
+    Type:
+      type: string
+      description: Used to describe resource objects that share common attributes
+        and relationships.
+      example: ResourceOject
+    UserLicenseResourceAttributes:
+      allOf:
+      - $ref: '#/components/schemas/Attributes'
+      - required:
+        - start_date
+        - stop_date
+        type: object
+        properties:
+          status:
+            type: string
+            description: Current status of license
+            readOnly: true
+            enum:
+            - PROCESSING
+            - CHECK_INVALID
+            - ORDER_ERROR
+            - ACTIVE
+            - EXPIRED
+            - SUSPENDED
+            - SUSPENDEDADMIN
+          start_date:
+            type: integer
+            description: The Unix epoch timestamp denoting the start date of the license
+            example: 1523268666
+          stop_date:
+            type: integer
+            description: The Unix epoch timestamp denoting expiration date of the
+              license
+            example: 1523268698
+          purchase_date:
+            type: integer
+            description: The Unix epoch timestamp denoting date when the license was
+              purchased
+            readOnly: true
+            example: 1523268698
+        additionalProperties: false
+    Attributes:
+      type: object
+      additionalProperties: true
+      description: An attributes object representing some of the resource’s data.
+    UserLicenseResourceRelationships:
+      allOf:
+      - $ref: '#/components/schemas/Relationships'
+      - required:
+        - product
+        - user
+        type: object
+        properties:
+          user:
+            $ref: '#/components/schemas/UserLicenseResourceRelationships_user'
+          product:
+            $ref: '#/components/schemas/UserLicenseResourceRelationships_product'
+        additionalProperties: false
+    Relationships:
+      type: object
+      additionalProperties:
+        required:
+        - data
+        type: object
+        properties:
+          data:
+            oneOf:
+            - $ref: '#/components/schemas/ResourceIdentifier'
+            - type: array
+              items:
+                $ref: '#/components/schemas/ResourceIdentifier'
+      description: A relationships object describing relationships between the resource
+        and other JSON:API resources.
+    UserResourceIdentifier:
+      allOf:
+      - $ref: '#/components/schemas/ResourceIdentifier'
+      - type: object
+        properties:
+          id:
+            type: string
+            example: "41"
+          type:
+            pattern: ^User$
+            type: string
+            example: User
+    ProductResourceIdentifier:
+      allOf:
+      - $ref: '#/components/schemas/ResourceIdentifier'
+      - type: object
+        properties:
+          id:
+            type: string
+            example: "43"
+          type:
+            pattern: ^Product$
+            type: string
+            example: Product
+    Error:
+      required:
+      - code
+      - details
+      - id
+      - status
+      - title
+      type: object
+      properties:
+        id:
+          type: string
+          description: A unique identifier for this particular occurrence of the problem.
+        status:
+          type: string
+          description: The HTTP status code applicable to this problem, expressed
+            as a string value.
+        code:
+          type: string
+          description: An application-specific error code, expressed as a string value.
+        title:
+          type: string
+          description: A short, human-readable summary of the problem that SHOULD
+            NOT change from occurrence to occurrence of the problem.
+        details:
+          type: string
+          description: A human-readable explanation specific to this occurrence of
+            the problem.
+      example:
+        id: 6de7da3e-8877-4f2b-a670-16e18e5d79a0
+        status: "400"
+        code: "31201"
+        title: Bad Request
+        detail: Parameter 'Foo' is invalid
+    UserCreateLicenseResource:
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/UserCreateLicenseResource_data'
+    inline_response_200:
+      required:
+      - data
+      - included
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserLicenseResource'
+    inline_response_404:
+      required:
+      - errors
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            allOf:
+            - $ref: '#/components/schemas/Error'
+            - example:
+                status: "404"
+                code: "10101"
+                title: Not Found
+                detail: The requested user does not exist
+    inline_response_204:
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/UserLicenseResource'
+    UserLicenseResourceRelationships_user:
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/UserResourceIdentifier'
+    UserLicenseResourceRelationships_product:
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ProductResourceIdentifier'
+    UserCreateLicenseResource_data:
+      required:
+      - attributes
+      - relationships
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: Resource type of the resource to create. Must be "License".
+          example: License
+        attributes:
+          $ref: '#/components/schemas/UserLicenseResourceAttributes'
+        relationships:
+          $ref: '#/components/schemas/UserLicenseResourceRelationships'
