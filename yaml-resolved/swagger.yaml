@@ -34,6 +34,12 @@ paths:
             application/vnd.api+json:
               schema:
                 $ref: '#/components/schemas/inline_response_200'
+        "401":
+          description: Unauthorized
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_401'
         "404":
           description: User does not exist
           content:
@@ -297,6 +303,21 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/UserLicenseResource'
+    inline_response_401:
+      required:
+      - errors
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            allOf:
+            - $ref: '#/components/schemas/Error'
+            - example:
+                status: "401"
+                code: "10201"
+                title: Invalid api key
+                detail: Client is not authorized to fetch user licenses
     inline_response_404:
       required:
       - errors
