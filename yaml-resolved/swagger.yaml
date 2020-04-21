@@ -73,12 +73,12 @@ paths:
               $ref: '#/components/schemas/UserCreateLicenseResource'
         required: true
       responses:
-        "204":
+        "201":
           description: Successful response on created resource
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/inline_response_204'
+                $ref: '#/components/schemas/inline_response_201'
 components:
   schemas:
     UserLicenseResource:
@@ -99,6 +99,14 @@ components:
               type: object
           relationships:
             $ref: '#/components/schemas/UserLicenseResourceRelationships'
+          links:
+            allOf:
+            - $ref: '#/components/schemas/Links'
+            - type: object
+              properties:
+                self:
+                  type: string
+                  example: https://boox.fi/api/user/waqqas.jabbar@gmail.com/license/10
     UserLicenseResourceIdentifier:
       allOf:
       - $ref: '#/components/schemas/ResourceIdentifier'
@@ -224,6 +232,9 @@ components:
             pattern: ^Product$
             type: string
             example: Product
+    Links:
+      type: object
+      description: A links object containing links related to the resource.
     Error:
       required:
       - code
@@ -289,7 +300,7 @@ components:
                 code: "10101"
                 title: Not Found
                 detail: The requested user does not exist
-    inline_response_204:
+    inline_response_201:
       required:
       - data
       type: object
