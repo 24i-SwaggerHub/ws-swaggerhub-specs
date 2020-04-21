@@ -76,9 +76,15 @@ paths:
         "201":
           description: Successful response on created resource
           content:
-            application/json:
+            application/vnd.api+json:
               schema:
                 $ref: '#/components/schemas/inline_response_201'
+        "403":
+          description: Incorrect PIN code
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_403'
 components:
   schemas:
     UserLicenseResource:
@@ -307,6 +313,22 @@ components:
       properties:
         data:
           $ref: '#/components/schemas/UserLicenseResource'
+    inline_response_403:
+      required:
+      - errors
+      properties:
+        errors:
+          type: array
+          items:
+            allOf:
+            - $ref: '#/components/schemas/Error'
+            - example:
+                id: 2d3ba0ea-0aca-11ea-b2d0-4bc6fcad2537
+                status: "403"
+                code: "10200"
+                title: Incorrect PIN code
+                detail: The PIN code that you supplied does not match the one we have
+                  stored for the account.
     UserLicenseResourceRelationships_user:
       required:
       - data
