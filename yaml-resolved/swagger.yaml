@@ -103,7 +103,7 @@ paths:
       - license
       summary: Get all user-visible products.
       description: |
-        Returns all licenses for a given user. All related products are included in the response, which can be used for grouping.
+        Returns all products which are visisble and byable by user. All related product items are included in the response, which can be used for grouping, showing product details.
         * We do not support including related resources in the index view.
       operationId: GetAllProducts
       responses:
@@ -326,14 +326,6 @@ components:
               type: object
           relationships:
             $ref: '#/components/schemas/UserProductResourceRelationships'
-          links:
-            allOf:
-            - $ref: '#/components/schemas/Links'
-            - type: object
-              properties:
-                self:
-                  type: string
-                  example: https://boox.fi/api/user/waqqas.jabbar@gmail.com/management/v4/products/1
     UserProductResourceAttributes:
       allOf:
       - $ref: '#/components/schemas/Attributes'
