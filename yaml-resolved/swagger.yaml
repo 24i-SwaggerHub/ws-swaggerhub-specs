@@ -103,7 +103,7 @@ paths:
       - license
       summary: Get all user-visible products.
       description: |
-        Returns all products which are visisble and byable by user. All related product items are included in the response, which can be used for grouping, showing product details.
+        Returns all products which are visible and byable by user. All related product items are included in the response, which can be used for grouping, sorting and showing product details.
         * We do not support including related resources in the index view.
       operationId: GetAllProducts
       responses:
@@ -113,6 +113,12 @@ paths:
             application/vnd.api+json:
               schema:
                 $ref: '#/components/schemas/inline_response_200_1'
+        "401":
+          description: Unauthorized
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_401_1'
 components:
   schemas:
     UserLicenseResource:
@@ -435,7 +441,7 @@ components:
             - example:
                 status: "401"
                 code: "10201"
-                title: Invalid api key
+                title: Invalid token
                 detail: Client is not authorized to fetch user licenses
     inline_response_404:
       required:
@@ -500,6 +506,21 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/UserProductResource'
+    inline_response_401_1:
+      required:
+      - errors
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            allOf:
+            - $ref: '#/components/schemas/Error'
+            - example:
+                status: "401"
+                code: "10201"
+                title: Invalid token
+                detail: Client is not authorized to fetch products
     UserLicenseResourceRelationships_user:
       required:
       - data
