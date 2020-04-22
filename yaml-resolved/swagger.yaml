@@ -97,6 +97,22 @@ paths:
             application/vnd.api+json:
               schema:
                 $ref: '#/components/schemas/inline_response_404_1'
+  /products:
+    get:
+      tags:
+      - license
+      summary: Get all user-visible products.
+      description: |
+        Returns all licenses for a given user. All related products are included in the response, which can be used for grouping.
+        * We do not support including related resources in the index view.
+      operationId: GetAllProducts
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_1'
 components:
   schemas:
     UserLicenseResource:
@@ -245,7 +261,7 @@ components:
         properties:
           id:
             type: string
-            example: "43"
+            example: "41"
           type:
             pattern: ^Product$
             type: string
@@ -293,6 +309,117 @@ components:
       properties:
         data:
           $ref: '#/components/schemas/UserCreateLicenseResource_data'
+    UserProductResource:
+      allOf:
+      - $ref: '#/components/schemas/ProductResourceIdentifier'
+      - required:
+        - attributes
+        - relationships
+        type: object
+        properties:
+          attributes:
+            allOf:
+            - $ref: '#/components/schemas/UserProductResourceAttributes'
+            - required:
+              - description
+              - title
+              type: object
+          relationships:
+            $ref: '#/components/schemas/UserProductResourceRelationships'
+          links:
+            allOf:
+            - $ref: '#/components/schemas/Links'
+            - type: object
+              properties:
+                self:
+                  type: string
+                  example: https://boox.fi/api/user/waqqas.jabbar@gmail.com/management/v4/products/1
+    UserProductResourceAttributes:
+      allOf:
+      - $ref: '#/components/schemas/Attributes'
+      - required:
+        - start_date
+        - stop_date
+        type: object
+        properties:
+          title:
+            type: string
+            description: Title of the product
+            example: Sport channels meagpack
+          description:
+            type: string
+            description: Description of the product
+            example: Complete collection fo all sports channels
+          price:
+            minimum: 0
+            type: number
+            description: product price
+            format: float
+          currency:
+            type: string
+            description: ISO 4217 alphabetic code
+            example: AUD
+        additionalProperties: false
+    UserProductResourceRelationships:
+      allOf:
+      - $ref: '#/components/schemas/Relationships'
+      - type: object
+        properties:
+          live:
+            type: array
+            description: List of items with live service enabled
+            items:
+              $ref: '#/components/schemas/ProductLiveItemResourceIdentifier'
+          catchup:
+            type: array
+            description: List of items with cathup service enabled
+            items:
+              $ref: '#/components/schemas/ProductCatchupItemResourceIdentifier'
+          npvr:
+            type: array
+            description: List of items with npvr service enabled
+            items:
+              $ref: '#/components/schemas/ProductNpvrItemResourceIdentifier'
+          startover:
+            type: array
+            description: List of items with startover service enabled
+            items:
+              $ref: '#/components/schemas/ProductStartoverItemResourceIdentifier'
+        additionalProperties: false
+    ProductLiveItemResourceIdentifier:
+      allOf:
+      - $ref: '#/components/schemas/ResourceIdentifier'
+      - $ref: '#/components/schemas/ProductItemResourceIdentifierAttributes'
+      - type: object
+        description: Product live service item
+    ProductItemResourceIdentifierAttributes:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "41"
+        type:
+          pattern: ^Channel$
+          example: Channel
+      description: Product service item
+    ProductCatchupItemResourceIdentifier:
+      allOf:
+      - $ref: '#/components/schemas/ResourceIdentifier'
+      - $ref: '#/components/schemas/ProductItemResourceIdentifierAttributes'
+      - type: object
+        description: Product catchup service item
+    ProductNpvrItemResourceIdentifier:
+      allOf:
+      - $ref: '#/components/schemas/ResourceIdentifier'
+      - $ref: '#/components/schemas/ProductItemResourceIdentifierAttributes'
+      - type: object
+        description: Product npvr service item
+    ProductStartoverItemResourceIdentifier:
+      allOf:
+      - $ref: '#/components/schemas/ResourceIdentifier'
+      - $ref: '#/components/schemas/ProductItemResourceIdentifierAttributes'
+      - type: object
+        description: Product startover service item
     inline_response_200:
       required:
       - data
@@ -371,6 +498,16 @@ components:
                 code: "30701"
                 title: Unable to purchase license
                 detail: Product "5000" not found
+    inline_response_200_1:
+      required:
+      - data
+      - included
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserProductResource'
     UserLicenseResourceRelationships_user:
       required:
       - data
