@@ -228,6 +228,10 @@ components:
                   type: string
                   description: Description of the product
                   example: Complete collection fo all sports channels
+                type:
+                  type: string
+                  description: Type of the product
+                  example: CHANNEL_GROUP
           relationships:
             $ref: '#/components/schemas/UserProductResourceRelationships'
     UserProductResourceRelationships:
@@ -314,6 +318,7 @@ components:
     inline_response_200:
       required:
       - data
+      - included
       type: object
       properties:
         data:
