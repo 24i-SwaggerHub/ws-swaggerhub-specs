@@ -316,6 +316,12 @@ paths:
             application/vnd.api+json:
               schema:
                 $ref: '#/components/schemas/inline_response_201_1'
+        "400":
+          description: Bad Request
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400_2'
   /licenses/batch_delete/{user_id}:
     post:
       tags:
@@ -351,6 +357,12 @@ paths:
         "204":
           description: |
             The user licenses were deleted successfully
+        "400":
+          description: Bad Request
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400_3'
         "401":
           description: Unauthorized
           content:
@@ -877,6 +889,21 @@ components:
       properties:
         data:
           $ref: '#/components/schemas/UserLicenseResource'
+    inline_response_400_2:
+      required:
+      - errors
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            allOf:
+            - $ref: '#/components/schemas/Error'
+            - example:
+                status: "400"
+                code: "10201"
+                title: Bad Request
+                detail: Error in client input
     body:
       required:
       - data
@@ -886,6 +913,21 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/LicenseResourceIdentifier'
+    inline_response_400_3:
+      required:
+      - errors
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            allOf:
+            - $ref: '#/components/schemas/Error'
+            - example:
+                status: "400"
+                code: "10201"
+                title: Bad Request
+                detail: Standart error descrition
     ManagementLicenseResourceAttributes_renew_record:
       type: object
       properties:
