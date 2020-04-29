@@ -1,0 +1,776 @@
+openapi: 3.0.0
+info:
+  title: License management API
+  description: 'License management API used for editing and managing user licenses
+    and related products. This API supposed to be used privately and consumed by BSS
+    and CMS. Only authorization with api key supported '
+  version: 4.0.0
+servers:
+- url: https://virtserver.swaggerhub.com/24i-API/license/management/4.0.0
+  description: SwaggerHub API Auto Mocking
+- url: https://testing.booxmedia.xyz/api/license/management/v4/
+  description: Testing server
+paths:
+  /licenses:
+    get:
+      tags:
+      - license
+      summary: Get licenses with filter
+      description: |
+        Returns a list of licenses for a given input set of filters. All related products and users are included in the response, which can be used for grouping.
+        * We do not support including related resources in the index view.
+      operationId: GetLicenses
+      parameters:
+      - name: Authorization
+        in: header
+        description: Internal API key.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: Apikey 1a2b3c4d
+      - name: page[number]
+        in: query
+        description: Page number if the results have more items than items per page.
+          Default = 1.
+        required: false
+        style: form
+        explode: true
+        schema:
+          minimum: 1
+          type: number
+        example: 1
+      - name: filter[user_id]
+        in: query
+        description: Return only licenses which belongs to specified user id.
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: number
+        example: "42"
+      - name: filter[with_auto_renew]
+        in: query
+        description: Return only licenses which has auto renew enabled
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: boolean
+        example: true
+      - name: filter[status]
+        in: query
+        description: Return only licenses which are in specified status, should be
+          "one of"
+        required: false
+        style: form
+        explode: true
+        schema:
+          uniqueItems: true
+          type: array
+          items:
+            type: string
+            enum:
+            - PROCESSING
+            - CHECK_INVALID
+            - ORDER_ERROR
+            - ACTIVE
+            - EXPIRED
+            - SUSPENDED
+            - SUSPENDEDADMIN
+        example: ACTIVE
+      - name: filter[payment_method]
+        in: query
+        description: Return only licenses which were purchased with specified payment
+          method
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+        example: billing
+      - name: filter[purchase_later_than]
+        in: query
+        description: Return only licenses which were purchased after specified date.
+          Full-date notation as defined by RFC 3339, section 5.6
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          format: date
+        example: 2017-07-21
+      - name: filter[active_from]
+        in: query
+        description: Return only licenses which became  active after specified date.
+          Full-date notation as defined by RFC 3339, section 5.6
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          format: date
+        example: 2017-07-21
+      - name: filter[active_till]
+        in: query
+        description: Return only licenses which will become or already inactive before
+          specified dat. Full-date notation as defined by RFC 3339, section 5.6
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+          format: date
+        example: 2017-07-21
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200'
+        "400":
+          description: Bad Request
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400'
+        "401":
+          description: Unauthorized
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_401'
+    post:
+      tags:
+      - license
+      summary: Create new license
+      description: |
+        Create new license
+      operationId: CreateLicense
+      parameters:
+      - name: Authorization
+        in: header
+        description: Internal API key.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: Apikey 1a2b3c4d
+      - name: Idempotency-Key
+        in: header
+        description: Client unique generated value for server to recognize subsequent
+          retries
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: 518d5812-b8e8-43a4-b3b0-8f9c5cdc31b9
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ManagementCreateLicenseResource'
+        required: true
+      responses:
+        "201":
+          description: Successful response on created resource
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_201'
+        "400":
+          description: Standard error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400_1'
+        "401":
+          description: Unauthorized
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_401'
+  /licenses/{license_id}:
+    get:
+      tags:
+      - license
+      summary: Get license
+      description: Returns license by id
+      operationId: GetLicenseById
+      parameters:
+      - name: license_id
+        in: path
+        description: The ID of the license to fetch.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: number
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200'
+        "401":
+          description: Unauthorized
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_401'
+        "404":
+          description: License does not exist
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404'
+    post:
+      tags:
+      - license
+      summary: Delete license
+      description: Deletes license by id
+      operationId: DeleteLicenseById
+      parameters:
+      - name: license_id
+        in: path
+        description: The ID of the license to fetch.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: number
+      responses:
+        "204":
+          description: |
+            The user license was deleted successfully
+        "401":
+          description: Unauthorized
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_401'
+        "404":
+          description: License does not exist
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404'
+components:
+  schemas:
+    ManagementLicenseResource:
+      allOf:
+      - $ref: '#/components/schemas/LicenseResourceIdentifier'
+      - required:
+        - attributes
+        - relationships
+        type: object
+        properties:
+          attributes:
+            allOf:
+            - $ref: '#/components/schemas/ManagementLicenseResourceAttributes'
+          relationships:
+            $ref: '#/components/schemas/LicenseResourceRelationships'
+          links:
+            allOf:
+            - $ref: '#/components/schemas/Links'
+            - type: object
+              properties:
+                self:
+                  type: string
+                  example: https://boox.fi/api/license/management/v4/licenses/10
+    LicenseResourceIdentifier:
+      allOf:
+      - $ref: '#/components/schemas/ResourceIdentifier'
+      - type: object
+        properties:
+          id:
+            type: string
+            example: "42"
+          type:
+            pattern: ^License$
+            type: string
+            example: License
+    ResourceIdentifier:
+      required:
+      - id
+      - type
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        type:
+          $ref: '#/components/schemas/Type'
+      discriminator:
+        propertyName: type
+    Id:
+      type: string
+      description: The id of the resource being referenced
+      example: e022f021-11f5-4cd6-89f2-02535d89eed6
+    Type:
+      type: string
+      description: Used to describe resource objects that share common attributes
+        and relationships.
+      example: ResourceOject
+    ManagementLicenseResourceAttributes:
+      allOf:
+      - $ref: '#/components/schemas/CommonLicenseResourceAttributes'
+      - type: object
+        properties:
+          order_id:
+            type: string
+            description: Application generated unique id of the order
+            format: uuid
+            nullable: true
+            readOnly: true
+            example: 1adc0dbe-3c65-4248-896c-78c049e276c8
+          renew_record:
+            $ref: '#/components/schemas/ManagementLicenseResourceAttributes_renew_record'
+          purchase_record:
+            $ref: '#/components/schemas/ManagementLicenseResourceAttributes_purchase_record'
+        additionalProperties: false
+        description: Management license resource attributes
+    CommonLicenseResourceAttributes:
+      allOf:
+      - $ref: '#/components/schemas/Attributes'
+      - required:
+        - start_date
+        - stop_date
+        type: object
+        properties:
+          status:
+            type: string
+            description: Current status of license
+            nullable: false
+            example: ACTIVE
+            enum:
+            - PROCESSING
+            - CHECK_INVALID
+            - ORDER_ERROR
+            - ACTIVE
+            - EXPIRED
+            - SUSPENDED
+            - SUSPENDEDADMIN
+          start_date:
+            type: integer
+            description: The Unix epoch timestamp denoting the start date of the license
+            nullable: false
+            example: 1523268666
+          stop_date:
+            type: integer
+            description: The Unix epoch timestamp denoting expiration date of the
+              license
+            nullable: false
+            example: 1523268698
+        additionalProperties: false
+    Attributes:
+      type: object
+      additionalProperties: true
+      description: An attributes object representing some of the resource’s data.
+    LicenseResourceRelationships:
+      allOf:
+      - $ref: '#/components/schemas/Relationships'
+      - required:
+        - product
+        - user
+        type: object
+        properties:
+          user:
+            $ref: '#/components/schemas/LicenseResourceRelationships_user'
+          product:
+            $ref: '#/components/schemas/LicenseResourceRelationships_product'
+        additionalProperties: false
+    Relationships:
+      type: object
+      additionalProperties:
+        required:
+        - data
+        type: object
+        properties:
+          data:
+            oneOf:
+            - $ref: '#/components/schemas/ResourceIdentifier'
+            - type: array
+              items:
+                $ref: '#/components/schemas/ResourceIdentifier'
+      description: A relationships object describing relationships between the resource
+        and other JSON:API resources.
+    UserResourceIdentifier:
+      allOf:
+      - $ref: '#/components/schemas/ResourceIdentifier'
+      - type: object
+        properties:
+          id:
+            type: string
+            example: "41"
+          type:
+            pattern: ^User$
+            type: string
+            example: User
+    ProductResourceIdentifier:
+      allOf:
+      - $ref: '#/components/schemas/ResourceIdentifier'
+      - type: object
+        properties:
+          id:
+            type: string
+            example: "41"
+          type:
+            pattern: ^Product$
+            type: string
+            example: Product
+    Links:
+      type: object
+      description: A links object containing links related to the resource.
+    ManagementProductResource:
+      allOf:
+      - $ref: '#/components/schemas/ProductResourceIdentifier'
+      - required:
+        - attributes
+        - relationships
+        type: object
+        properties:
+          attributes:
+            allOf:
+            - $ref: '#/components/schemas/UserProductResourceAttributes'
+            - required:
+              - description
+              - title
+              type: object
+          relationships:
+            $ref: '#/components/schemas/UserProductResourceRelationships'
+    UserProductResourceAttributes:
+      allOf:
+      - $ref: '#/components/schemas/Attributes'
+      - type: object
+        properties:
+          title:
+            type: string
+            description: Title of the product
+            example: Sport channels meagpack
+          description:
+            type: string
+            description: Description of the product
+            example: Complete collection fo all sports channels
+          type:
+            type: string
+            description: Type of the product
+            example: CHANNEL_GROUP
+          isPremium:
+            type: boolean
+            description: Whether the product is premium one
+            example: true
+        additionalProperties: false
+    UserProductResourceRelationships:
+      allOf:
+      - $ref: '#/components/schemas/Relationships'
+      - type: object
+        properties:
+          live:
+            $ref: '#/components/schemas/UserProductResourceRelationships_live'
+          catchup:
+            $ref: '#/components/schemas/UserProductResourceRelationships_catchup'
+          npvr:
+            $ref: '#/components/schemas/UserProductResourceRelationships_npvr'
+          startover:
+            $ref: '#/components/schemas/UserProductResourceRelationships_startover'
+        additionalProperties: false
+    ProductLiveItemResourceIdentifier:
+      allOf:
+      - $ref: '#/components/schemas/ResourceIdentifier'
+      - $ref: '#/components/schemas/ProductItemResourceIdentifierAttributes'
+      - type: object
+        description: Product live service item
+    ProductItemResourceIdentifierAttributes:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "41"
+        type:
+          pattern: ^Channel$
+          example: Channel
+      description: Product service item
+    ProductCatchupItemResourceIdentifier:
+      allOf:
+      - $ref: '#/components/schemas/ResourceIdentifier'
+      - $ref: '#/components/schemas/ProductItemResourceIdentifierAttributes'
+      - type: object
+        description: Product catchup service item
+    ProductNpvrItemResourceIdentifier:
+      allOf:
+      - $ref: '#/components/schemas/ResourceIdentifier'
+      - $ref: '#/components/schemas/ProductItemResourceIdentifierAttributes'
+      - type: object
+        description: Product npvr service item
+    ProductStartoverItemResourceIdentifier:
+      allOf:
+      - $ref: '#/components/schemas/ResourceIdentifier'
+      - $ref: '#/components/schemas/ProductItemResourceIdentifierAttributes'
+      - type: object
+        description: Product startover service item
+    Error:
+      required:
+      - code
+      - details
+      - id
+      - status
+      - title
+      type: object
+      properties:
+        id:
+          type: string
+          description: A unique identifier for this particular occurrence of the problem.
+        status:
+          type: string
+          description: The HTTP status code applicable to this problem, expressed
+            as a string value.
+        code:
+          type: string
+          description: An application-specific error code, expressed as a string value.
+        title:
+          type: string
+          description: A short, human-readable summary of the problem that SHOULD
+            NOT change from occurrence to occurrence of the problem.
+        details:
+          type: string
+          description: A human-readable explanation specific to this occurrence of
+            the problem.
+      example:
+        id: 6de7da3e-8877-4f2b-a670-16e18e5d79a0
+        status: "400"
+        code: "31201"
+        title: Bad Request
+        detail: Parameter 'Foo' is invalid
+    ManagementCreateLicenseResource:
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ManagementCreateLicenseResource_data'
+    Error_2:
+      type: object
+      properties:
+        id:
+          type: string
+          description: A unique identifier for this instance of error (allows tracking
+            in logs)
+        href:
+          type: string
+          description: The url where you can find documentation about this class of
+            error
+        code:
+          type: string
+          description: A static 7 character code that is associated with this family
+            of errors
+        title:
+          type: string
+          description: A human readable and user friendly (no implementation details)
+            description of the general condition of the error
+        details:
+          type: string
+          description: A human readable and user friendly description of the specific
+            details of the error
+      example:
+      - id: 5941163294aef
+        code: 4INZEX
+        title: Method not allowed
+        details: This method is not supported for this resource
+    inline_response_200:
+      required:
+      - data
+      - included
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ManagementLicenseResource'
+        included:
+          type: array
+          items:
+            anyOf:
+            - $ref: '#/components/schemas/ManagementProductResource'
+    inline_response_400:
+      required:
+      - errors
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            allOf:
+            - $ref: '#/components/schemas/Error'
+            - example:
+                status: "400"
+                code: "10201"
+                title: Bad Request
+                detail: Standard error response
+    inline_response_401:
+      required:
+      - errors
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            allOf:
+            - $ref: '#/components/schemas/Error'
+            - example:
+                status: "401"
+                code: "10201"
+                title: Invalid api key
+                detail: 'Invalid authorization api key: Unauthorised Api key provided
+                  in the header'
+    inline_response_201:
+      required:
+      - data
+      - included
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ManagementLicenseResource'
+        included:
+          type: array
+          items:
+            anyOf:
+            - $ref: '#/components/schemas/ManagementProductResource'
+    inline_response_400_1:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/Error_2'
+    inline_response_404:
+      required:
+      - errors
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            allOf:
+            - $ref: '#/components/schemas/Error'
+            - example:
+                status: "404"
+                code: "10101"
+                title: Not Found
+                detail: The requested license does not exist
+    ManagementLicenseResourceAttributes_renew_record:
+      type: object
+      properties:
+        recurring:
+          type: boolean
+          description: Indicates whether the license will be scheduled for auto renew
+          example: false
+        expiry_date:
+          type: integer
+          description: The Unix epoch timestamp denoting the license expiration date.
+            If 'recurring' is set for that record then renew script will handle auto
+            renew few days before that date.
+          nullable: true
+          readOnly: false
+          example: 1523268698
+    ManagementLicenseResourceAttributes_purchase_record:
+      type: object
+      properties:
+        price_currency_amount:
+          type: number
+          description: The float (double precision) amount of currency that was paid
+            (some fiat currencies have three decimal points of precision)
+          nullable: true
+          readOnly: true
+          example: 12.23
+        price_currency_iso4217:
+          type: string
+          description: The ISO-4217 code of the currency (https://en.wikipedia.org/wiki/ISO_4217)
+          nullable: true
+          readOnly: true
+          example: EUR
+        purchase_timestamp:
+          type: integer
+          description: The Unix timestamp at which this license was purchased
+          nullable: true
+          readOnly: true
+          example: 1526648593
+        payment_method:
+          type: string
+          description: The purchase instrument
+          nullable: true
+          example: credit card
+    LicenseResourceRelationships_user:
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/UserResourceIdentifier'
+    LicenseResourceRelationships_product:
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ProductResourceIdentifier'
+    UserProductResourceRelationships_live:
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          type: array
+          description: List of items with live service enabled
+          items:
+            $ref: '#/components/schemas/ProductLiveItemResourceIdentifier'
+    UserProductResourceRelationships_catchup:
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          type: array
+          description: List of items with cathup service enabled
+          items:
+            $ref: '#/components/schemas/ProductCatchupItemResourceIdentifier'
+    UserProductResourceRelationships_npvr:
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          type: array
+          description: List of items with npvr service enabled enabled
+          items:
+            $ref: '#/components/schemas/ProductNpvrItemResourceIdentifier'
+    UserProductResourceRelationships_startover:
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          type: array
+          description: List of items with startover service enabled
+          items:
+            $ref: '#/components/schemas/ProductStartoverItemResourceIdentifier'
+    ManagementCreateLicenseResource_data:
+      required:
+      - attributes
+      - relationships
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: Resource type of the resource to create. Must be "License".
+          example: License
+        attributes:
+          allOf:
+          - $ref: '#/components/schemas/ManagementLicenseResourceAttributes'
+        relationships:
+          $ref: '#/components/schemas/LicenseResourceRelationships'
