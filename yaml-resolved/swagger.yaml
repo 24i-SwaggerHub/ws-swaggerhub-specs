@@ -34,6 +34,18 @@ paths:
             application/vnd.api+json:
               schema:
                 $ref: '#/components/schemas/inline_response_200'
+        "401":
+          description: Unauthorized
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_401'
+        "404":
+          description: User does not exist
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404'
 components:
   schemas:
     UserLicenseResource:
@@ -195,6 +207,39 @@ components:
     Links:
       type: object
       description: A links object containing links related to the resource.
+    Error:
+      required:
+      - code
+      - details
+      - id
+      - status
+      - title
+      type: object
+      properties:
+        id:
+          type: string
+          description: A unique identifier for this particular occurrence of the problem.
+        status:
+          type: string
+          description: The HTTP status code applicable to this problem, expressed
+            as a string value.
+        code:
+          type: string
+          description: An application-specific error code, expressed as a string value.
+        title:
+          type: string
+          description: A short, human-readable summary of the problem that SHOULD
+            NOT change from occurrence to occurrence of the problem.
+        details:
+          type: string
+          description: A human-readable explanation specific to this occurrence of
+            the problem.
+      example:
+        id: 6de7da3e-8877-4f2b-a670-16e18e5d79a0
+        status: "400"
+        code: "31201"
+        title: Bad Request
+        detail: Parameter 'Foo' is invalid
     inline_response_200:
       required:
       - data
@@ -204,6 +249,36 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/UserLicenseResource'
+    inline_response_401:
+      required:
+      - errors
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            allOf:
+            - $ref: '#/components/schemas/Error'
+            - example:
+                status: "401"
+                code: "10201"
+                title: Invalid token
+                detail: Client is not authorized to fetch user licenses
+    inline_response_404:
+      required:
+      - errors
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            allOf:
+            - $ref: '#/components/schemas/Error'
+            - example:
+                status: "404"
+                code: "10101"
+                title: Not Found
+                detail: The requested user does not exist
     LicenseResourceRelationships_user:
       required:
       - data
