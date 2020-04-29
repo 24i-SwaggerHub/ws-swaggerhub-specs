@@ -212,32 +212,40 @@ components:
       - $ref: '#/components/schemas/ProductResourceIdentifier'
       - required:
         - attributes
+        - relationships
         type: object
         properties:
           attributes:
             allOf:
+            - $ref: '#/components/schemas/UserProductResourceAttributes'
             - required:
+              - description
               - title
               type: object
-              properties:
-                title:
-                  type: string
-                  description: Title of the product
-                  example: Sport channels meagpack
-                description:
-                  type: string
-                  description: Description of the product
-                  example: Complete collection fo all sports channels
-                type:
-                  type: string
-                  description: Type of the product
-                  example: CHANNEL_GROUP
-                isPremium:
-                  type: boolean
-                  description: Whether the product is premium one
-                  example: true
           relationships:
             $ref: '#/components/schemas/UserProductResourceRelationships'
+    UserProductResourceAttributes:
+      allOf:
+      - $ref: '#/components/schemas/Attributes'
+      - type: object
+        properties:
+          title:
+            type: string
+            description: Title of the product
+            example: Sport channels meagpack
+          description:
+            type: string
+            description: Description of the product
+            example: Complete collection fo all sports channels
+          type:
+            type: string
+            description: Type of the product
+            example: CHANNEL_GROUP
+          isPremium:
+            type: boolean
+            description: Whether the product is premium one
+            example: true
+        additionalProperties: true
     UserProductResourceRelationships:
       allOf:
       - $ref: '#/components/schemas/Relationships'
@@ -322,6 +330,7 @@ components:
     inline_response_200:
       required:
       - data
+      - included
       type: object
       properties:
         data:
