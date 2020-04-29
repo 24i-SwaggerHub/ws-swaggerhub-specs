@@ -278,7 +278,7 @@ paths:
             application/vnd.api+json:
               schema:
                 $ref: '#/components/schemas/inline_response_404'
-  /licenses/batch_create:
+  /licenses/batch_create/{user_id}:
     post:
       tags:
       - license
@@ -295,6 +295,20 @@ paths:
         schema:
           type: string
         example: Apikey 1a2b3c4d
+      - name: user_id
+        in: path
+        description: The ID of the license to fetch.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: number
+      requestBody:
+        content:
+          application/vnd.api+json; ext=bulk:
+            schema:
+              $ref: '#/components/schemas/ManagementBatchCreateLicenseResource'
+        required: true
       responses:
         "201":
           description: Successful response on created resource
@@ -318,6 +332,14 @@ paths:
         schema:
           type: string
         example: Apikey 1a2b3c4d
+      - name: user_id
+        in: path
+        description: The ID of the license to fetch.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: number
       responses:
         "204":
           description: |
@@ -708,6 +730,15 @@ components:
         code: 4INZEX
         title: Method not allowed
         details: This method is not supported for this resource
+    ManagementBatchCreateLicenseResource:
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/LicenseResourceIdentifier'
     UserLicenseResource:
       allOf:
       - $ref: '#/components/schemas/LicenseResourceIdentifier'
