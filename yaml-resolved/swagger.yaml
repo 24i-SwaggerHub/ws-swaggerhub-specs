@@ -224,6 +224,56 @@ components:
                   type: string
                   description: Title of the product
                   example: Sport channels meagpack
+          relationships:
+            $ref: '#/components/schemas/UserProductResourceRelationships'
+    UserProductResourceRelationships:
+      allOf:
+      - $ref: '#/components/schemas/Relationships'
+      - type: object
+        properties:
+          live:
+            $ref: '#/components/schemas/UserProductResourceRelationships_live'
+          catchup:
+            $ref: '#/components/schemas/UserProductResourceRelationships_catchup'
+          npvr:
+            $ref: '#/components/schemas/UserProductResourceRelationships_npvr'
+          startover:
+            $ref: '#/components/schemas/UserProductResourceRelationships_startover'
+        additionalProperties: false
+    ProductLiveItemResourceIdentifier:
+      allOf:
+      - $ref: '#/components/schemas/ResourceIdentifier'
+      - $ref: '#/components/schemas/ProductItemResourceIdentifierAttributes'
+      - type: object
+        description: Product live service item
+    ProductItemResourceIdentifierAttributes:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "41"
+        type:
+          pattern: ^Channel$
+          example: Channel
+      description: Product service item
+    ProductCatchupItemResourceIdentifier:
+      allOf:
+      - $ref: '#/components/schemas/ResourceIdentifier'
+      - $ref: '#/components/schemas/ProductItemResourceIdentifierAttributes'
+      - type: object
+        description: Product catchup service item
+    ProductNpvrItemResourceIdentifier:
+      allOf:
+      - $ref: '#/components/schemas/ResourceIdentifier'
+      - $ref: '#/components/schemas/ProductItemResourceIdentifierAttributes'
+      - type: object
+        description: Product npvr service item
+    ProductStartoverItemResourceIdentifier:
+      allOf:
+      - $ref: '#/components/schemas/ResourceIdentifier'
+      - $ref: '#/components/schemas/ProductItemResourceIdentifierAttributes'
+      - type: object
+        description: Product startover service item
     Error:
       required:
       - code
@@ -260,6 +310,7 @@ components:
     inline_response_200:
       required:
       - data
+      - included
       type: object
       properties:
         data:
@@ -314,3 +365,43 @@ components:
       properties:
         data:
           $ref: '#/components/schemas/ProductResourceIdentifier'
+    UserProductResourceRelationships_live:
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          type: array
+          description: List of items with live service enabled
+          items:
+            $ref: '#/components/schemas/ProductLiveItemResourceIdentifier'
+    UserProductResourceRelationships_catchup:
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          type: array
+          description: List of items with cathup service enabled
+          items:
+            $ref: '#/components/schemas/ProductCatchupItemResourceIdentifier'
+    UserProductResourceRelationships_npvr:
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          type: array
+          description: List of items with npvr service enabled enabled
+          items:
+            $ref: '#/components/schemas/ProductNpvrItemResourceIdentifier'
+    UserProductResourceRelationships_startover:
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          type: array
+          description: List of items with startover service enabled
+          items:
+            $ref: '#/components/schemas/ProductStartoverItemResourceIdentifier'
