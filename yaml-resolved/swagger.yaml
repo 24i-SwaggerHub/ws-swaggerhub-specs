@@ -1,0 +1,220 @@
+openapi: 3.0.0
+info:
+  title: User License API
+  description: User License API used for managing user licenses and related products.
+    Supposed to be consumed by user client application.
+  version: 4.0.0
+servers:
+- url: https://virtserver.swaggerhub.com/24i-API/UserLicense/4.0.0
+  description: SwaggerHub API Auto Mocking
+- url: https://testing.booxmedia.xyz/api/license/v4
+  description: Testing server
+paths:
+  /users/{user_id}/licenses:
+    get:
+      tags:
+      - license
+      summary: Get user licenses index
+      description: |
+        Returns all licenses for a given user. All related products are included in the response, which can be used for grouping.
+      operationId: GetUserLicenses
+      parameters:
+      - name: user_id
+        in: path
+        description: The ID of the user to fetch licenses for.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200'
+components:
+  schemas:
+    UserLicenseResource:
+      allOf:
+      - $ref: '#/components/schemas/LicenseResourceIdentifier'
+      - required:
+        - attributes
+        - relationships
+        type: object
+        properties:
+          attributes:
+            allOf:
+            - $ref: '#/components/schemas/CommonLicenseResourceAttributes'
+            - required:
+              - purchase_date
+              - start_date
+              - status
+              - stop_date
+              type: object
+              properties:
+                purchase_date:
+                  type: integer
+                  description: The Unix epoch timestamp denoting date when the license
+                    was purchased
+                  readOnly: true
+                  example: 1523268698
+          relationships:
+            $ref: '#/components/schemas/LicenseResourceRelationships'
+          links:
+            allOf:
+            - $ref: '#/components/schemas/Links'
+            - type: object
+              properties:
+                self:
+                  type: string
+                  example: https://boox.fi/api/user/waqqas.jabbar@gmail.com/license/10
+    LicenseResourceIdentifier:
+      allOf:
+      - $ref: '#/components/schemas/ResourceIdentifier'
+      - type: object
+        properties:
+          id:
+            type: string
+            example: "42"
+          type:
+            pattern: ^License$
+            type: string
+            example: License
+    ResourceIdentifier:
+      required:
+      - id
+      - type
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        type:
+          $ref: '#/components/schemas/Type'
+      discriminator:
+        propertyName: type
+    Id:
+      type: string
+      description: The id of the resource being referenced
+      example: e022f021-11f5-4cd6-89f2-02535d89eed6
+    Type:
+      type: string
+      description: Used to describe resource objects that share common attributes
+        and relationships.
+      example: ResourceOject
+    CommonLicenseResourceAttributes:
+      allOf:
+      - $ref: '#/components/schemas/Attributes'
+      - required:
+        - start_date
+        - stop_date
+        type: object
+        properties:
+          status:
+            type: string
+            description: Current status of license
+            nullable: false
+            example: ACTIVE
+            enum:
+            - PROCESSING
+            - CHECK_INVALID
+            - ORDER_ERROR
+            - ACTIVE
+            - EXPIRED
+            - SUSPENDED
+            - SUSPENDEDADMIN
+          start_date:
+            type: integer
+            description: The Unix epoch timestamp denoting the start date of the license
+            nullable: false
+            example: 1523268666
+          stop_date:
+            type: integer
+            description: The Unix epoch timestamp denoting expiration date of the
+              license
+            nullable: false
+            example: 1523268698
+        additionalProperties: false
+    Attributes:
+      type: object
+      additionalProperties: true
+      description: An attributes object representing some of the resource’s data.
+    LicenseResourceRelationships:
+      allOf:
+      - $ref: '#/components/schemas/Relationships'
+      - required:
+        - product
+        - user
+        type: object
+        properties:
+          user:
+            $ref: '#/components/schemas/LicenseResourceRelationships_user'
+          product:
+            $ref: '#/components/schemas/LicenseResourceRelationships_product'
+        additionalProperties: false
+    Relationships:
+      type: object
+      additionalProperties:
+        required:
+        - data
+        type: object
+        properties:
+          data:
+            oneOf:
+            - $ref: '#/components/schemas/ResourceIdentifier'
+            - type: array
+              items:
+                $ref: '#/components/schemas/ResourceIdentifier'
+      description: A relationships object describing relationships between the resource
+        and other JSON:API resources.
+    UserResourceIdentifier:
+      allOf:
+      - $ref: '#/components/schemas/ResourceIdentifier'
+      - type: object
+        properties:
+          id:
+            type: string
+            example: "41"
+          type:
+            pattern: ^User$
+            type: string
+            example: User
+    ProductResourceIdentifier:
+      allOf:
+      - $ref: '#/components/schemas/ResourceIdentifier'
+      - type: object
+        properties:
+          id:
+            type: string
+            example: "41"
+          type:
+            pattern: ^Product$
+            type: string
+            example: Product
+    Links:
+      type: object
+      description: A links object containing links related to the resource.
+    inline_response_200:
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserLicenseResource'
+    LicenseResourceRelationships_user:
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/UserResourceIdentifier'
+    LicenseResourceRelationships_product:
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ProductResourceIdentifier'
