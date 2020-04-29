@@ -316,7 +316,8 @@ paths:
             application/vnd.api+json:
               schema:
                 $ref: '#/components/schemas/inline_response_201_1'
-    delete:
+  /licenses/batch_delete/{user_id}:
+    post:
       tags:
       - license
       summary: Delete all user licenses
@@ -340,6 +341,12 @@ paths:
         explode: false
         schema:
           type: number
+      requestBody:
+        content:
+          application/vnd.api+json; ext=bulk:
+            schema:
+              $ref: '#/components/schemas/ManagementBatchCreateLicenseResource'
+        required: true
       responses:
         "204":
           description: |
