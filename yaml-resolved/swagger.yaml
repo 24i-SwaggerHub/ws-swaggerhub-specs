@@ -173,7 +173,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ManagementSingleCreateLicenseResource'
+              $ref: '#/components/schemas/ManagementCreateLicenseResource'
         required: true
       responses:
         "201":
@@ -345,7 +345,7 @@ paths:
         content:
           application/vnd.api+json; ext=bulk:
             schema:
-              $ref: '#/components/schemas/ManagementBatchCreateLicenseResource'
+              $ref: '#/components/schemas/body'
         required: true
       responses:
         "204":
@@ -702,15 +702,6 @@ components:
         code: "31201"
         title: Bad Request
         detail: Parameter 'Foo' is invalid
-    ManagementSingleCreateLicenseResource:
-      allOf:
-      - $ref: '#/components/schemas/ManagementCreateLicenseResource'
-      - required:
-        - data
-        type: object
-        properties:
-          data:
-            $ref: '#/components/schemas/ManagementSingleCreateLicenseResource_data'
     ManagementCreateLicenseResource:
       required:
       - data
@@ -752,9 +743,18 @@ components:
       type: object
       properties:
         data:
-          type: array
-          items:
-            $ref: '#/components/schemas/ManagementCreateLicenseResource'
+          $ref: '#/components/schemas/ManagementBatchCreateLicenseResource_data'
+    ManagemenBatchLicenseResourceRelationships:
+      allOf:
+      - $ref: '#/components/schemas/Relationships'
+      - required:
+        - product
+        - user
+        type: object
+        properties:
+          product:
+            $ref: '#/components/schemas/LicenseResourceRelationships_product'
+        additionalProperties: false
     UserLicenseResource:
       allOf:
       - $ref: '#/components/schemas/LicenseResourceIdentifier'
@@ -877,6 +877,15 @@ components:
       properties:
         data:
           $ref: '#/components/schemas/UserLicenseResource'
+    body:
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/LicenseResourceIdentifier'
     ManagementLicenseResourceAttributes_renew_record:
       type: object
       properties:
@@ -973,15 +982,9 @@ components:
           description: List of items with startover service enabled
           items:
             $ref: '#/components/schemas/ProductStartoverItemResourceIdentifier'
-    ManagementSingleCreateLicenseResource_data:
-      type: object
-      properties:
-        relationships:
-          $ref: '#/components/schemas/LicenseResourceRelationships'
     ManagementCreateLicenseResource_data:
       required:
       - attributes
-      - relationships
       - type
       type: object
       properties:
@@ -992,3 +995,20 @@ components:
         attributes:
           allOf:
           - $ref: '#/components/schemas/ManagementLicenseResourceAttributes'
+        relationships:
+          $ref: '#/components/schemas/LicenseResourceRelationships'
+    ManagementBatchCreateLicenseResource_data:
+      required:
+      - attributes
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: Resource type of the resource to create. Must be "License".
+          example: License
+        attributes:
+          allOf:
+          - $ref: '#/components/schemas/ManagementLicenseResourceAttributes'
+        relationships:
+          $ref: '#/components/schemas/ManagemenBatchLicenseResourceRelationships'
