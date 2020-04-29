@@ -173,7 +173,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ManagementCreateLicenseResource'
+              $ref: '#/components/schemas/ManagementSingleCreateLicenseResource'
         required: true
       responses:
         "201":
@@ -702,6 +702,15 @@ components:
         code: "31201"
         title: Bad Request
         detail: Parameter 'Foo' is invalid
+    ManagementSingleCreateLicenseResource:
+      allOf:
+      - $ref: '#/components/schemas/ManagementCreateLicenseResource'
+      - required:
+        - data
+        type: object
+        properties:
+          data:
+            $ref: '#/components/schemas/ManagementSingleCreateLicenseResource_data'
     ManagementCreateLicenseResource:
       required:
       - data
@@ -745,7 +754,7 @@ components:
         data:
           type: array
           items:
-            $ref: '#/components/schemas/LicenseResourceIdentifier'
+            $ref: '#/components/schemas/ManagementCreateLicenseResource'
     UserLicenseResource:
       allOf:
       - $ref: '#/components/schemas/LicenseResourceIdentifier'
@@ -964,6 +973,11 @@ components:
           description: List of items with startover service enabled
           items:
             $ref: '#/components/schemas/ProductStartoverItemResourceIdentifier'
+    ManagementSingleCreateLicenseResource_data:
+      type: object
+      properties:
+        relationships:
+          $ref: '#/components/schemas/LicenseResourceRelationships'
     ManagementCreateLicenseResource_data:
       required:
       - attributes
@@ -978,5 +992,3 @@ components:
         attributes:
           allOf:
           - $ref: '#/components/schemas/ManagementLicenseResourceAttributes'
-        relationships:
-          $ref: '#/components/schemas/LicenseResourceRelationships'
