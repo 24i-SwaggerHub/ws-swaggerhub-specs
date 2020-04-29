@@ -238,7 +238,7 @@ paths:
             application/vnd.api+json:
               schema:
                 $ref: '#/components/schemas/inline_response_404'
-    post:
+    delete:
       tags:
       - license
       summary: Delete license
@@ -278,6 +278,56 @@ paths:
             application/vnd.api+json:
               schema:
                 $ref: '#/components/schemas/inline_response_404'
+  /licenses/batch_create:
+    post:
+      tags:
+      - license
+      summary: Grant same product license to multiple users
+      description: Creates multiple license for specified user ids
+      operationId: BatchCreateLicenses
+      parameters:
+      - name: Authorization
+        in: header
+        description: Internal API key.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: Apikey 1a2b3c4d
+      responses:
+        "201":
+          description: Successful response on created resource
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_201_1'
+    delete:
+      tags:
+      - license
+      summary: Delete all user licenses
+      description: Deletes all licenses for specified user
+      operationId: DeleteLicensesByUserId
+      parameters:
+      - name: Authorization
+        in: header
+        description: Internal API key.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: Apikey 1a2b3c4d
+      responses:
+        "204":
+          description: |
+            The user licenses were deleted successfully
+        "401":
+          description: Unauthorized
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_401'
 components:
   schemas:
     ManagementLicenseResource:
@@ -364,6 +414,7 @@ components:
             type: string
             description: Current status of license
             nullable: false
+            readOnly: true
             example: ACTIVE
             enum:
             - PROCESSING
@@ -657,6 +708,40 @@ components:
         code: 4INZEX
         title: Method not allowed
         details: This method is not supported for this resource
+    UserLicenseResource:
+      allOf:
+      - $ref: '#/components/schemas/LicenseResourceIdentifier'
+      - required:
+        - attributes
+        - relationships
+        type: object
+        properties:
+          attributes:
+            allOf:
+            - $ref: '#/components/schemas/CommonLicenseResourceAttributes'
+            - required:
+              - purchase_date
+              - start_date
+              - status
+              - stop_date
+              type: object
+              properties:
+                purchase_date:
+                  type: integer
+                  description: The Unix epoch timestamp denoting date when the license
+                    was purchased
+                  readOnly: true
+                  example: 1523268698
+          relationships:
+            $ref: '#/components/schemas/LicenseResourceRelationships'
+          links:
+            allOf:
+            - $ref: '#/components/schemas/Links'
+            - type: object
+              properties:
+                self:
+                  type: string
+                  example: https://boox.fi/api/user/waqqas.jabbar@gmail.com/license/10
     inline_response_200:
       required:
       - data
@@ -738,6 +823,13 @@ components:
                 code: "10101"
                 title: Not Found
                 detail: The requested license does not exist
+    inline_response_201_1:
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/UserLicenseResource'
     ManagementLicenseResourceAttributes_renew_record:
       type: object
       properties:
