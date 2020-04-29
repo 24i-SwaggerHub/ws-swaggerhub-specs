@@ -202,6 +202,15 @@ paths:
       description: Returns license by id
       operationId: GetLicenseById
       parameters:
+      - name: Authorization
+        in: header
+        description: Internal API key.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: Apikey 1a2b3c4d
       - name: license_id
         in: path
         description: The ID of the license to fetch.
@@ -236,6 +245,15 @@ paths:
       description: Deletes license by id
       operationId: DeleteLicenseById
       parameters:
+      - name: Authorization
+        in: header
+        description: Internal API key.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: Apikey 1a2b3c4d
       - name: license_id
         in: path
         description: The ID of the license to fetch.
@@ -438,9 +456,65 @@ components:
             allOf:
             - $ref: '#/components/schemas/UserProductResourceAttributes'
             - required:
-              - description
+              - license_duration
               - title
               type: object
+              properties:
+                costing_record:
+                  type: object
+                  properties:
+                    amount:
+                      type: number
+                      description: Product cost
+                      example: 42.13
+                    currency:
+                      type: string
+                      description: The ISO-4217 code of the currency
+                      example: EUR
+                license_duration:
+                  type: number
+                  description: License duration in seconds, means that license associated
+                    with this product and  given to user will have duration of time
+                    of creation plus this value
+                  example: 518400.0
+                type:
+                  type: string
+                  description: Type of the product
+                  readOnly: true
+                  enum:
+                  - CATCHUP
+                  - CHANNEL
+                  - PVR
+                  - STARTOVER
+                  - CHANNEL_GROUP
+                auto_grant_on_signup:
+                  type: boolean
+                  description: Automatically grant this product license to new users
+                  example: false
+                  default: false
+                auto_renew:
+                  type: boolean
+                  description: Indicates whether the license created for this product
+                    will be scheduled for auto renew
+                  example: false
+                  default: false
+                is_user_visible:
+                  type: boolean
+                  description: Whether the product is visible to client
+                  example: true
+                  default: true
+                is_byable:
+                  type: boolean
+                  description: Whether the product can be bought
+                  example: true
+                  default: true
+                created_at:
+                  type: integer
+                  description: The Unix epoch timestamp denoting the start date of
+                    the license
+                  nullable: false
+                  readOnly: true
+                  example: 1523268666
           relationships:
             $ref: '#/components/schemas/UserProductResourceRelationships'
     UserProductResourceAttributes:
@@ -456,14 +530,16 @@ components:
             type: string
             description: Description of the product
             example: Complete collection fo all sports channels
+            default: ""
           type:
             type: string
             description: Type of the product
             example: CHANNEL_GROUP
-          isPremium:
+          is_premium:
             type: boolean
             description: Whether the product is premium one
             example: true
+            default: false
         additionalProperties: false
     UserProductResourceRelationships:
       allOf:
@@ -689,7 +765,7 @@ components:
           example: 12.23
         price_currency_iso4217:
           type: string
-          description: The ISO-4217 code of the currency (https://en.wikipedia.org/wiki/ISO_4217)
+          description: The ISO-4217 code of the currency
           nullable: true
           readOnly: true
           example: EUR
