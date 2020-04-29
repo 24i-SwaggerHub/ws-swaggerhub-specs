@@ -234,6 +234,8 @@ components:
                   example: CHANNEL_GROUP
                 isPremium:
                   type: boolean
+                  description: Whether the product is premium one
+                  example: true
           relationships:
             $ref: '#/components/schemas/UserProductResourceRelationships'
     UserProductResourceRelationships:
