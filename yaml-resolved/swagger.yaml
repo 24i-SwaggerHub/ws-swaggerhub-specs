@@ -207,9 +207,6 @@ components:
     Links:
       type: object
       description: A links object containing links related to the resource.
-    UserProductResource:
-      allOf:
-      - $ref: '#/components/schemas/ProductResourceIdentifier'
     Error:
       required:
       - code
@@ -246,18 +243,12 @@ components:
     inline_response_200:
       required:
       - data
-      - included
       type: object
       properties:
         data:
           type: array
           items:
             $ref: '#/components/schemas/UserLicenseResource'
-        included:
-          type: array
-          items:
-            anyOf:
-            - $ref: '#/components/schemas/UserProductResource'
     inline_response_401:
       required:
       - errors
