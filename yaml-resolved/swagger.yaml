@@ -210,6 +210,20 @@ components:
     UserProductResource:
       allOf:
       - $ref: '#/components/schemas/ProductResourceIdentifier'
+      - required:
+        - attributes
+        type: object
+        properties:
+          attributes:
+            allOf:
+            - required:
+              - title
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: Title of the product
+                  example: Sport channels meagpack
     Error:
       required:
       - code
@@ -246,7 +260,6 @@ components:
     inline_response_200:
       required:
       - data
-      - included
       type: object
       properties:
         data:
