@@ -232,6 +232,8 @@ components:
                   type: string
                   description: Type of the product
                   example: CHANNEL_GROUP
+                isPremium:
+                  type: boolean
           relationships:
             $ref: '#/components/schemas/UserProductResourceRelationships'
     UserProductResourceRelationships:
@@ -318,7 +320,6 @@ components:
     inline_response_200:
       required:
       - data
-      - included
       type: object
       properties:
         data:
