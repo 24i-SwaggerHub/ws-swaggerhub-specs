@@ -246,6 +246,7 @@ components:
     inline_response_200:
       required:
       - data
+      - included
       type: object
       properties:
         data:
