@@ -362,8 +362,8 @@ paths:
       - license
       summary: Get all user licenses - Under question
       description: |
-        Returns all licenses for a given user. All related products are included in the response, which can be used for grouping.
         NOT sure we need it, but this could be more convivinet way to fetch all user licenses with one call instead of using /licenses with filter
+        Returns all licenses for a given user. All related products are included in the response, which can be used for grouping.
       operationId: GetLicensesByUser
       parameters:
       - name: user_id
