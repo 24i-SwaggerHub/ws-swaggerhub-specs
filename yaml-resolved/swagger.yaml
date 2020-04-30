@@ -383,8 +383,19 @@ paths:
           type: number
       responses:
         "204":
-          description: |
-            The user licenses were deleted successfully
+          description: The user licenses were deleted successfully descrition
+        "401":
+          description: Unauthorized
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_401'
+        "404":
+          description: User does not exist
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404_1'
 components:
   schemas:
     ManagementLicenseResource:
@@ -894,6 +905,21 @@ components:
                 code: "10201"
                 title: Bad Request
                 detail: Standart error descrition
+    inline_response_404_1:
+      required:
+      - errors
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            allOf:
+            - $ref: '#/components/schemas/Error'
+            - example:
+                status: "404"
+                code: "10101"
+                title: Not Found
+                detail: The requested user does not exist
     ManagementLicenseResourceAttributes_renew_record:
       type: object
       properties:
