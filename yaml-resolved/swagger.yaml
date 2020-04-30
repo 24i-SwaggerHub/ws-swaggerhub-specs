@@ -307,7 +307,7 @@ paths:
         content:
           application/vnd.api+json; ext=bulk:
             schema:
-              $ref: '#/components/schemas/ManagementBatchCreateLicenseResource'
+              $ref: '#/components/schemas/ManagementBatchCreateLicensesResource'
         required: true
       responses:
         "201":
@@ -749,6 +749,15 @@ components:
         code: 4INZEX
         title: Method not allowed
         details: This method is not supported for this resource
+    ManagementBatchCreateLicensesResource:
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ManagementBatchCreateLicenseResource'
     ManagementBatchCreateLicenseResource:
       required:
       - data
