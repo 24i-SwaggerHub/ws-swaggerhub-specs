@@ -282,8 +282,8 @@ paths:
     post:
       tags:
       - license
-      summary: Grant same product license to multiple users
-      description: Creates multiple license for specified user ids
+      summary: Grant multiple licenses to multiple users
+      description: Creates multiple licenses
       operationId: BatchCreateLicenses
       parameters:
       - name: Authorization
@@ -295,14 +295,6 @@ paths:
         schema:
           type: string
         example: Apikey 1a2b3c4d
-      - name: user_id
-        in: path
-        description: The ID of the license to fetch.
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: number
       requestBody:
         content:
           application/vnd.api+json; ext=bulk:
@@ -310,18 +302,21 @@ paths:
               $ref: '#/components/schemas/ManagementBatchCreateLicensesResource'
         required: true
       responses:
-        "201":
-          description: Successful response on created resource
-          content:
-            application/vnd.api+json:
-              schema:
-                $ref: '#/components/schemas/inline_response_201_1'
+        "204":
+          description: |
+            The user licenses were created successfully
         "400":
           description: Bad Request
           content:
             application/vnd.api+json:
               schema:
                 $ref: '#/components/schemas/inline_response_400_2'
+        "401":
+          description: Unauthorized
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_401'
   /licenses/batch_delete:
     post:
       tags:
@@ -339,14 +334,6 @@ paths:
         schema:
           type: string
         example: Apikey 1a2b3c4d
-      - name: user_id
-        in: path
-        description: The ID of the license to fetch.
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: number
       requestBody:
         content:
           application/vnd.api+json; ext=bulk:
@@ -757,59 +744,7 @@ components:
         data:
           type: array
           items:
-            $ref: '#/components/schemas/ManagementBatchCreateLicenseResource'
-    ManagementBatchCreateLicenseResource:
-      required:
-      - data
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/ManagementBatchCreateLicenseResource_data'
-    ManagemenBatchLicenseResourceRelationships:
-      allOf:
-      - $ref: '#/components/schemas/Relationships'
-      - required:
-        - product
-        - user
-        type: object
-        properties:
-          product:
-            $ref: '#/components/schemas/LicenseResourceRelationships_product'
-        additionalProperties: false
-    UserLicenseResource:
-      allOf:
-      - $ref: '#/components/schemas/LicenseResourceIdentifier'
-      - required:
-        - attributes
-        - relationships
-        type: object
-        properties:
-          attributes:
-            allOf:
-            - $ref: '#/components/schemas/CommonLicenseResourceAttributes'
-            - required:
-              - purchase_date
-              - start_date
-              - status
-              - stop_date
-              type: object
-              properties:
-                purchase_date:
-                  type: integer
-                  description: The Unix epoch timestamp denoting date when the license
-                    was purchased
-                  readOnly: true
-                  example: 1523268698
-          relationships:
-            $ref: '#/components/schemas/LicenseResourceRelationships'
-          links:
-            allOf:
-            - $ref: '#/components/schemas/Links'
-            - type: object
-              properties:
-                self:
-                  type: string
-                  example: https://boox.fi/api/user/waqqas.jabbar@gmail.com/license/10
+            $ref: '#/components/schemas/ManagementCreateLicenseResource'
     inline_response_200:
       required:
       - data
@@ -891,13 +826,6 @@ components:
                 code: "10101"
                 title: Not Found
                 detail: The requested license does not exist
-    inline_response_201_1:
-      required:
-      - data
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/UserLicenseResource'
     inline_response_400_2:
       required:
       - errors
@@ -1048,18 +976,3 @@ components:
           - $ref: '#/components/schemas/ManagementLicenseResourceAttributes'
         relationships:
           $ref: '#/components/schemas/LicenseResourceRelationships'
-    ManagementBatchCreateLicenseResource_data:
-      required:
-      - attributes
-      - type
-      type: object
-      properties:
-        type:
-          type: string
-          description: Resource type of the resource to create. Must be "License".
-          example: License
-        attributes:
-          allOf:
-          - $ref: '#/components/schemas/ManagementLicenseResourceAttributes'
-        relationships:
-          $ref: '#/components/schemas/ManagemenBatchLicenseResourceRelationships'
