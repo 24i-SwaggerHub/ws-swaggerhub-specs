@@ -124,12 +124,6 @@ paths:
             application/vnd.api+json:
               schema:
                 $ref: '#/components/schemas/inline_response_200_1'
-        "401":
-          description: Unauthorized
-          content:
-            application/vnd.api+json:
-              schema:
-                $ref: '#/components/schemas/inline_response_401_1'
 components:
   schemas:
     UserLicenseResource:
@@ -211,6 +205,7 @@ components:
             type: string
             description: Current status of license
             nullable: false
+            readOnly: true
             example: ACTIVE
             enum:
             - PROCESSING
@@ -307,7 +302,7 @@ components:
               - title
               type: object
           relationships:
-            $ref: '#/components/schemas/UserProductResourceRelationships'
+            $ref: '#/components/schemas/ProductResourceRelationships'
     UserProductResourceAttributes:
       allOf:
       - $ref: '#/components/schemas/Attributes'
@@ -321,28 +316,30 @@ components:
             type: string
             description: Description of the product
             example: Complete collection fo all sports channels
+            default: ""
           type:
             type: string
             description: Type of the product
             example: CHANNEL_GROUP
-          isPremium:
+          is_premium:
             type: boolean
             description: Whether the product is premium one
             example: true
+            default: false
         additionalProperties: false
-    UserProductResourceRelationships:
+    ProductResourceRelationships:
       allOf:
       - $ref: '#/components/schemas/Relationships'
       - type: object
         properties:
           live:
-            $ref: '#/components/schemas/UserProductResourceRelationships_live'
+            $ref: '#/components/schemas/ProductResourceRelationships_live'
           catchup:
-            $ref: '#/components/schemas/UserProductResourceRelationships_catchup'
+            $ref: '#/components/schemas/ProductResourceRelationships_catchup'
           npvr:
-            $ref: '#/components/schemas/UserProductResourceRelationships_npvr'
+            $ref: '#/components/schemas/ProductResourceRelationships_npvr'
           startover:
-            $ref: '#/components/schemas/UserProductResourceRelationships_startover'
+            $ref: '#/components/schemas/ProductResourceRelationships_startover'
         additionalProperties: false
     ProductLiveItemResourceIdentifier:
       allOf:
@@ -510,21 +507,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/UserProductResource'
-    inline_response_401_1:
-      required:
-      - errors
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            allOf:
-            - $ref: '#/components/schemas/Error'
-            - example:
-                status: "401"
-                code: "10201"
-                title: Invalid token
-                detail: Client is not authorized to fetch products
     LicenseResourceRelationships_user:
       required:
       - data
@@ -539,7 +521,7 @@ components:
       properties:
         data:
           $ref: '#/components/schemas/ProductResourceIdentifier'
-    UserProductResourceRelationships_live:
+    ProductResourceRelationships_live:
       required:
       - data
       type: object
@@ -549,7 +531,7 @@ components:
           description: List of items with live service enabled
           items:
             $ref: '#/components/schemas/ProductLiveItemResourceIdentifier'
-    UserProductResourceRelationships_catchup:
+    ProductResourceRelationships_catchup:
       required:
       - data
       type: object
@@ -559,7 +541,7 @@ components:
           description: List of items with cathup service enabled
           items:
             $ref: '#/components/schemas/ProductCatchupItemResourceIdentifier'
-    UserProductResourceRelationships_npvr:
+    ProductResourceRelationships_npvr:
       required:
       - data
       type: object
@@ -569,7 +551,7 @@ components:
           description: List of items with npvr service enabled enabled
           items:
             $ref: '#/components/schemas/ProductNpvrItemResourceIdentifier'
-    UserProductResourceRelationships_startover:
+    ProductResourceRelationships_startover:
       required:
       - data
       type: object
