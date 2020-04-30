@@ -531,6 +531,50 @@ paths:
             application/vnd.api+json:
               schema:
                 $ref: '#/components/schemas/inline_response_401'
+  /products/{product_id}:
+    get:
+      tags:
+      - product
+      summary: Get product
+      description: Returns product by id
+      operationId: GetProductById
+      parameters:
+      - name: Authorization
+        in: header
+        description: Internal API key.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: Apikey 1a2b3c4d
+      - name: product_id
+        in: path
+        description: The ID of the product to fetch.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: number
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_2'
+        "401":
+          description: Unauthorized
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_401'
+        "404":
+          description: Product does not exist
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404_2'
 components:
   schemas:
     ManagementLicenseResource:
@@ -708,7 +752,7 @@ components:
           attributes:
             $ref: '#/components/schemas/ManagementProductResourceAttributes'
           relationships:
-            $ref: '#/components/schemas/UserProductResourceRelationships'
+            $ref: '#/components/schemas/ProductResourceRelationships'
     ManagementProductResourceAttributes:
       allOf:
       - $ref: '#/components/schemas/UserProductResourceAttributes'
@@ -786,19 +830,19 @@ components:
             example: true
             default: false
         additionalProperties: false
-    UserProductResourceRelationships:
+    ProductResourceRelationships:
       allOf:
       - $ref: '#/components/schemas/Relationships'
       - type: object
         properties:
           live:
-            $ref: '#/components/schemas/UserProductResourceRelationships_live'
+            $ref: '#/components/schemas/ProductResourceRelationships_live'
           catchup:
-            $ref: '#/components/schemas/UserProductResourceRelationships_catchup'
+            $ref: '#/components/schemas/ProductResourceRelationships_catchup'
           npvr:
-            $ref: '#/components/schemas/UserProductResourceRelationships_npvr'
+            $ref: '#/components/schemas/ProductResourceRelationships_npvr'
           startover:
-            $ref: '#/components/schemas/UserProductResourceRelationships_startover'
+            $ref: '#/components/schemas/ProductResourceRelationships_startover'
         additionalProperties: false
     ProductLiveItemResourceIdentifier:
       allOf:
@@ -1077,6 +1121,21 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ManagementProductResource'
+    inline_response_404_2:
+      required:
+      - errors
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            allOf:
+            - $ref: '#/components/schemas/Error'
+            - example:
+                status: "404"
+                code: "10101"
+                title: Not Found
+                detail: The requested product does not exist
     ManagementLicenseResourceAttributes_renew_record:
       type: object
       properties:
@@ -1144,7 +1203,7 @@ components:
           type: string
           description: The ISO-4217 code of the currency
           example: EUR
-    UserProductResourceRelationships_live:
+    ProductResourceRelationships_live:
       required:
       - data
       type: object
@@ -1154,7 +1213,7 @@ components:
           description: List of items with live service enabled
           items:
             $ref: '#/components/schemas/ProductLiveItemResourceIdentifier'
-    UserProductResourceRelationships_catchup:
+    ProductResourceRelationships_catchup:
       required:
       - data
       type: object
@@ -1164,7 +1223,7 @@ components:
           description: List of items with cathup service enabled
           items:
             $ref: '#/components/schemas/ProductCatchupItemResourceIdentifier'
-    UserProductResourceRelationships_npvr:
+    ProductResourceRelationships_npvr:
       required:
       - data
       type: object
@@ -1174,7 +1233,7 @@ components:
           description: List of items with npvr service enabled enabled
           items:
             $ref: '#/components/schemas/ProductNpvrItemResourceIdentifier'
-    UserProductResourceRelationships_startover:
+    ProductResourceRelationships_startover:
       required:
       - data
       type: object
@@ -1208,7 +1267,9 @@ components:
         type:
           type: string
           description: Resource type of the resource to create. Must be "Product".
-          example: License
+          example: Product
         attributes:
           allOf:
           - $ref: '#/components/schemas/ManagementProductResourceAttributes'
+        relationships:
+          $ref: '#/components/schemas/ProductResourceRelationships'
