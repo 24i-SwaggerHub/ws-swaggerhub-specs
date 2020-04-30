@@ -496,16 +496,6 @@ paths:
         schema:
           type: string
         example: Apikey 1a2b3c4d
-      - name: Idempotency-Key
-        in: header
-        description: Client unique generated value for server to recognize subsequent
-          retries
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-        example: 518d5812-b8e8-43a4-b3b0-8f9c5cdc31b9
       requestBody:
         content:
           application/json:
@@ -615,6 +605,56 @@ paths:
             application/vnd.api+json:
               schema:
                 $ref: '#/components/schemas/inline_response_404_2'
+    patch:
+      tags:
+      - product
+      summary: Update product
+      description: |
+        Updates product specified by product id
+      operationId: UpdateProduct
+      parameters:
+      - name: Authorization
+        in: header
+        description: Internal API key.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: Apikey 1a2b3c4d
+      - name: product_id
+        in: path
+        description: The ID of the product to update.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: number
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ManagementProductResource'
+        required: true
+      responses:
+        "200":
+          description: Successful response on updated resource
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_3'
+        "400":
+          description: Standard error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400_1'
+        "401":
+          description: Unauthorized
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_401'
 components:
   schemas:
     ManagementLicenseResource:
@@ -1176,6 +1216,14 @@ components:
                 code: "10101"
                 title: Not Found
                 detail: The requested product does not exist
+    inline_response_200_3:
+      required:
+      - data
+      - included
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ManagementProductResource'
     ManagementLicenseResourceAttributes_renew_record:
       type: object
       properties:
