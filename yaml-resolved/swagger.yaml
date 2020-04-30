@@ -278,7 +278,7 @@ paths:
             application/vnd.api+json:
               schema:
                 $ref: '#/components/schemas/inline_response_404'
-  /licenses/batch_create/{user_id}:
+  /licenses/batch_create:
     post:
       tags:
       - license
@@ -322,7 +322,7 @@ paths:
             application/vnd.api+json:
               schema:
                 $ref: '#/components/schemas/inline_response_400_2'
-  /licenses/batch_delete/{user_id}:
+  /licenses/batch_delete:
     post:
       tags:
       - license
