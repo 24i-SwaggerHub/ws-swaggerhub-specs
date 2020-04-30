@@ -18,7 +18,6 @@ paths:
       summary: Get licenses with filter
       description: |
         Returns a list of licenses for a given input set of filters. All related products and users are included in the response, which can be used for grouping.
-        * We do not support including related resources in the index view.
       operationId: GetLicenses
       parameters:
       - name: Authorization
@@ -432,6 +431,106 @@ paths:
             application/vnd.api+json:
               schema:
                 $ref: '#/components/schemas/inline_response_404_1'
+  /products:
+    get:
+      tags:
+      - product
+      summary: Get all products
+      description: |
+        Returns a list of products
+      operationId: GetAllProducts
+      parameters:
+      - name: Authorization
+        in: header
+        description: Internal API key.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: Apikey 1a2b3c4d
+      - name: page[number]
+        in: query
+        description: Page number if the results have more items than items per page.
+          Default = 1.
+        required: false
+        style: form
+        explode: true
+        schema:
+          minimum: 1
+          type: number
+        example: 1
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_2'
+        "400":
+          description: Bad Request
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400'
+        "401":
+          description: Unauthorized
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_401'
+    post:
+      tags:
+      - product
+      summary: Create new product
+      description: |
+        Create new product
+      operationId: CreateProduct
+      parameters:
+      - name: Authorization
+        in: header
+        description: Internal API key.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: Apikey 1a2b3c4d
+      - name: Idempotency-Key
+        in: header
+        description: Client unique generated value for server to recognize subsequent
+          retries
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: 518d5812-b8e8-43a4-b3b0-8f9c5cdc31b9
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ManagementCreateProductResource'
+        required: true
+      responses:
+        "201":
+          description: Successful response on created resource
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_201'
+        "400":
+          description: Standard error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400_1'
+        "401":
+          description: Unauthorized
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_401'
 components:
   schemas:
     ManagementLicenseResource:
@@ -443,8 +542,7 @@ components:
         type: object
         properties:
           attributes:
-            allOf:
-            - $ref: '#/components/schemas/ManagementLicenseResourceAttributes'
+            $ref: '#/components/schemas/ManagementLicenseResourceAttributes'
           relationships:
             $ref: '#/components/schemas/LicenseResourceRelationships'
           links:
@@ -608,70 +706,62 @@ components:
         type: object
         properties:
           attributes:
-            allOf:
-            - $ref: '#/components/schemas/UserProductResourceAttributes'
-            - required:
-              - license_duration
-              - title
-              type: object
-              properties:
-                costing_record:
-                  type: object
-                  properties:
-                    amount:
-                      type: number
-                      description: Product cost
-                      example: 42.13
-                    currency:
-                      type: string
-                      description: The ISO-4217 code of the currency
-                      example: EUR
-                license_duration:
-                  type: number
-                  description: License duration in seconds, means that license associated
-                    with this product and  given to user will have duration of time
-                    of creation plus this value
-                  example: 518400.0
-                type:
-                  type: string
-                  description: Type of the product
-                  readOnly: true
-                  enum:
-                  - CATCHUP
-                  - CHANNEL
-                  - PVR
-                  - STARTOVER
-                  - CHANNEL_GROUP
-                auto_grant_on_signup:
-                  type: boolean
-                  description: Automatically grant this product license to new users
-                  example: false
-                  default: false
-                auto_renew:
-                  type: boolean
-                  description: Indicates whether the license created for this product
-                    will be scheduled for auto renew
-                  example: false
-                  default: false
-                is_user_visible:
-                  type: boolean
-                  description: Whether the product is visible to client
-                  example: true
-                  default: true
-                is_byable:
-                  type: boolean
-                  description: Whether the product can be bought
-                  example: true
-                  default: true
-                created_at:
-                  type: integer
-                  description: The Unix epoch timestamp denoting the start date of
-                    the license
-                  nullable: false
-                  readOnly: true
-                  example: 1523268666
+            $ref: '#/components/schemas/ManagementProductResourceAttributes'
           relationships:
             $ref: '#/components/schemas/UserProductResourceRelationships'
+    ManagementProductResourceAttributes:
+      allOf:
+      - $ref: '#/components/schemas/UserProductResourceAttributes'
+      - required:
+        - license_duration
+        - title
+        type: object
+        properties:
+          costing_record:
+            $ref: '#/components/schemas/ManagementProductResourceAttributes_costing_record'
+          license_duration:
+            type: number
+            description: License duration in seconds, means that license associated
+              with this product and  given to user will have duration of time of creation
+              plus this value
+            example: 518400.0
+          type:
+            type: string
+            description: Type of the product
+            readOnly: true
+            enum:
+            - CATCHUP
+            - CHANNEL
+            - PVR
+            - STARTOVER
+            - CHANNEL_GROUP
+          auto_grant_on_signup:
+            type: boolean
+            description: Automatically grant this product license to new users
+            example: false
+            default: false
+          auto_renew:
+            type: boolean
+            description: Indicates whether the license created for this product will
+              be scheduled for auto renew
+            example: false
+            default: false
+          is_user_visible:
+            type: boolean
+            description: Whether the product is visible to client
+            example: true
+            default: true
+          is_byable:
+            type: boolean
+            description: Whether the product can be bought
+            example: true
+            default: true
+          created_at:
+            type: integer
+            description: The Unix epoch timestamp denoting the start date of the license
+            nullable: false
+            readOnly: true
+            example: 1523268666
     UserProductResourceAttributes:
       allOf:
       - $ref: '#/components/schemas/Attributes'
@@ -821,6 +911,13 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ManagementCreateLicenseResource'
+    ManagementCreateProductResource:
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ManagementCreateProductResource_data'
     inline_response_200:
       required:
       - data
@@ -970,6 +1067,16 @@ components:
                 code: "10101"
                 title: Not Found
                 detail: The requested user does not exist
+    inline_response_200_2:
+      required:
+      - data
+      - included
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ManagementProductResource'
     ManagementLicenseResourceAttributes_renew_record:
       type: object
       properties:
@@ -1026,6 +1133,17 @@ components:
       properties:
         data:
           $ref: '#/components/schemas/ProductResourceIdentifier'
+    ManagementProductResourceAttributes_costing_record:
+      type: object
+      properties:
+        amount:
+          type: number
+          description: Product cost
+          example: 42.13
+        currency:
+          type: string
+          description: The ISO-4217 code of the currency
+          example: EUR
     UserProductResourceRelationships_live:
       required:
       - data
@@ -1081,3 +1199,16 @@ components:
           - $ref: '#/components/schemas/ManagementLicenseResourceAttributes'
         relationships:
           $ref: '#/components/schemas/LicenseResourceRelationships'
+    ManagementCreateProductResource_data:
+      required:
+      - attributes
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: Resource type of the resource to create. Must be "Product".
+          example: License
+        attributes:
+          allOf:
+          - $ref: '#/components/schemas/ManagementProductResourceAttributes'
