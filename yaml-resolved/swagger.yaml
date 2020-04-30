@@ -356,6 +356,35 @@ paths:
             application/vnd.api+json:
               schema:
                 $ref: '#/components/schemas/inline_response_401'
+  /users/{user_id}/licenses:
+    delete:
+      tags:
+      - license
+      summary: Delete all user licenses
+      description: Deletes all licenses for specified user
+      operationId: BatchDeleteAllUserLicenses
+      parameters:
+      - name: Authorization
+        in: header
+        description: Internal API key.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: Apikey 1a2b3c4d
+      - name: user_id
+        in: path
+        description: The ID of the user to revoke all licenses for.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: number
+      responses:
+        "204":
+          description: |
+            The user licenses were deleted successfully
 components:
   schemas:
     ManagementLicenseResource:
