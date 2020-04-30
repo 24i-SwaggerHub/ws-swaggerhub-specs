@@ -8,7 +8,7 @@ info:
 servers:
 - url: https://virtserver.swaggerhub.com/24i-API/license/management/4.0.0
   description: SwaggerHub API Auto Mocking
-- url: https://testing.booxmedia.xyz/api/license/management/v4/
+- url: https://testing.booxmedia.xyz/api/license/management/v4
   description: Testing server
 paths:
   /licenses:
@@ -321,9 +321,9 @@ paths:
     post:
       tags:
       - license
-      summary: Delete all user licenses
-      description: Deletes all licenses for specified user
-      operationId: DeleteLicensesByUserId
+      summary: Delete specified licenses
+      description: Deletes all provided licenses
+      operationId: BatchDeleteLicenses
       parameters:
       - name: Authorization
         in: header
@@ -343,7 +343,7 @@ paths:
       responses:
         "204":
           description: |
-            The user licenses were deleted successfully
+            Licenses were deleted successfully
         "400":
           description: Bad Request
           content:
