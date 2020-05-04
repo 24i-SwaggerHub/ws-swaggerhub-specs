@@ -444,6 +444,41 @@ paths:
             application/vnd.api+json:
               schema:
                 $ref: '#/components/schemas/inline_response_401'
+  /products/{product_id}:
+    get:
+      tags:
+      - product
+      summary: Get product
+      description: Returns product by id
+      operationId: GetProductById
+      parameters:
+      - name: product_id
+        in: path
+        description: The ID of the product to fetch.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: number
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_2'
+        "401":
+          description: Unauthorized
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_401'
+        "404":
+          description: Product does not exist
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404_2'
 components:
   schemas:
     ManagementLicenseResource:
@@ -981,6 +1016,21 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ManagementProductResource'
+    inline_response_404_2:
+      required:
+      - errors
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            allOf:
+            - $ref: '#/components/schemas/Error'
+            - example:
+                status: "404"
+                code: "10101"
+                title: Not Found
+                detail: The requested product does not exist
     ManagementLicenseResourceAttributes_renew_record:
       type: object
       properties:
