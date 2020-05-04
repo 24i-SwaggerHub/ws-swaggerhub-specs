@@ -549,59 +549,6 @@ paths:
                 $ref: '#/components/schemas/inline_response_401'
 components:
   schemas:
-    ManagementLicenseResource:
-      allOf:
-      - $ref: '#/components/schemas/LicenseResourceIdentifier'
-      - required:
-        - attributes
-        - relationships
-        type: object
-        properties:
-          attributes:
-            $ref: '#/components/schemas/ManagementLicenseResourceAttributes'
-          relationships:
-            $ref: '#/components/schemas/LicenseResourceRelationships'
-          links:
-            allOf:
-            - $ref: '#/components/schemas/Links'
-            - type: object
-              properties:
-                self:
-                  type: string
-                  example: https://boox.fi/api/license/management/v4/licenses/10
-    LicenseResourceIdentifier:
-      allOf:
-      - $ref: '#/components/schemas/ResourceIdentifier'
-      - type: object
-        properties:
-          id:
-            type: string
-            example: "42"
-          type:
-            pattern: ^License$
-            type: string
-            example: License
-    ResourceIdentifier:
-      required:
-      - id
-      - type
-      type: object
-      properties:
-        id:
-          $ref: '#/components/schemas/Id'
-        type:
-          $ref: '#/components/schemas/Type'
-      discriminator:
-        propertyName: type
-    Id:
-      type: string
-      description: The id of the resource being referenced
-      example: e022f021-11f5-4cd6-89f2-02535d89eed6
-    Type:
-      type: string
-      description: Used to describe resource objects that share common attributes
-        and relationships.
-      example: ResourceOject
     ManagementLicenseResourceAttributes:
       allOf:
       - $ref: '#/components/schemas/CommonLicenseResourceAttributes'
@@ -620,6 +567,167 @@ components:
             $ref: '#/components/schemas/ManagementLicenseResourceAttributes_purchase_record'
         additionalProperties: false
         description: Management license resource attributes
+    ManagementLicenseResource:
+      allOf:
+      - $ref: '#/components/schemas/LicenseResourceIdentifier'
+      - required:
+        - attributes
+        - relationships
+        type: object
+        properties:
+          attributes:
+            $ref: '#/components/schemas/ManagementLicenseResourceAttributes'
+          relationships:
+            $ref: '#/components/schemas/LicenseResourceRelationships'
+    ManagementCreateLicenseResource:
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ManagementCreateLicenseResource_data'
+    ManagementBatchCreateLicensesResource:
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ManagementCreateLicenseResource'
+    ManagementProductResourceAttributes:
+      allOf:
+      - $ref: '#/components/schemas/ProductResourceAttributes'
+      - required:
+        - license_duration
+        - title
+        type: object
+        properties:
+          costing_record:
+            $ref: '#/components/schemas/ManagementProductResourceAttributes_costing_record'
+          license_duration:
+            type: number
+            description: License duration in seconds, means that license associated
+              with this product and  given to user will have duration of time of creation
+              plus this value
+            example: 518400.0
+          type:
+            type: string
+            description: Type of the product
+            readOnly: true
+            enum:
+            - CATCHUP
+            - CHANNEL
+            - PVR
+            - STARTOVER
+            - CHANNEL_GROUP
+          auto_grant_on_signup:
+            type: boolean
+            description: Automatically grant this product license to new users
+            example: false
+            default: false
+          auto_renew:
+            type: boolean
+            description: Indicates whether the license created for this product will
+              be scheduled for auto renew
+            example: false
+            default: false
+          is_user_visible:
+            type: boolean
+            description: Whether the product is visible to client
+            example: true
+            default: true
+          is_byable:
+            type: boolean
+            description: Whether the product can be bought
+            example: true
+            default: true
+          created_at:
+            type: integer
+            description: The Unix epoch timestamp denoting the start date of the license
+            nullable: false
+            readOnly: true
+            example: 1523268666
+    ManagementProductResource:
+      allOf:
+      - $ref: '#/components/schemas/ProductResourceIdentifier'
+      - required:
+        - attributes
+        - relationships
+        type: object
+        properties:
+          attributes:
+            $ref: '#/components/schemas/ManagementProductResourceAttributes'
+          relationships:
+            $ref: '#/components/schemas/ProductResourceRelationships'
+    ManagementCreateProductResource:
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ManagementCreateProductResource_data'
+    Error:
+      required:
+      - code
+      - details
+      - id
+      - status
+      - title
+      type: object
+      properties:
+        id:
+          type: string
+          description: A unique identifier for this particular occurrence of the problem.
+        status:
+          type: string
+          description: The HTTP status code applicable to this problem, expressed
+            as a string value.
+        code:
+          type: string
+          description: An application-specific error code, expressed as a string value.
+        title:
+          type: string
+          description: A short, human-readable summary of the problem that SHOULD
+            NOT change from occurrence to occurrence of the problem.
+        details:
+          type: string
+          description: A human-readable explanation specific to this occurrence of
+            the problem.
+      example:
+        id: 6de7da3e-8877-4f2b-a670-16e18e5d79a0
+        status: "400"
+        code: "31201"
+        title: Bad Request
+        detail: Parameter 'Foo' is invalid
+    Error_2:
+      type: object
+      properties:
+        id:
+          type: string
+          description: A unique identifier for this instance of error (allows tracking
+            in logs)
+        href:
+          type: string
+          description: The url where you can find documentation about this class of
+            error
+        code:
+          type: string
+          description: A static 7 character code that is associated with this family
+            of errors
+        title:
+          type: string
+          description: A human readable and user friendly (no implementation details)
+            description of the general condition of the error
+        details:
+          type: string
+          description: A human readable and user friendly description of the specific
+            details of the error
+      example:
+      - id: 5941163294aef
+        code: 4INZEX
+        title: Method not allowed
+        details: This method is not supported for this resource
     CommonLicenseResourceAttributes:
       allOf:
       - $ref: '#/components/schemas/Attributes'
@@ -658,6 +766,39 @@ components:
       type: object
       additionalProperties: true
       description: An attributes object representing some of the resource’s data.
+    LicenseResourceIdentifier:
+      allOf:
+      - $ref: '#/components/schemas/ResourceIdentifier'
+      - type: object
+        properties:
+          id:
+            type: string
+            example: "42"
+          type:
+            pattern: ^License$
+            type: string
+            example: License
+    ResourceIdentifier:
+      required:
+      - id
+      - type
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        type:
+          $ref: '#/components/schemas/Type'
+      discriminator:
+        propertyName: type
+    Id:
+      type: string
+      description: The id of the resource being referenced
+      example: e022f021-11f5-4cd6-89f2-02535d89eed6
+    Type:
+      type: string
+      description: Used to describe resource objects that share common attributes
+        and relationships.
+      example: ResourceOject
     LicenseResourceRelationships:
       allOf:
       - $ref: '#/components/schemas/Relationships'
@@ -710,75 +851,7 @@ components:
             pattern: ^Product$
             type: string
             example: Product
-    Links:
-      type: object
-      description: A links object containing links related to the resource.
-    ManagementProductResource:
-      allOf:
-      - $ref: '#/components/schemas/ProductResourceIdentifier'
-      - required:
-        - attributes
-        - relationships
-        type: object
-        properties:
-          attributes:
-            $ref: '#/components/schemas/ManagementProductResourceAttributes'
-          relationships:
-            $ref: '#/components/schemas/ProductResourceRelationships'
-    ManagementProductResourceAttributes:
-      allOf:
-      - $ref: '#/components/schemas/UserProductResourceAttributes'
-      - required:
-        - license_duration
-        - title
-        type: object
-        properties:
-          costing_record:
-            $ref: '#/components/schemas/ManagementProductResourceAttributes_costing_record'
-          license_duration:
-            type: number
-            description: License duration in seconds, means that license associated
-              with this product and  given to user will have duration of time of creation
-              plus this value
-            example: 518400.0
-          type:
-            type: string
-            description: Type of the product
-            readOnly: true
-            enum:
-            - CATCHUP
-            - CHANNEL
-            - PVR
-            - STARTOVER
-            - CHANNEL_GROUP
-          auto_grant_on_signup:
-            type: boolean
-            description: Automatically grant this product license to new users
-            example: false
-            default: false
-          auto_renew:
-            type: boolean
-            description: Indicates whether the license created for this product will
-              be scheduled for auto renew
-            example: false
-            default: false
-          is_user_visible:
-            type: boolean
-            description: Whether the product is visible to client
-            example: true
-            default: true
-          is_byable:
-            type: boolean
-            description: Whether the product can be bought
-            example: true
-            default: true
-          created_at:
-            type: integer
-            description: The Unix epoch timestamp denoting the start date of the license
-            nullable: false
-            readOnly: true
-            example: 1523268666
-    UserProductResourceAttributes:
+    ProductResourceAttributes:
       allOf:
       - $ref: '#/components/schemas/Attributes'
       - type: object
@@ -850,90 +923,6 @@ components:
       - $ref: '#/components/schemas/ProductItemResourceIdentifierAttributes'
       - type: object
         description: Product startover service item
-    Error:
-      required:
-      - code
-      - details
-      - id
-      - status
-      - title
-      type: object
-      properties:
-        id:
-          type: string
-          description: A unique identifier for this particular occurrence of the problem.
-        status:
-          type: string
-          description: The HTTP status code applicable to this problem, expressed
-            as a string value.
-        code:
-          type: string
-          description: An application-specific error code, expressed as a string value.
-        title:
-          type: string
-          description: A short, human-readable summary of the problem that SHOULD
-            NOT change from occurrence to occurrence of the problem.
-        details:
-          type: string
-          description: A human-readable explanation specific to this occurrence of
-            the problem.
-      example:
-        id: 6de7da3e-8877-4f2b-a670-16e18e5d79a0
-        status: "400"
-        code: "31201"
-        title: Bad Request
-        detail: Parameter 'Foo' is invalid
-    Error_2:
-      type: object
-      properties:
-        id:
-          type: string
-          description: A unique identifier for this instance of error (allows tracking
-            in logs)
-        href:
-          type: string
-          description: The url where you can find documentation about this class of
-            error
-        code:
-          type: string
-          description: A static 7 character code that is associated with this family
-            of errors
-        title:
-          type: string
-          description: A human readable and user friendly (no implementation details)
-            description of the general condition of the error
-        details:
-          type: string
-          description: A human readable and user friendly description of the specific
-            details of the error
-      example:
-      - id: 5941163294aef
-        code: 4INZEX
-        title: Method not allowed
-        details: This method is not supported for this resource
-    ManagementCreateLicenseResource:
-      required:
-      - data
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/ManagementCreateLicenseResource_data'
-    ManagementBatchCreateLicensesResource:
-      required:
-      - data
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/ManagementCreateLicenseResource'
-    ManagementCreateProductResource:
-      required:
-      - data
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/ManagementCreateProductResource_data'
     inline_response_200:
       required:
       - data
@@ -1149,6 +1138,47 @@ components:
           description: The purchase instrument
           nullable: true
           example: credit card
+    ManagementCreateLicenseResource_data:
+      required:
+      - attributes
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: Resource type of the resource to create. Must be "License".
+          example: License
+        attributes:
+          allOf:
+          - $ref: '#/components/schemas/ManagementLicenseResourceAttributes'
+        relationships:
+          $ref: '#/components/schemas/LicenseResourceRelationships'
+    ManagementProductResourceAttributes_costing_record:
+      type: object
+      properties:
+        amount:
+          type: number
+          description: Product cost
+          example: 42.13
+        currency:
+          type: string
+          description: The ISO-4217 code of the currency
+          example: EUR
+    ManagementCreateProductResource_data:
+      required:
+      - attributes
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          description: Resource type of the resource to create. Must be "Product".
+          example: Product
+        attributes:
+          allOf:
+          - $ref: '#/components/schemas/ManagementProductResourceAttributes'
+        relationships:
+          $ref: '#/components/schemas/ProductResourceRelationships'
     LicenseResourceRelationships_user:
       required:
       - data
@@ -1163,17 +1193,6 @@ components:
       properties:
         data:
           $ref: '#/components/schemas/ProductResourceIdentifier'
-    ManagementProductResourceAttributes_costing_record:
-      type: object
-      properties:
-        amount:
-          type: number
-          description: Product cost
-          example: 42.13
-        currency:
-          type: string
-          description: The ISO-4217 code of the currency
-          example: EUR
     ProductResourceRelationships_live:
       required:
       - data
@@ -1214,36 +1233,6 @@ components:
           description: List of items with startover service enabled
           items:
             $ref: '#/components/schemas/ProductStartoverItemResourceIdentifier'
-    ManagementCreateLicenseResource_data:
-      required:
-      - attributes
-      - type
-      type: object
-      properties:
-        type:
-          type: string
-          description: Resource type of the resource to create. Must be "License".
-          example: License
-        attributes:
-          allOf:
-          - $ref: '#/components/schemas/ManagementLicenseResourceAttributes'
-        relationships:
-          $ref: '#/components/schemas/LicenseResourceRelationships'
-    ManagementCreateProductResource_data:
-      required:
-      - attributes
-      - type
-      type: object
-      properties:
-        type:
-          type: string
-          description: Resource type of the resource to create. Must be "Product".
-          example: Product
-        attributes:
-          allOf:
-          - $ref: '#/components/schemas/ManagementProductResourceAttributes'
-        relationships:
-          $ref: '#/components/schemas/ProductResourceRelationships'
   requestBodies:
     CreateLicenseRequestBody:
       content:
