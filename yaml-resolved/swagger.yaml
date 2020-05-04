@@ -75,11 +75,7 @@ paths:
           type: string
         example: 518d5812-b8e8-43a4-b3b0-8f9c5cdc31b9
       requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UserCreateLicenseResource'
-        required: true
+        $ref: '#/components/requestBodies/CreateLicenseRequestBody'
       responses:
         "201":
           description: Successful response on created resource
@@ -307,14 +303,14 @@ components:
         properties:
           attributes:
             allOf:
-            - $ref: '#/components/schemas/UserProductResourceAttributes'
+            - $ref: '#/components/schemas/ProductResourceAttributes'
             - required:
               - description
               - title
               type: object
           relationships:
             $ref: '#/components/schemas/ProductResourceRelationships'
-    UserProductResourceAttributes:
+    ProductResourceAttributes:
       allOf:
       - $ref: '#/components/schemas/Attributes'
       - type: object
@@ -366,6 +362,7 @@ components:
           example: "41"
         type:
           pattern: ^Channel$
+          type: string
           example: Channel
       description: Product service item
     ProductCatchupItemResourceIdentifier:
@@ -615,6 +612,13 @@ components:
           description: List of items with startover service enabled
           items:
             $ref: '#/components/schemas/ProductStartoverItemResourceIdentifier'
+  requestBodies:
+    CreateLicenseRequestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UserCreateLicenseResource'
+      required: true
   securitySchemes:
     bearerAuth:
       type: http
