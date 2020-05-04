@@ -262,11 +262,7 @@ paths:
           type: string
         example: 518d5812-b8e8-43a4-b3b0-8f9c5cdc31b9
       requestBody:
-        content:
-          application/vnd.api+json; ext=bulk:
-            schema:
-              $ref: '#/components/schemas/ManagementBatchCreateLicensesResource'
-        required: true
+        $ref: '#/components/requestBodies/BatchCreateLicensesRequestBody'
       responses:
         "204":
           description: |
@@ -302,11 +298,7 @@ paths:
           type: string
         example: 518d5812-b8e8-43a4-b3b0-8f9c5cdc31b9
       requestBody:
-        content:
-          application/vnd.api+json; ext=bulk:
-            schema:
-              $ref: '#/components/schemas/body'
-        required: true
+        $ref: '#/components/requestBodies/BatchDeleteLicensesRequestBody'
       responses:
         "204":
           description: |
@@ -939,6 +931,13 @@ components:
         code: 4INZEX
         title: Method not allowed
         details: This method is not supported for this resource
+    ManagementCreateProductResource:
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ManagementCreateProductResource_data'
     ManagementBatchCreateLicensesResource:
       required:
       - data
@@ -948,13 +947,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ManagementCreateLicenseResource'
-    ManagementCreateProductResource:
-      required:
-      - data
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/ManagementCreateProductResource_data'
     inline_response_200:
       required:
       - data
@@ -1051,15 +1043,6 @@ components:
                 code: "10201"
                 title: Bad Request
                 detail: Error in client input
-    body:
-      required:
-      - data
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/LicenseResourceIdentifier'
     inline_response_400_3:
       required:
       - errors
@@ -1274,6 +1257,37 @@ components:
           - $ref: '#/components/schemas/ManagementProductResourceAttributes'
         relationships:
           $ref: '#/components/schemas/ProductResourceRelationships'
+  requestBodies:
+    NewItem:
+      description: A JSON object containing item data
+      content:
+        application/vnd.api+json:
+          schema:
+            type: object
+      required: true
+    BatchCreateLicensesRequestBody:
+      description: A JSON object containing array of licenses data for  BatchCreateLicenses
+        request
+      content:
+        application/vnd.api+json; ext=bulk:
+          schema:
+            $ref: '#/components/schemas/ManagementBatchCreateLicensesResource'
+      required: true
+    BatchDeleteLicensesRequestBody:
+      description: A JSON object containing array of licenses identities data for  BatchDeleteLicenses
+        request
+      content:
+        application/vnd.api+json; ext=bulk:
+          schema:
+            required:
+            - data
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LicenseResourceIdentifier'
+      required: true
   securitySchemes:
     apiKeyAuth:
       type: apiKey
