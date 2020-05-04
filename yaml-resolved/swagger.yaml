@@ -46,6 +46,8 @@ paths:
             application/vnd.api+json:
               schema:
                 $ref: '#/components/schemas/inline_response_404'
+      security:
+      - bearerAuth: []
     post:
       tags:
       - license
@@ -97,6 +99,8 @@ paths:
             application/vnd.api+json:
               schema:
                 $ref: '#/components/schemas/inline_response_404_1'
+      security:
+      - bearerAuth: []
   /products:
     get:
       tags:
@@ -611,3 +615,9 @@ components:
           $ref: '#/components/schemas/LicenseResourceRelationships'
         meta:
           $ref: '#/components/schemas/UserCreateLicenseResource_data_meta'
+  securitySchemes:
+    bearerAuth:
+      type: http
+      description: JWT recieved from server, example "Bearer 1a2b3c4d".
+      scheme: bearer
+      bearerFormat: JWT
