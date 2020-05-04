@@ -479,6 +479,37 @@ paths:
             application/vnd.api+json:
               schema:
                 $ref: '#/components/schemas/inline_response_404_2'
+    delete:
+      tags:
+      - product
+      summary: Delete product
+      description: Deletes product by id
+      operationId: DeleteProductById
+      parameters:
+      - name: product_id
+        in: path
+        description: The ID of the product to delete.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: number
+      responses:
+        "204":
+          description: |
+            The product was deleted successfully
+        "401":
+          description: Unauthorized
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_401'
+        "404":
+          description: Product does not exist
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404_2'
     patch:
       tags:
       - product
