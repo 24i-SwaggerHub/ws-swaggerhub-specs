@@ -11,7 +11,7 @@ servers:
 - url: https://testing.booxmedia.xyz/api/license/management/v4
   description: Testing server
 security:
-- ApiKeyAuth: []
+- apiKeyAuth: []
 paths:
   /licenses:
     get:
@@ -1275,7 +1275,7 @@ components:
         relationships:
           $ref: '#/components/schemas/ProductResourceRelationships'
   securitySchemes:
-    ApiKeyAuth:
+    apiKeyAuth:
       type: apiKey
       description: Internal API key, format "Apikey 1a2b3c4d".
       name: Authorization
