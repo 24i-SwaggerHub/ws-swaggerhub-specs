@@ -294,6 +294,16 @@ paths:
         schema:
           type: string
         example: Apikey 1a2b3c4d
+      - name: Idempotency-Key
+        in: header
+        description: Client unique generated value for server to recognize subsequent
+          retries
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: 518d5812-b8e8-43a4-b3b0-8f9c5cdc31b9
       requestBody:
         content:
           application/vnd.api+json; ext=bulk:
@@ -333,6 +343,16 @@ paths:
         schema:
           type: string
         example: Apikey 1a2b3c4d
+      - name: Idempotency-Key
+        in: header
+        description: Client unique generated value for server to recognize subsequent
+          retries
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: 518d5812-b8e8-43a4-b3b0-8f9c5cdc31b9
       requestBody:
         content:
           application/vnd.api+json; ext=bulk:
