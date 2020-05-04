@@ -10,6 +10,8 @@ servers:
   description: SwaggerHub API Auto Mocking
 - url: https://testing.booxmedia.xyz/api/license/management/v4
   description: Testing server
+security:
+- ApiKeyAuth: []
 paths:
   /licenses:
     get:
@@ -20,15 +22,6 @@ paths:
         Returns a list of licenses for a given input set of filters. All related products and users are included in the response, which can be used for grouping.
       operationId: GetLicenses
       parameters:
-      - name: Authorization
-        in: header
-        description: Internal API key.
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-        example: Apikey 1a2b3c4d
       - name: page[number]
         in: query
         description: Page number if the results have more items than items per page.
@@ -149,15 +142,6 @@ paths:
         Create new license
       operationId: CreateLicense
       parameters:
-      - name: Authorization
-        in: header
-        description: Internal API key.
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-        example: Apikey 1a2b3c4d
       - name: Idempotency-Key
         in: header
         description: Client unique generated value for server to recognize subsequent
@@ -201,15 +185,6 @@ paths:
       description: Returns license by id
       operationId: GetLicenseById
       parameters:
-      - name: Authorization
-        in: header
-        description: Internal API key.
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-        example: Apikey 1a2b3c4d
       - name: license_id
         in: path
         description: The ID of the license to fetch.
@@ -244,15 +219,6 @@ paths:
       description: Deletes license by id
       operationId: DeleteLicenseById
       parameters:
-      - name: Authorization
-        in: header
-        description: Internal API key.
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-        example: Apikey 1a2b3c4d
       - name: license_id
         in: path
         description: The ID of the license to delete.
@@ -285,15 +251,6 @@ paths:
       description: Creates multiple licenses
       operationId: BatchCreateLicenses
       parameters:
-      - name: Authorization
-        in: header
-        description: Internal API key.
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-        example: Apikey 1a2b3c4d
       - name: Idempotency-Key
         in: header
         description: Client unique generated value for server to recognize subsequent
@@ -334,15 +291,6 @@ paths:
       description: Deletes all provided licenses
       operationId: BatchDeleteLicenses
       parameters:
-      - name: Authorization
-        in: header
-        description: Internal API key.
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-        example: Apikey 1a2b3c4d
       - name: Idempotency-Key
         in: header
         description: Client unique generated value for server to recognize subsequent
@@ -419,15 +367,6 @@ paths:
       description: Deletes all licenses for specified user
       operationId: BatchDeleteAllUserLicenses
       parameters:
-      - name: Authorization
-        in: header
-        description: Internal API key.
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-        example: Apikey 1a2b3c4d
       - name: user_id
         in: path
         description: The ID of the user to revoke all licenses for.
@@ -460,15 +399,6 @@ paths:
         Returns a list of products
       operationId: GetAllProducts
       parameters:
-      - name: Authorization
-        in: header
-        description: Internal API key.
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-        example: Apikey 1a2b3c4d
       - name: page[number]
         in: query
         description: Page number if the results have more items than items per page.
@@ -506,16 +436,6 @@ paths:
       description: |
         Create new product
       operationId: CreateProduct
-      parameters:
-      - name: Authorization
-        in: header
-        description: Internal API key.
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-        example: Apikey 1a2b3c4d
       requestBody:
         content:
           application/json:
@@ -549,15 +469,6 @@ paths:
       description: Returns product by id
       operationId: GetProductById
       parameters:
-      - name: Authorization
-        in: header
-        description: Internal API key.
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-        example: Apikey 1a2b3c4d
       - name: product_id
         in: path
         description: The ID of the product to fetch.
@@ -592,15 +503,6 @@ paths:
       description: Deletes product by id
       operationId: DeleteProductById
       parameters:
-      - name: Authorization
-        in: header
-        description: Internal API key.
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-        example: Apikey 1a2b3c4d
       - name: product_id
         in: path
         description: The ID of the product to delete.
@@ -633,15 +535,6 @@ paths:
         Updates product specified by product id
       operationId: UpdateProduct
       parameters:
-      - name: Authorization
-        in: header
-        description: Internal API key.
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-        example: Apikey 1a2b3c4d
       - name: product_id
         in: path
         description: The ID of the product to update.
@@ -1381,3 +1274,9 @@ components:
           - $ref: '#/components/schemas/ManagementProductResourceAttributes'
         relationships:
           $ref: '#/components/schemas/ProductResourceRelationships'
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      description: Internal API key.
+      name: Authorization
+      in: header
