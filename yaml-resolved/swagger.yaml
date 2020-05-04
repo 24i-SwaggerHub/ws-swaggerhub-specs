@@ -1277,6 +1277,6 @@ components:
   securitySchemes:
     ApiKeyAuth:
       type: apiKey
-      description: Internal API key.
+      description: Internal API key, format "Apikey 1a2b3c4d".
       name: Authorization
       in: header
