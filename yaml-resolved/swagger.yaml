@@ -126,14 +126,7 @@ paths:
                 $ref: '#/components/schemas/inline_response_200_1'
 components:
   schemas:
-    UserCreateLicenseResource:
-      required:
-      - data
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/UserCreateLicenseResource_data'
-    UserLicenseResource:
+    LicenseResource:
       allOf:
       - $ref: '#/components/schemas/LicenseResourceIdentifier'
       - required:
@@ -143,7 +136,7 @@ components:
         properties:
           attributes:
             allOf:
-            - $ref: '#/components/schemas/CommonLicenseResourceAttributes'
+            - $ref: '#/components/schemas/Attributes'
             - required:
               - purchase_date
               - start_date
@@ -151,14 +144,56 @@ components:
               - stop_date
               type: object
               properties:
-                purchase_date:
-                  type: integer
-                  description: The Unix epoch timestamp denoting date when the license
-                    was purchased
+                status:
+                  type: string
+                  description: Current status of license
+                  nullable: false
                   readOnly: true
+                  example: ACTIVE
+                  enum:
+                  - PROCESSING
+                  - CHECK_INVALID
+                  - ORDER_ERROR
+                  - ACTIVE
+                  - EXPIRED
+                  - SUSPENDED
+                  - SUSPENDEDADMIN
+                start_date:
+                  type: integer
+                  description: The Unix epoch timestamp denoting the start date of
+                    the license
+                  nullable: false
+                  example: 1523268666
+                stop_date:
+                  type: integer
+                  description: The Unix epoch timestamp denoting expiration date of
+                    the license
+                  nullable: false
                   example: 1523268698
+              additionalProperties: false
           relationships:
-            $ref: '#/components/schemas/LicenseResourceRelationships'
+            allOf:
+            - $ref: '#/components/schemas/Relationships'
+            - required:
+              - product
+              - user
+              type: object
+              properties:
+                user:
+                  required:
+                  - data
+                  type: object
+                  properties:
+                    data:
+                      $ref: '#/components/schemas/UserResourceIdentifier'
+                product:
+                  required:
+                  - data
+                  type: object
+                  properties:
+                    data:
+                      $ref: '#/components/schemas/ProductResourceIdentifier'
+              additionalProperties: false
           links:
             allOf:
             - $ref: '#/components/schemas/Links'
@@ -200,57 +235,10 @@ components:
       description: Used to describe resource objects that share common attributes
         and relationships.
       example: ResourceOject
-    CommonLicenseResourceAttributes:
-      allOf:
-      - $ref: '#/components/schemas/Attributes'
-      - required:
-        - start_date
-        - stop_date
-        type: object
-        properties:
-          status:
-            type: string
-            description: Current status of license
-            nullable: false
-            readOnly: true
-            example: ACTIVE
-            enum:
-            - PROCESSING
-            - CHECK_INVALID
-            - ORDER_ERROR
-            - ACTIVE
-            - EXPIRED
-            - SUSPENDED
-            - SUSPENDEDADMIN
-          start_date:
-            type: integer
-            description: The Unix epoch timestamp denoting the start date of the license
-            nullable: false
-            example: 1523268666
-          stop_date:
-            type: integer
-            description: The Unix epoch timestamp denoting expiration date of the
-              license
-            nullable: false
-            example: 1523268698
-        additionalProperties: false
     Attributes:
       type: object
       additionalProperties: true
       description: An attributes object representing some of the resource’s data.
-    LicenseResourceRelationships:
-      allOf:
-      - $ref: '#/components/schemas/Relationships'
-      - required:
-        - product
-        - user
-        type: object
-        properties:
-          user:
-            $ref: '#/components/schemas/LicenseResourceRelationships_user'
-          product:
-            $ref: '#/components/schemas/LicenseResourceRelationships_product'
-        additionalProperties: false
     Relationships:
       type: object
       additionalProperties:
@@ -293,7 +281,7 @@ components:
     Links:
       type: object
       description: A links object containing links related to the resource.
-    UserProductResource:
+    ProductResource:
       allOf:
       - $ref: '#/components/schemas/ProductResourceIdentifier'
       - required:
@@ -303,86 +291,89 @@ components:
         properties:
           attributes:
             allOf:
-            - $ref: '#/components/schemas/ProductResourceAttributes'
+            - $ref: '#/components/schemas/Attributes'
             - required:
               - description
               - title
               type: object
+              properties:
+                title:
+                  type: string
+                  description: Title of the product
+                  example: Sport channels meagpack
+                description:
+                  type: string
+                  description: Description of the product
+                  example: Complete collection fo all sports channels
+                  default: ""
+                type:
+                  type: string
+                  description: Type of the product
+                  example: CHANNEL_GROUP
+                is_premium:
+                  type: boolean
+                  description: Whether the product is premium one
+                  example: true
+                  default: false
+              additionalProperties: false
           relationships:
-            $ref: '#/components/schemas/ProductResourceRelationships'
-    ProductResourceAttributes:
+            allOf:
+            - $ref: '#/components/schemas/Relationships'
+            - type: object
+              properties:
+                live:
+                  required:
+                  - data
+                  type: object
+                  properties:
+                    data:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/ChannelResourceIdentifier'
+                  description: Items with live service enabled
+                catchup:
+                  required:
+                  - data
+                  type: object
+                  properties:
+                    data:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/ChannelResourceIdentifier'
+                  description: Items with cathup service enabled
+                npvr:
+                  required:
+                  - data
+                  type: object
+                  properties:
+                    data:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/ChannelResourceIdentifier'
+                  description: Items with npvr service enabled enabled
+                startover:
+                  required:
+                  - data
+                  type: object
+                  properties:
+                    data:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/ChannelResourceIdentifier'
+                  description: Items with startover service enabled
+              additionalProperties: false
+    ChannelResourceIdentifier:
       allOf:
-      - $ref: '#/components/schemas/Attributes'
+      - $ref: '#/components/schemas/ResourceIdentifier'
       - type: object
         properties:
-          title:
+          id:
             type: string
-            description: Title of the product
-            example: Sport channels meagpack
-          description:
-            type: string
-            description: Description of the product
-            example: Complete collection fo all sports channels
-            default: ""
+            example: "42"
           type:
+            pattern: ^Channel$
             type: string
-            description: Type of the product
-            example: CHANNEL_GROUP
-          is_premium:
-            type: boolean
-            description: Whether the product is premium one
-            example: true
-            default: false
-        additionalProperties: false
-    ProductResourceRelationships:
-      allOf:
-      - $ref: '#/components/schemas/Relationships'
-      - type: object
-        properties:
-          live:
-            $ref: '#/components/schemas/ProductResourceRelationships_live'
-          catchup:
-            $ref: '#/components/schemas/ProductResourceRelationships_catchup'
-          npvr:
-            $ref: '#/components/schemas/ProductResourceRelationships_npvr'
-          startover:
-            $ref: '#/components/schemas/ProductResourceRelationships_startover'
-        additionalProperties: false
-    ProductLiveItemResourceIdentifier:
-      allOf:
-      - $ref: '#/components/schemas/ResourceIdentifier'
-      - $ref: '#/components/schemas/ProductItemResourceIdentifierAttributes'
-      - type: object
-        description: Product live service item
-    ProductItemResourceIdentifierAttributes:
-      type: object
-      properties:
-        id:
-          type: string
-          example: "41"
-        type:
-          pattern: ^Channel$
-          type: string
-          example: Channel
-      description: Product service item
-    ProductCatchupItemResourceIdentifier:
-      allOf:
-      - $ref: '#/components/schemas/ResourceIdentifier'
-      - $ref: '#/components/schemas/ProductItemResourceIdentifierAttributes'
-      - type: object
-        description: Product catchup service item
-    ProductNpvrItemResourceIdentifier:
-      allOf:
-      - $ref: '#/components/schemas/ResourceIdentifier'
-      - $ref: '#/components/schemas/ProductItemResourceIdentifierAttributes'
-      - type: object
-        description: Product npvr service item
-    ProductStartoverItemResourceIdentifier:
-      allOf:
-      - $ref: '#/components/schemas/ResourceIdentifier'
-      - $ref: '#/components/schemas/ProductItemResourceIdentifierAttributes'
-      - type: object
-        description: Product startover service item
+            example: Channel
     Error:
       required:
       - code
@@ -425,11 +416,11 @@ components:
         data:
           type: array
           items:
-            $ref: '#/components/schemas/UserLicenseResource'
+            $ref: '#/components/schemas/LicenseResource'
         included:
           type: array
           items:
-            $ref: '#/components/schemas/UserProductResource'
+            $ref: '#/components/schemas/ProductResource'
     inline_response_401:
       required:
       - errors
@@ -466,7 +457,7 @@ components:
       type: object
       properties:
         data:
-          $ref: '#/components/schemas/UserLicenseResource'
+          $ref: '#/components/schemas/LicenseResource'
     inline_response_403:
       required:
       - errors
@@ -507,117 +498,80 @@ components:
         data:
           type: array
           items:
-            $ref: '#/components/schemas/UserProductResource'
-    UserCreateLicenseResource_data_attributes_purchase_record:
-      required:
-      - payment_method
-      type: object
-      properties:
-        payment_method:
-          type: string
-          description: License purcahse payment method
-          example: billing
-    UserCreateLicenseResource_data_attributes:
-      required:
-      - purchase_record
-      type: object
-      properties:
-        purchase_record:
-          $ref: '#/components/schemas/UserCreateLicenseResource_data_attributes_purchase_record'
-    UserCreateLicenseResource_data_meta_authorization:
-      required:
-      - pin_code
-      type: object
-      properties:
-        pin_code:
-          type: string
-          description: User PIN code.
-          example: "0000"
-    UserCreateLicenseResource_data_meta:
-      required:
-      - authorization
-      type: object
-      properties:
-        authorization:
-          $ref: '#/components/schemas/UserCreateLicenseResource_data_meta_authorization'
-    UserCreateLicenseResource_data:
-      required:
-      - attributes
-      - meta
-      - relationships
-      - type
-      type: object
-      properties:
-        type:
-          type: string
-          description: Resource type of the resource to create. Must be "License".
-          example: License
-        attributes:
-          $ref: '#/components/schemas/UserCreateLicenseResource_data_attributes'
-        relationships:
-          $ref: '#/components/schemas/LicenseResourceRelationships'
-        meta:
-          $ref: '#/components/schemas/UserCreateLicenseResource_data_meta'
-    LicenseResourceRelationships_user:
-      required:
-      - data
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/UserResourceIdentifier'
-    LicenseResourceRelationships_product:
-      required:
-      - data
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/ProductResourceIdentifier'
-    ProductResourceRelationships_live:
-      required:
-      - data
-      type: object
-      properties:
-        data:
-          type: array
-          description: List of items with live service enabled
-          items:
-            $ref: '#/components/schemas/ProductLiveItemResourceIdentifier'
-    ProductResourceRelationships_catchup:
-      required:
-      - data
-      type: object
-      properties:
-        data:
-          type: array
-          description: List of items with cathup service enabled
-          items:
-            $ref: '#/components/schemas/ProductCatchupItemResourceIdentifier'
-    ProductResourceRelationships_npvr:
-      required:
-      - data
-      type: object
-      properties:
-        data:
-          type: array
-          description: List of items with npvr service enabled enabled
-          items:
-            $ref: '#/components/schemas/ProductNpvrItemResourceIdentifier'
-    ProductResourceRelationships_startover:
-      required:
-      - data
-      type: object
-      properties:
-        data:
-          type: array
-          description: List of items with startover service enabled
-          items:
-            $ref: '#/components/schemas/ProductStartoverItemResourceIdentifier'
+            $ref: '#/components/schemas/ProductResource'
   requestBodies:
     CreateLicenseRequestBody:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/UserCreateLicenseResource'
+            required:
+            - data
+            type: object
+            properties:
+              data:
+                required:
+                - attributes
+                - meta
+                - relationships
+                - type
+                type: object
+                properties:
+                  type:
+                    type: string
+                    description: Resource type of the resource to create. Must be
+                      "License".
+                    example: License
+                  attributes:
+                    required:
+                    - purchase_record
+                    type: object
+                    properties:
+                      purchase_record:
+                        required:
+                        - payment_method
+                        type: object
+                        properties:
+                          payment_method:
+                            type: string
+                            description: License purcahse payment method
+                            example: billing
+                  relationships:
+                    allOf:
+                    - $ref: '#/components/schemas/Relationships'
+                    - required:
+                      - product
+                      - user
+                      type: object
+                      properties:
+                        user:
+                          required:
+                          - data
+                          type: object
+                          properties:
+                            data:
+                              $ref: '#/components/schemas/UserResourceIdentifier'
+                        product:
+                          required:
+                          - data
+                          type: object
+                          properties:
+                            data:
+                              $ref: '#/components/schemas/ProductResourceIdentifier'
+                      additionalProperties: false
+                  meta:
+                    required:
+                    - authorization
+                    type: object
+                    properties:
+                      authorization:
+                        required:
+                        - pin_code
+                        type: object
+                        properties:
+                          pin_code:
+                            type: string
+                            description: User PIN code.
+                            example: "0000"
       required: true
   securitySchemes:
     bearerAuth:
