@@ -136,16 +136,6 @@ paths:
                 $ref: '#/components/schemas/inline_response_401'
 components:
   schemas:
-    ManagementProductResource:
-      allOf:
-      - $ref: '#/components/schemas/ProductResource'
-      - required:
-        - attributes
-        - relationships
-        type: object
-        properties:
-          attributes:
-            $ref: '#/components/schemas/ManagementProductResource_attributes'
     ManagementLicenseResource:
       allOf:
       - $ref: '#/components/schemas/LicenseResource'
@@ -182,151 +172,6 @@ components:
         code: "31201"
         title: Bad Request
         detail: Parameter 'Foo' is invalid
-    ProductResource:
-      allOf:
-      - $ref: '#/components/schemas/ProductResourceIdentifier'
-      - required:
-        - attributes
-        - relationships
-        type: object
-        properties:
-          attributes:
-            allOf:
-            - $ref: '#/components/schemas/Attributes'
-            - required:
-              - description
-              - title
-              type: object
-              properties:
-                title:
-                  type: string
-                  description: Title of the product
-                  example: Sport channels meagpack
-                description:
-                  type: string
-                  description: Description of the product
-                  example: Complete collection fo all sports channels
-                  default: ""
-                type:
-                  type: string
-                  description: Type of the product
-                  example: CHANNEL_GROUP
-                is_premium:
-                  type: boolean
-                  description: Whether the product is premium one
-                  example: true
-                  default: false
-              additionalProperties: false
-          relationships:
-            allOf:
-            - $ref: '#/components/schemas/Relationships'
-            - type: object
-              properties:
-                live:
-                  required:
-                  - data
-                  type: object
-                  properties:
-                    data:
-                      type: array
-                      items:
-                        $ref: '#/components/schemas/ChannelResourceIdentifier'
-                  description: Items with live service enabled
-                catchup:
-                  required:
-                  - data
-                  type: object
-                  properties:
-                    data:
-                      type: array
-                      items:
-                        $ref: '#/components/schemas/ChannelResourceIdentifier'
-                  description: Items with cathup service enabled
-                npvr:
-                  required:
-                  - data
-                  type: object
-                  properties:
-                    data:
-                      type: array
-                      items:
-                        $ref: '#/components/schemas/ChannelResourceIdentifier'
-                  description: Items with npvr service enabled enabled
-                startover:
-                  required:
-                  - data
-                  type: object
-                  properties:
-                    data:
-                      type: array
-                      items:
-                        $ref: '#/components/schemas/ChannelResourceIdentifier'
-                  description: Items with startover service enabled
-              additionalProperties: false
-    ProductResourceIdentifier:
-      allOf:
-      - $ref: '#/components/schemas/ResourceIdentifier'
-      - type: object
-        properties:
-          id:
-            type: string
-            example: "41"
-          type:
-            pattern: ^Product$
-            type: string
-            example: Product
-    ResourceIdentifier:
-      required:
-      - id
-      - type
-      type: object
-      properties:
-        id:
-          $ref: '#/components/schemas/Id'
-        type:
-          $ref: '#/components/schemas/Type'
-      discriminator:
-        propertyName: type
-    Id:
-      type: string
-      description: The id of the resource being referenced
-      example: e022f021-11f5-4cd6-89f2-02535d89eed6
-    Type:
-      type: string
-      description: Used to describe resource objects that share common attributes
-        and relationships.
-      example: ResourceOject
-    Attributes:
-      type: object
-      additionalProperties: true
-      description: An attributes object representing some of the resource’s data.
-    Relationships:
-      type: object
-      additionalProperties:
-        required:
-        - data
-        type: object
-        properties:
-          data:
-            oneOf:
-            - $ref: '#/components/schemas/ResourceIdentifier'
-            - type: array
-              items:
-                $ref: '#/components/schemas/ResourceIdentifier'
-      description: A relationships object describing relationships between the resource
-        and other JSON:API resources.
-    ChannelResourceIdentifier:
-      allOf:
-      - $ref: '#/components/schemas/ResourceIdentifier'
-      - type: object
-        properties:
-          id:
-            type: string
-            example: "42"
-          type:
-            pattern: ^Channel$
-            type: string
-            example: Channel
     LicenseResource:
       allOf:
       - $ref: '#/components/schemas/LicenseResourceIdentifier'
@@ -413,6 +258,46 @@ components:
             pattern: ^License$
             type: string
             example: License
+    ResourceIdentifier:
+      required:
+      - id
+      - type
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        type:
+          $ref: '#/components/schemas/Type'
+      discriminator:
+        propertyName: type
+    Id:
+      type: string
+      description: The id of the resource being referenced
+      example: e022f021-11f5-4cd6-89f2-02535d89eed6
+    Type:
+      type: string
+      description: Used to describe resource objects that share common attributes
+        and relationships.
+      example: ResourceOject
+    Attributes:
+      type: object
+      additionalProperties: true
+      description: An attributes object representing some of the resource’s data.
+    Relationships:
+      type: object
+      additionalProperties:
+        required:
+        - data
+        type: object
+        properties:
+          data:
+            oneOf:
+            - $ref: '#/components/schemas/ResourceIdentifier'
+            - type: array
+              items:
+                $ref: '#/components/schemas/ResourceIdentifier'
+      description: A relationships object describing relationships between the resource
+        and other JSON:API resources.
     UserResourceIdentifier:
       allOf:
       - $ref: '#/components/schemas/ResourceIdentifier'
@@ -425,6 +310,18 @@ components:
             pattern: ^User$
             type: string
             example: User
+    ProductResourceIdentifier:
+      allOf:
+      - $ref: '#/components/schemas/ResourceIdentifier'
+      - type: object
+        properties:
+          id:
+            type: string
+            example: "41"
+          type:
+            pattern: ^Product$
+            type: string
+            example: Product
     Links:
       type: object
       description: A links object containing links related to the resource.
@@ -468,62 +365,6 @@ components:
                 title: Invalid api key
                 detail: 'Invalid authorization api key: Unauthorised Api key provided
                   in the header'
-    ManagementProductResource_attributes_price_record:
-      type: object
-      properties:
-        amount:
-          type: integer
-          description: Product cost in cents or it's currency analog
-          example: 98
-        currency:
-          type: string
-          description: The ISO-4217 code of the currency
-          example: EUR
-    ManagementProductResource_attributes:
-      required:
-      - license_duration
-      - title
-      type: object
-      properties:
-        price_record:
-          $ref: '#/components/schemas/ManagementProductResource_attributes_price_record'
-        license_duration:
-          type: number
-          description: License duration in seconds, means that license associated
-            with this product and  given to user will have duration of time of creation
-            plus this value
-          example: 518400.0
-        type:
-          type: string
-          description: Type of the product
-          readOnly: true
-          enum:
-          - CATCHUP
-          - CHANNEL
-          - PVR
-          - STARTOVER
-          - CHANNEL_GROUP
-        auto_grant_on_signup:
-          type: boolean
-          description: Automatically grant this product license to new users
-          example: false
-          default: false
-        auto_renew:
-          type: boolean
-          description: Indicates whether the license created for this product will
-            be scheduled for auto renew
-          example: false
-          default: false
-        is_user_visible:
-          type: boolean
-          description: Whether the product is visible to client
-          example: true
-          default: true
-        is_byable:
-          type: boolean
-          description: Whether the product can be bought
-          example: true
-          default: true
   securitySchemes:
     apiKeyAuth:
       type: apiKey
