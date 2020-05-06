@@ -137,6 +137,7 @@ paths:
 components:
   schemas:
     ManagementLicenseResource:
+      type: object
       allOf:
       - $ref: '#/components/schemas/LicenseResource'
     Error:
