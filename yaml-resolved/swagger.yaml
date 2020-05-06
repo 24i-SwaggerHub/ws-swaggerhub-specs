@@ -177,217 +177,6 @@ paths:
             application/vnd.api+json:
               schema:
                 $ref: '#/components/schemas/inline_response_401'
-  /licenses/{license_id}:
-    get:
-      tags:
-      - license
-      summary: Get license
-      description: Returns license by id
-      operationId: GetLicenseById
-      parameters:
-      - name: license_id
-        in: path
-        description: The ID of the license to fetch.
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: number
-      responses:
-        "200":
-          description: Successful response
-          content:
-            application/vnd.api+json:
-              schema:
-                $ref: '#/components/schemas/inline_response_200_1'
-        "401":
-          description: Unauthorized
-          content:
-            application/vnd.api+json:
-              schema:
-                $ref: '#/components/schemas/inline_response_401'
-        "404":
-          description: License does not exist
-          content:
-            application/vnd.api+json:
-              schema:
-                $ref: '#/components/schemas/inline_response_404'
-    delete:
-      tags:
-      - license
-      summary: Delete license
-      description: Deletes license by id
-      operationId: DeleteLicenseById
-      parameters:
-      - name: license_id
-        in: path
-        description: The ID of the license to delete.
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: number
-      responses:
-        "204":
-          description: |
-            The user license was deleted successfully
-        "401":
-          description: Unauthorized
-          content:
-            application/vnd.api+json:
-              schema:
-                $ref: '#/components/schemas/inline_response_401'
-        "404":
-          description: License does not exist
-          content:
-            application/vnd.api+json:
-              schema:
-                $ref: '#/components/schemas/inline_response_404'
-  /licenses/batch_create:
-    post:
-      tags:
-      - license
-      summary: Grant multiple licenses to multiple users
-      description: Creates multiple licenses
-      operationId: BatchCreateLicenses
-      parameters:
-      - name: Idempotency-Key
-        in: header
-        description: Client unique generated value for server to recognize subsequent
-          retries
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-        example: 518d5812-b8e8-43a4-b3b0-8f9c5cdc31b9
-      requestBody:
-        description: A JSON object containing array of licenses data for BatchCreateLicenses
-          request
-        content:
-          application/vnd.api+json; ext=bulk:
-            schema:
-              $ref: '#/components/schemas/body_1'
-        required: true
-      responses:
-        "204":
-          description: |
-            The user licenses were created successfully
-        "400":
-          description: Bad Request
-          content:
-            application/vnd.api+json:
-              schema:
-                $ref: '#/components/schemas/inline_response_400_2'
-        "401":
-          description: Unauthorized
-          content:
-            application/vnd.api+json:
-              schema:
-                $ref: '#/components/schemas/inline_response_401'
-  /licenses/batch_delete:
-    post:
-      tags:
-      - license
-      summary: Delete specified licenses
-      description: Deletes all provided licenses
-      operationId: BatchDeleteLicenses
-      parameters:
-      - name: Idempotency-Key
-        in: header
-        description: Client unique generated value for server to recognize subsequent
-          retries
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-        example: 518d5812-b8e8-43a4-b3b0-8f9c5cdc31b9
-      requestBody:
-        $ref: '#/components/requestBodies/BatchDeleteLicensesRequestBody'
-      responses:
-        "204":
-          description: |
-            Licenses were deleted successfully
-        "400":
-          description: Bad Request
-          content:
-            application/vnd.api+json:
-              schema:
-                $ref: '#/components/schemas/inline_response_400_3'
-        "401":
-          description: Unauthorized
-          content:
-            application/vnd.api+json:
-              schema:
-                $ref: '#/components/schemas/inline_response_401'
-  /users/{user_id}/licenses:
-    get:
-      tags:
-      - license
-      summary: Get all user licenses
-      description: |
-        NOT sure we need it, but this could be more convivinet way to fetch all user licenses with one call instead of using /licenses with filter
-        Returns all licenses for a given user. All related products are included in the response, which can be used for grouping.
-      operationId: GetLicensesByUser
-      parameters:
-      - name: user_id
-        in: path
-        description: The ID of the user to fetch licenses for.
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-      responses:
-        "200":
-          description: Successful response
-          content:
-            application/vnd.api+json:
-              schema:
-                $ref: '#/components/schemas/inline_response_200_2'
-        "401":
-          description: Unauthorized
-          content:
-            application/vnd.api+json:
-              schema:
-                $ref: '#/components/schemas/inline_response_401'
-        "404":
-          description: User does not exist
-          content:
-            application/vnd.api+json:
-              schema:
-                $ref: '#/components/schemas/inline_response_404_1'
-    delete:
-      tags:
-      - license
-      summary: Delete all user licenses
-      description: Deletes all licenses for specified user
-      operationId: BatchDeleteAllUserLicenses
-      parameters:
-      - name: user_id
-        in: path
-        description: The ID of the user to revoke all licenses for.
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: number
-      responses:
-        "204":
-          description: The user licenses were deleted successfully descrition
-        "401":
-          description: Unauthorized
-          content:
-            application/vnd.api+json:
-              schema:
-                $ref: '#/components/schemas/inline_response_401'
-        "404":
-          description: User does not exist
-          content:
-            application/vnd.api+json:
-              schema:
-                $ref: '#/components/schemas/inline_response_404_1'
 components:
   schemas:
     ManagementProductResource:
@@ -400,17 +189,18 @@ components:
         properties:
           attributes:
             $ref: '#/components/schemas/ManagementProductResource_attributes'
+    ExtendedLicenseResource:
+      required:
+      - attributes
+      - relationships
+      type: object
+      properties:
+        attributes:
+          $ref: '#/components/schemas/ExtendedLicenseResource_attributes'
     ManagementLicenseResource:
       allOf:
       - $ref: '#/components/schemas/LicenseResource'
-      - required:
-        - attributes
-        - relationships
-        type: object
-        properties:
-          attributes:
-            $ref: '#/components/schemas/ManagementLicenseResource_attributes'
-        additionalProperties: false
+      - $ref: '#/components/schemas/ExtendedLicenseResource'
     Error:
       required:
       - code
@@ -794,104 +584,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Error_2'
-    inline_response_200_1:
-      required:
-      - data
-      - included
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/ManagementLicenseResource'
-        included:
-          type: array
-          items:
-            anyOf:
-            - $ref: '#/components/schemas/ManagementProductResource'
-    inline_response_404:
-      required:
-      - errors
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            allOf:
-            - $ref: '#/components/schemas/Error'
-            - example:
-                status: "404"
-                code: "10101"
-                title: Not Found
-                detail: The requested license does not exist
-    body_1:
-      required:
-      - data
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/ManagementLicenseResource'
-    inline_response_400_2:
-      required:
-      - errors
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            allOf:
-            - $ref: '#/components/schemas/Error'
-            - example:
-                status: "400"
-                code: "10201"
-                title: Bad Request
-                detail: Error in client input
-    inline_response_400_3:
-      required:
-      - errors
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            allOf:
-            - $ref: '#/components/schemas/Error'
-            - example:
-                status: "400"
-                code: "10201"
-                title: Bad Request
-                detail: Standart error descrition
-    inline_response_200_2:
-      required:
-      - data
-      - included
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/ManagementLicenseResource'
-        included:
-          type: array
-          items:
-            $ref: '#/components/schemas/ManagementProductResource'
-    inline_response_404_1:
-      required:
-      - errors
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            allOf:
-            - $ref: '#/components/schemas/Error'
-            - example:
-                status: "404"
-                code: "10101"
-                title: Not Found
-                detail: The requested user does not exist
     ManagementProductResource_attributes_price_record:
       type: object
       properties:
@@ -948,7 +640,7 @@ components:
           description: Whether the product can be bought
           example: true
           default: true
-    ManagementLicenseResource_attributes_renew_record:
+    ExtendedLicenseResource_attributes_renew_record:
       type: object
       properties:
         recurring:
@@ -963,7 +655,7 @@ components:
           nullable: true
           readOnly: false
           example: 1523268698
-    ManagementLicenseResource_attributes_purchase_record:
+    ExtendedLicenseResource_attributes_purchase_record:
       type: object
       properties:
         price_currency_amount:
@@ -989,7 +681,7 @@ components:
           description: The purchase instrument
           nullable: true
           example: credit card
-    ManagementLicenseResource_attributes:
+    ExtendedLicenseResource_attributes:
       type: object
       properties:
         order_id:
@@ -1000,43 +692,10 @@ components:
           readOnly: true
           example: 1adc0dbe-3c65-4248-896c-78c049e276c8
         renew_record:
-          $ref: '#/components/schemas/ManagementLicenseResource_attributes_renew_record'
+          $ref: '#/components/schemas/ExtendedLicenseResource_attributes_renew_record'
         purchase_record:
-          $ref: '#/components/schemas/ManagementLicenseResource_attributes_purchase_record'
+          $ref: '#/components/schemas/ExtendedLicenseResource_attributes_purchase_record'
       description: Management license resource attributes
-  requestBodies:
-    BatchDeleteLicensesRequestBody:
-      description: A JSON object containing array of licenses identities data for  BatchDeleteLicenses
-        request
-      content:
-        application/vnd.api+json; ext=bulk:
-          schema:
-            required:
-            - data
-            type: object
-            properties:
-              data:
-                type: array
-                items:
-                  $ref: '#/components/schemas/LicenseResourceIdentifier'
-      required: true
-    CreateProductRequestBody:
-      content:
-        application/json:
-          schema:
-            required:
-            - data
-            type: object
-            properties:
-              data:
-                $ref: '#/components/schemas/ManagementProductResource'
-      required: true
-    UpdateProductRequestBody:
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/ManagementProductResource'
-      required: true
   securitySchemes:
     apiKeyAuth:
       type: apiKey
