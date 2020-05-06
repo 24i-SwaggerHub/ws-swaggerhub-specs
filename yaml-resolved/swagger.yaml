@@ -149,13 +149,6 @@ components:
     ManagementLicenseResource:
       allOf:
       - $ref: '#/components/schemas/LicenseResource'
-      - required:
-        - attributes
-        - relationships
-        type: object
-        properties:
-          attributes:
-            $ref: '#/components/schemas/ManagementLicenseResource_attributes'
     Error:
       required:
       - code
@@ -377,7 +370,6 @@ components:
                     the license
                   nullable: false
                   example: 1523268698
-              additionalProperties: true
           relationships:
             allOf:
             - $ref: '#/components/schemas/Relationships'
@@ -532,62 +524,6 @@ components:
           description: Whether the product can be bought
           example: true
           default: true
-    ManagementLicenseResource_attributes_renew_record:
-      type: object
-      properties:
-        recurring:
-          type: boolean
-          description: Indicates whether the license will be scheduled for auto renew
-          example: false
-        expiry_date:
-          type: integer
-          description: The Unix epoch timestamp denoting the license expiration date.
-            If 'recurring' is set for that record then renew script will handle auto
-            renew few days before that date.
-          nullable: true
-          readOnly: false
-          example: 1523268698
-    ManagementLicenseResource_attributes_purchase_record:
-      type: object
-      properties:
-        price_currency_amount:
-          type: number
-          description: License price in cents
-          nullable: true
-          readOnly: true
-          example: 1223
-        price_currency_iso4217:
-          type: string
-          description: The ISO-4217 code of the currency
-          nullable: true
-          readOnly: true
-          example: EUR
-        purchase_timestamp:
-          type: integer
-          description: The Unix timestamp at which this license was purchased
-          nullable: true
-          readOnly: true
-          example: 1526648593
-        payment_method:
-          type: string
-          description: The purchase instrument
-          nullable: true
-          example: credit card
-    ManagementLicenseResource_attributes:
-      type: object
-      properties:
-        order_id:
-          type: string
-          description: Application generated unique id of the order
-          format: uuid
-          nullable: true
-          readOnly: true
-          example: 1adc0dbe-3c65-4248-896c-78c049e276c8
-        renew_record:
-          $ref: '#/components/schemas/ManagementLicenseResource_attributes_renew_record'
-        purchase_record:
-          $ref: '#/components/schemas/ManagementLicenseResource_attributes_purchase_record'
-      description: Management license resource attributes
   securitySchemes:
     apiKeyAuth:
       type: apiKey
