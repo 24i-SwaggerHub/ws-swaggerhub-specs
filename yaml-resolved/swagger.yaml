@@ -199,7 +199,7 @@ paths:
           content:
             application/vnd.api+json:
               schema:
-                $ref: '#/components/schemas/inline_response_200'
+                $ref: '#/components/schemas/inline_response_200_1'
         "401":
           description: Unauthorized
           content:
@@ -345,7 +345,7 @@ paths:
           content:
             application/vnd.api+json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_1'
+                $ref: '#/components/schemas/inline_response_200_2'
         "401":
           description: Unauthorized
           content:
@@ -733,7 +733,7 @@ components:
           type: array
           items:
             anyOf:
-            - $ref: '#/components/schemas/ManagementProductResource'
+            - $ref: '#/components/schemas/ManagementLicenseResource'
     inline_response_400:
       required:
       - errors
@@ -792,6 +792,21 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Error_2'
+    inline_response_200_1:
+      required:
+      - data
+      - included
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ManagementLicenseResource'
+        included:
+          type: array
+          items:
+            anyOf:
+            - $ref: '#/components/schemas/ManagementProductResource'
     inline_response_404:
       required:
       - errors
@@ -846,7 +861,7 @@ components:
                 code: "10201"
                 title: Bad Request
                 detail: Standart error descrition
-    inline_response_200_1:
+    inline_response_200_2:
       required:
       - data
       - included
@@ -875,13 +890,13 @@ components:
                 code: "10101"
                 title: Not Found
                 detail: The requested user does not exist
-    ManagementProductResource_attributes_costing_record:
+    ManagementProductResource_attributes_price_record:
       type: object
       properties:
         amount:
-          type: number
-          description: Product cost
-          example: 42.13
+          type: integer
+          description: Product cost in cents or it's currency analog
+          example: 98
         currency:
           type: string
           description: The ISO-4217 code of the currency
@@ -892,8 +907,8 @@ components:
       - title
       type: object
       properties:
-        costing_record:
-          $ref: '#/components/schemas/ManagementProductResource_attributes_costing_record'
+        price_record:
+          $ref: '#/components/schemas/ManagementProductResource_attributes_price_record'
         license_duration:
           type: number
           description: License duration in seconds, means that license associated
@@ -931,12 +946,6 @@ components:
           description: Whether the product can be bought
           example: true
           default: true
-        created_at:
-          type: integer
-          description: The Unix epoch timestamp denoting the start date of the license
-          nullable: false
-          readOnly: true
-          example: 1523268666
     ManagementLicenseResource_attributes_renew_record:
       type: object
       properties:
@@ -957,11 +966,10 @@ components:
       properties:
         price_currency_amount:
           type: number
-          description: The float (double precision) amount of currency that was paid
-            (some fiat currencies have three decimal points of precision)
+          description: License price in cents
           nullable: true
           readOnly: true
-          example: 12.23
+          example: 1223
         price_currency_iso4217:
           type: string
           description: The ISO-4217 code of the currency
