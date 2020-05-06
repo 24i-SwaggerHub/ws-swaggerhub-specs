@@ -410,6 +410,7 @@ components:
         properties:
           attributes:
             $ref: '#/components/schemas/ManagementLicenseResource_attributes'
+        additionalProperties: false
     Error:
       required:
       - code
@@ -692,6 +693,7 @@ components:
                 self:
                   type: string
                   example: https://boox.fi/api/user/waqqas.jabbar@gmail.com/license/10
+        additionalProperties: true
     LicenseResourceIdentifier:
       allOf:
       - $ref: '#/components/schemas/ResourceIdentifier'
