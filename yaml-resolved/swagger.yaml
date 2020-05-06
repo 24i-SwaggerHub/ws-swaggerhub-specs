@@ -146,18 +146,16 @@ components:
         properties:
           attributes:
             $ref: '#/components/schemas/ManagementProductResource_attributes'
-    ExtendedLicenseResource:
-      required:
-      - attributes
-      - relationships
-      type: object
-      properties:
-        attributes:
-          $ref: '#/components/schemas/ExtendedLicenseResource_attributes'
     ManagementLicenseResource:
       allOf:
       - $ref: '#/components/schemas/LicenseResource'
-      - $ref: '#/components/schemas/ExtendedLicenseResource'
+      - required:
+        - attributes
+        - relationships
+        type: object
+        properties:
+          attributes:
+            $ref: '#/components/schemas/ManagementLicenseResource_attributes'
     Error:
       required:
       - code
@@ -379,7 +377,7 @@ components:
                     the license
                   nullable: false
                   example: 1523268698
-              additionalProperties: false
+              additionalProperties: true
           relationships:
             allOf:
             - $ref: '#/components/schemas/Relationships'
@@ -411,7 +409,6 @@ components:
                 self:
                   type: string
                   example: https://boox.fi/api/user/waqqas.jabbar@gmail.com/license/10
-        additionalProperties: true
     LicenseResourceIdentifier:
       allOf:
       - $ref: '#/components/schemas/ResourceIdentifier'
@@ -535,7 +532,7 @@ components:
           description: Whether the product can be bought
           example: true
           default: true
-    ExtendedLicenseResource_attributes_renew_record:
+    ManagementLicenseResource_attributes_renew_record:
       type: object
       properties:
         recurring:
@@ -550,7 +547,7 @@ components:
           nullable: true
           readOnly: false
           example: 1523268698
-    ExtendedLicenseResource_attributes_purchase_record:
+    ManagementLicenseResource_attributes_purchase_record:
       type: object
       properties:
         price_currency_amount:
@@ -576,7 +573,7 @@ components:
           description: The purchase instrument
           nullable: true
           example: credit card
-    ExtendedLicenseResource_attributes:
+    ManagementLicenseResource_attributes:
       type: object
       properties:
         order_id:
@@ -587,9 +584,9 @@ components:
           readOnly: true
           example: 1adc0dbe-3c65-4248-896c-78c049e276c8
         renew_record:
-          $ref: '#/components/schemas/ExtendedLicenseResource_attributes_renew_record'
+          $ref: '#/components/schemas/ManagementLicenseResource_attributes_renew_record'
         purchase_record:
-          $ref: '#/components/schemas/ExtendedLicenseResource_attributes_purchase_record'
+          $ref: '#/components/schemas/ManagementLicenseResource_attributes_purchase_record'
       description: Management license resource attributes
   securitySchemes:
     apiKeyAuth:
