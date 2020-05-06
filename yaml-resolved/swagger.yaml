@@ -153,7 +153,11 @@ paths:
           type: string
         example: 518d5812-b8e8-43a4-b3b0-8f9c5cdc31b9
       requestBody:
-        $ref: '#/components/requestBodies/CreateLicenseRequestBody'
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/body'
+        required: true
       responses:
         "201":
           description: Successful response on created resource
@@ -258,7 +262,13 @@ paths:
           type: string
         example: 518d5812-b8e8-43a4-b3b0-8f9c5cdc31b9
       requestBody:
-        $ref: '#/components/requestBodies/BatchCreateLicensesRequestBody'
+        description: A JSON object containing array of licenses data for BatchCreateLicenses
+          request
+        content:
+          application/vnd.api+json; ext=bulk:
+            schema:
+              $ref: '#/components/schemas/body_1'
+        required: true
       responses:
         "204":
           description: |
@@ -755,6 +765,13 @@ components:
                 title: Invalid api key
                 detail: 'Invalid authorization api key: Unauthorised Api key provided
                   in the header'
+    body:
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ManagementLicenseResource'
     inline_response_201:
       required:
       - data
@@ -790,6 +807,15 @@ components:
                 code: "10101"
                 title: Not Found
                 detail: The requested license does not exist
+    body_1:
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ManagementLicenseResource'
     inline_response_400_2:
       required:
       - errors
@@ -969,32 +995,6 @@ components:
           $ref: '#/components/schemas/ManagementLicenseResource_attributes_purchase_record'
       description: Management license resource attributes
   requestBodies:
-    CreateLicenseRequestBody:
-      content:
-        application/json:
-          schema:
-            required:
-            - data
-            type: object
-            properties:
-              data:
-                $ref: '#/components/schemas/ManagementLicenseResource'
-      required: true
-    BatchCreateLicensesRequestBody:
-      description: A JSON object containing array of licenses data for BatchCreateLicenses
-        request
-      content:
-        application/vnd.api+json; ext=bulk:
-          schema:
-            required:
-            - data
-            type: object
-            properties:
-              data:
-                type: array
-                items:
-                  $ref: '#/components/schemas/ManagementLicenseResource'
-      required: true
     BatchDeleteLicensesRequestBody:
       description: A JSON object containing array of licenses identities data for  BatchDeleteLicenses
         request
