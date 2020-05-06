@@ -199,7 +199,7 @@ paths:
           content:
             application/vnd.api+json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_1'
+                $ref: '#/components/schemas/inline_response_200'
         "401":
           description: Unauthorized
           content:
@@ -345,7 +345,7 @@ paths:
           content:
             application/vnd.api+json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_2'
+                $ref: '#/components/schemas/inline_response_200_1'
         "401":
           description: Unauthorized
           content:
@@ -733,7 +733,7 @@ components:
           type: array
           items:
             anyOf:
-            - $ref: '#/components/schemas/ManagementLicenseResource'
+            - $ref: '#/components/schemas/ManagementProductResource'
     inline_response_400:
       required:
       - errors
@@ -792,21 +792,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Error_2'
-    inline_response_200_1:
-      required:
-      - data
-      - included
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/ManagementLicenseResource'
-        included:
-          type: array
-          items:
-            anyOf:
-            - $ref: '#/components/schemas/ManagementProductResource'
     inline_response_404:
       required:
       - errors
@@ -861,7 +846,7 @@ components:
                 code: "10201"
                 title: Bad Request
                 detail: Standart error descrition
-    inline_response_200_2:
+    inline_response_200_1:
       required:
       - data
       - included
