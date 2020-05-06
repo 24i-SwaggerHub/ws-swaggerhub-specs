@@ -692,6 +692,39 @@ components:
         purchase_record:
           $ref: '#/components/schemas/ManagementLicenseResource_attributes_purchase_record'
       description: Management license resource attributes
+  requestBodies:
+    BatchDeleteLicensesRequestBody:
+      description: A JSON object containing array of licenses identities data for  BatchDeleteLicenses
+        request
+      content:
+        application/vnd.api+json; ext=bulk:
+          schema:
+            required:
+            - data
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LicenseResourceIdentifier'
+      required: true
+    CreateProductRequestBody:
+      content:
+        application/json:
+          schema:
+            required:
+            - data
+            type: object
+            properties:
+              data:
+                $ref: '#/components/schemas/ManagementProductResource'
+      required: true
+    UpdateProductRequestBody:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ManagementProductResource'
+      required: true
   securitySchemes:
     apiKeyAuth:
       type: apiKey
