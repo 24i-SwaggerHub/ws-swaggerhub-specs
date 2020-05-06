@@ -134,6 +134,49 @@ paths:
             application/vnd.api+json:
               schema:
                 $ref: '#/components/schemas/inline_response_401'
+    post:
+      tags:
+      - license
+      summary: Create new license
+      description: |
+        Create new license
+      operationId: CreateLicense
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        description: Client unique generated value for server to recognize subsequent
+          retries
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: 518d5812-b8e8-43a4-b3b0-8f9c5cdc31b9
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/body'
+        required: true
+      responses:
+        "201":
+          description: Successful response on created resource
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_201'
+        "400":
+          description: Standard error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400_1'
+        "401":
+          description: Unauthorized
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_401'
 components:
   schemas:
     ManagementProductResource:
@@ -431,9 +474,38 @@ components:
         code: "31201"
         title: Bad Request
         detail: Parameter 'Foo' is invalid
+    Error_2:
+      type: object
+      properties:
+        id:
+          type: string
+          description: A unique identifier for this instance of error (allows tracking
+            in logs)
+        href:
+          type: string
+          description: The url where you can find documentation about this class of
+            error
+        code:
+          type: string
+          description: A static 7 character code that is associated with this family
+            of errors
+        title:
+          type: string
+          description: A human readable and user friendly (no implementation details)
+            description of the general condition of the error
+        details:
+          type: string
+          description: A human readable and user friendly description of the specific
+            details of the error
+      example:
+      - id: 5941163294aef
+        code: 4INZEX
+        title: Method not allowed
+        details: This method is not supported for this resource
     inline_response_200:
       required:
       - data
+      - included
       type: object
       properties:
         data:
@@ -450,7 +522,6 @@ components:
             allOf:
             - $ref: '#/components/schemas/ProductResource'
             - $ref: '#/components/schemas/ManagementProductResource'
-      additionalProperties: true
     inline_response_400:
       required:
       - errors
@@ -482,6 +553,33 @@ components:
                 title: Invalid api key
                 detail: 'Invalid authorization api key: Unauthorised Api key provided
                   in the header'
+    body:
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ManagementLicenseResource'
+    inline_response_201:
+      required:
+      - data
+      - included
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ManagementLicenseResource'
+        included:
+          type: array
+          items:
+            anyOf:
+            - $ref: '#/components/schemas/ManagementProductResource'
+    inline_response_400_1:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/Error_2'
     ManagementProductResource_attributes_price_record:
       type: object
       properties:
