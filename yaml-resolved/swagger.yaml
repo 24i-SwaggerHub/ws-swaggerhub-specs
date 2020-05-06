@@ -121,7 +121,7 @@ paths:
           content:
             application/vnd.api+json:
               schema:
-                $ref: '#/components/schemas/inline_response_200'
+                $ref: '#/components/schemas/GetLicensesResponseSchema'
         "400":
           description: Bad Request
           content:
@@ -136,9 +136,6 @@ paths:
                 $ref: '#/components/schemas/inline_response_401'
 components:
   schemas:
-    ManagementLicenseResource:
-      allOf:
-      - $ref: '#/components/schemas/LicenseResource'
     ManagementLicenseResourceExtended:
       required:
       - attributes
@@ -147,9 +144,10 @@ components:
       properties:
         attributes:
           $ref: '#/components/schemas/ManagementLicenseResourceExtended_attributes'
-    GetLicensesResposeSchema:
+    GetLicensesResponseSchema:
       required:
       - data
+      - included
       type: object
       properties:
         data:
@@ -158,6 +156,11 @@ components:
             type: object
             allOf:
             - $ref: '#/components/schemas/LicenseResource'
+            - $ref: '#/components/schemas/ManagementLicenseResourceExtended'
+        included:
+          type: array
+          items:
+            anyOf:
             - $ref: '#/components/schemas/ManagementLicenseResourceExtended'
       additionalProperties: true
     Error:
@@ -346,16 +349,6 @@ components:
     Links:
       type: object
       description: A links object containing links related to the resource.
-    inline_response_200:
-      required:
-      - data
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/ManagementLicenseResource'
-      additionalProperties: true
     inline_response_400:
       required:
       - errors
