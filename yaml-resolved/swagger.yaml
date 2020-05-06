@@ -136,33 +136,22 @@ paths:
                 $ref: '#/components/schemas/inline_response_401'
 components:
   schemas:
-    ManagementLicenseResourceExtended:
+    ManagementProductResource:
       required:
       - attributes
       - relationships
       type: object
       properties:
         attributes:
-          $ref: '#/components/schemas/ManagementLicenseResourceExtended_attributes'
-    GetLicensesResponseSchema:
+          $ref: '#/components/schemas/ManagementProductResource_attributes'
+    ManagementLicenseResource:
       required:
-      - data
-      - included
+      - attributes
+      - relationships
       type: object
       properties:
-        data:
-          type: array
-          items:
-            type: object
-            allOf:
-            - $ref: '#/components/schemas/LicenseResource'
-            - $ref: '#/components/schemas/ManagementLicenseResourceExtended'
-        included:
-          type: array
-          items:
-            anyOf:
-            - $ref: '#/components/schemas/ManagementLicenseResourceExtended'
-      additionalProperties: true
+        attributes:
+          $ref: '#/components/schemas/ManagementLicenseResource_attributes'
     LicenseResource:
       allOf:
       - $ref: '#/components/schemas/LicenseResourceIdentifier'
@@ -316,6 +305,99 @@ components:
     Links:
       type: object
       description: A links object containing links related to the resource.
+    ProductResource:
+      allOf:
+      - $ref: '#/components/schemas/ProductResourceIdentifier'
+      - required:
+        - attributes
+        - relationships
+        type: object
+        properties:
+          attributes:
+            allOf:
+            - $ref: '#/components/schemas/Attributes'
+            - required:
+              - description
+              - title
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: Title of the product
+                  example: Sport channels meagpack
+                description:
+                  type: string
+                  description: Description of the product
+                  example: Complete collection fo all sports channels
+                  default: ""
+                type:
+                  type: string
+                  description: Type of the product
+                  example: CHANNEL_GROUP
+                is_premium:
+                  type: boolean
+                  description: Whether the product is premium one
+                  example: true
+                  default: false
+              additionalProperties: false
+          relationships:
+            allOf:
+            - $ref: '#/components/schemas/Relationships'
+            - type: object
+              properties:
+                live:
+                  required:
+                  - data
+                  type: object
+                  properties:
+                    data:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/ChannelResourceIdentifier'
+                  description: Items with live service enabled
+                catchup:
+                  required:
+                  - data
+                  type: object
+                  properties:
+                    data:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/ChannelResourceIdentifier'
+                  description: Items with cathup service enabled
+                npvr:
+                  required:
+                  - data
+                  type: object
+                  properties:
+                    data:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/ChannelResourceIdentifier'
+                  description: Items with npvr service enabled enabled
+                startover:
+                  required:
+                  - data
+                  type: object
+                  properties:
+                    data:
+                      type: array
+                      items:
+                        $ref: '#/components/schemas/ChannelResourceIdentifier'
+                  description: Items with startover service enabled
+              additionalProperties: false
+    ChannelResourceIdentifier:
+      allOf:
+      - $ref: '#/components/schemas/ResourceIdentifier'
+      - type: object
+        properties:
+          id:
+            type: string
+            example: "42"
+          type:
+            pattern: ^Channel$
+            type: string
+            example: Channel
     Error:
       required:
       - code
@@ -352,7 +434,6 @@ components:
     inline_response_200:
       required:
       - data
-      - included
       type: object
       properties:
         data:
@@ -361,12 +442,14 @@ components:
             type: object
             allOf:
             - $ref: '#/components/schemas/LicenseResource'
-            - $ref: '#/components/schemas/ManagementLicenseResourceExtended'
+            - $ref: '#/components/schemas/ManagementLicenseResource'
         included:
           type: array
           items:
-            anyOf:
-            - $ref: '#/components/schemas/ManagementLicenseResourceExtended'
+            type: object
+            allOf:
+            - $ref: '#/components/schemas/ProductResource'
+            - $ref: '#/components/schemas/ManagementProductResource'
       additionalProperties: true
     inline_response_400:
       required:
@@ -399,7 +482,63 @@ components:
                 title: Invalid api key
                 detail: 'Invalid authorization api key: Unauthorised Api key provided
                   in the header'
-    ManagementLicenseResourceExtended_attributes_renew_record:
+    ManagementProductResource_attributes_price_record:
+      type: object
+      properties:
+        amount:
+          type: integer
+          description: Product cost in cents or it's currency analog
+          example: 98
+        currency:
+          type: string
+          description: The ISO-4217 code of the currency
+          example: EUR
+    ManagementProductResource_attributes:
+      required:
+      - license_duration
+      - title
+      type: object
+      properties:
+        price_record:
+          $ref: '#/components/schemas/ManagementProductResource_attributes_price_record'
+        license_duration:
+          type: number
+          description: License duration in seconds, means that license associated
+            with this product and  given to user will have duration of time of creation
+            plus this value
+          example: 518400.0
+        type:
+          type: string
+          description: Type of the product
+          readOnly: true
+          enum:
+          - CATCHUP
+          - CHANNEL
+          - PVR
+          - STARTOVER
+          - CHANNEL_GROUP
+        auto_grant_on_signup:
+          type: boolean
+          description: Automatically grant this product license to new users
+          example: false
+          default: false
+        auto_renew:
+          type: boolean
+          description: Indicates whether the license created for this product will
+            be scheduled for auto renew
+          example: false
+          default: false
+        is_user_visible:
+          type: boolean
+          description: Whether the product is visible to client
+          example: true
+          default: true
+        is_byable:
+          type: boolean
+          description: Whether the product can be bought
+          example: true
+          default: true
+    ManagementLicenseResource_attributes_renew_record:
       type: object
       properties:
         recurring:
@@ -414,7 +553,7 @@ components:
           nullable: true
           readOnly: false
           example: 1523268698
-    ManagementLicenseResourceExtended_attributes_purchase_record:
+    ManagementLicenseResource_attributes_purchase_record:
       type: object
       properties:
         price_currency_amount:
@@ -440,7 +579,7 @@ components:
           description: The purchase instrument
           nullable: true
           example: credit card
-    ManagementLicenseResourceExtended_attributes:
+    ManagementLicenseResource_attributes:
       type: object
       properties:
         order_id:
@@ -451,9 +590,9 @@ components:
           readOnly: true
           example: 1adc0dbe-3c65-4248-896c-78c049e276c8
         renew_record:
-          $ref: '#/components/schemas/ManagementLicenseResourceExtended_attributes_renew_record'
+          $ref: '#/components/schemas/ManagementLicenseResource_attributes_renew_record'
         purchase_record:
-          $ref: '#/components/schemas/ManagementLicenseResourceExtended_attributes_purchase_record'
+          $ref: '#/components/schemas/ManagementLicenseResource_attributes_purchase_record'
       description: Management license resource attributes
   securitySchemes:
     apiKeyAuth:
