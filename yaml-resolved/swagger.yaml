@@ -400,29 +400,6 @@ components:
         properties:
           attributes:
             $ref: '#/components/schemas/ManagementLicenseResource_attributes'
-    CreateManagementProductResourceEntity:
-      required:
-      - data
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/CreateManagementProductResourceEntity_data'
-    CreateManagementLicenseResourceEntity:
-      required:
-      - data
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/CreateManagementLicenseResourceEntity_data'
-    BatchCreateManagementLicensesResourceEntity:
-      required:
-      - data
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/CreateManagementLicenseResourceEntity'
     Error:
       required:
       - code
@@ -991,40 +968,18 @@ components:
         purchase_record:
           $ref: '#/components/schemas/ManagementLicenseResource_attributes_purchase_record'
       description: Management license resource attributes
-    CreateManagementProductResourceEntity_data:
-      required:
-      - attributes
-      - type
-      type: object
-      properties:
-        type:
-          type: string
-          description: Resource type of the resource to create. Must be "Product".
-          example: Product
-        attributes:
-          type: object
-        relationships:
-          type: object
-    CreateManagementLicenseResourceEntity_data:
-      required:
-      - attributes
-      - type
-      type: object
-      properties:
-        type:
-          type: string
-          description: Resource type of the resource to create. Must be "License".
-          example: License
-        attributes:
-          type: object
-        relationships:
-          type: object
   requestBodies:
     CreateLicenseRequestBody:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/CreateManagementLicenseResourceEntity'
+            required:
+            - data
+            type: object
+            properties:
+              data:
+                allOf:
+                - $ref: '#/components/schemas/ManagementLicenseResource'
       required: true
     BatchCreateLicensesRequestBody:
       description: A JSON object containing array of licenses data for  BatchCreateLicenses
@@ -1032,7 +987,14 @@ components:
       content:
         application/vnd.api+json; ext=bulk:
           schema:
-            $ref: '#/components/schemas/BatchCreateManagementLicensesResourceEntity'
+            required:
+            - data
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ManagementLicenseResource'
       required: true
     BatchDeleteLicensesRequestBody:
       description: A JSON object containing array of licenses identities data for  BatchDeleteLicenses
@@ -1053,7 +1015,12 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/CreateManagementProductResourceEntity'
+            required:
+            - data
+            type: object
+            properties:
+              data:
+                $ref: '#/components/schemas/ManagementProductResource'
       required: true
     UpdateProductRequestBody:
       content:
