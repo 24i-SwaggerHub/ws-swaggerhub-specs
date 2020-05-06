@@ -981,7 +981,7 @@ components:
                 $ref: '#/components/schemas/ManagementLicenseResource'
       required: true
     BatchCreateLicensesRequestBody:
-      description: A JSON object containing array of licenses data for  BatchCreateLicenses
+      description: A JSON object containing array of licenses data for BatchCreateLicenses
         request
       content:
         application/vnd.api+json; ext=bulk:
