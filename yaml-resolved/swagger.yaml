@@ -348,7 +348,6 @@ components:
             allOf:
             - $ref: '#/components/schemas/Attributes'
             - required:
-              - purchase_date
               - start_date
               - status
               - stop_date
@@ -443,18 +442,12 @@ components:
     inline_response_200:
       required:
       - data
-      - included
       type: object
       properties:
         data:
           type: array
           items:
             $ref: '#/components/schemas/ManagementLicenseResource'
-        included:
-          type: array
-          items:
-            anyOf:
-            - $ref: '#/components/schemas/ManagementLicenseResource'
     inline_response_400:
       required:
       - errors
