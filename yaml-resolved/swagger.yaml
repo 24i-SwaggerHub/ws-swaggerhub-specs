@@ -503,14 +503,17 @@ components:
             type: object
             properties:
               data:
+                required:
+                - attributes
+                - meta
+                - relationships
+                - type
                 type: object
                 allOf:
                 - $ref: '#/components/schemas/CreateLicenseResourceIdentifier'
                 - $ref: '#/components/schemas/LicenseResourceProperties'
                 - properties:
                     attributes:
-                      required:
-                      - purchase_record
                       type: object
                       properties:
                         purchase_record:
