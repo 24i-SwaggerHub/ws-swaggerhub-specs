@@ -231,14 +231,6 @@ components:
                   data:
                     $ref: '#/components/schemas/ProductResourceIdentifier'
             additionalProperties: false
-        links:
-          allOf:
-          - $ref: '#/components/schemas/Links'
-          - type: object
-            properties:
-              self:
-                type: string
-                example: https://boox.fi/api/user/waqqas.jabbar@gmail.com/license/10
     Attributes:
       type: object
       additionalProperties: true
@@ -282,9 +274,6 @@ components:
             pattern: ^Product$
             type: string
             example: Product
-    Links:
-      type: object
-      description: A links object containing links related to the resource.
     ProductResource:
       allOf:
       - $ref: '#/components/schemas/ProductResourceIdentifier'
@@ -518,6 +507,9 @@ components:
             type: object
             properties:
               data:
+                required:
+                - attributes
+                - relationships
                 type: object
                 allOf:
                 - $ref: '#/components/schemas/CreateLicenseResourceIdentifier'
