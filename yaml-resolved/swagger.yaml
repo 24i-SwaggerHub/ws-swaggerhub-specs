@@ -166,9 +166,6 @@ components:
       type: string
       example: License
     LicenseResourceProperties:
-      required:
-      - attributes
-      - relationships
       type: object
       properties:
         attributes:
@@ -513,6 +510,7 @@ components:
                 type: object
                 allOf:
                 - $ref: '#/components/schemas/CreateLicenseResourceIdentifier'
+                - $ref: '#/components/schemas/LicenseResourceProperties'
                 - properties:
                     attributes:
                       required:
@@ -528,6 +526,7 @@ components:
                               type: string
                               description: License purcahse payment method
                               example: billing
+                      additionalProperties: false
                     meta:
                       required:
                       - authorization
