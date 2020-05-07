@@ -542,7 +542,7 @@ components:
                               type: string
                               description: License purcahse payment method
                               example: billing
-                      additionalProperties: false
+                      additionalProperties: true
                     meta:
                       required:
                       - authorization
