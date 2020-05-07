@@ -542,29 +542,6 @@ components:
                               type: string
                               description: License purcahse payment method
                               example: billing
-                    relationships:
-                      allOf:
-                      - $ref: '#/components/schemas/Relationships'
-                      - required:
-                        - product
-                        - user
-                        type: object
-                        properties:
-                          user:
-                            required:
-                            - data
-                            type: object
-                            properties:
-                              data:
-                                $ref: '#/components/schemas/UserResourceIdentifier'
-                          product:
-                            required:
-                            - data
-                            type: object
-                            properties:
-                              data:
-                                $ref: '#/components/schemas/ProductResourceIdentifier'
-                        additionalProperties: false
                     meta:
                       required:
                       - authorization
