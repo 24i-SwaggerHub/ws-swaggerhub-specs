@@ -199,12 +199,14 @@ components:
                 description: The Unix epoch timestamp denoting the start date of the
                   license
                 nullable: false
+                readOnly: true
                 example: 1523268666
               stop_date:
                 type: integer
                 description: The Unix epoch timestamp denoting expiration date of
                   the license
                 nullable: false
+                readOnly: true
                 example: 1523268698
         relationships:
           allOf:
@@ -524,6 +526,7 @@ components:
                 type: object
                 allOf:
                 - $ref: '#/components/schemas/CreateLicenseResourceIdentifier'
+                - $ref: '#/components/schemas/LicenseResourceProperties'
                 - properties:
                     attributes:
                       required:
