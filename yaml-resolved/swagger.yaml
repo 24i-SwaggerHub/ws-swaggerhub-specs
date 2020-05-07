@@ -275,12 +275,9 @@ components:
       - type: object
         properties:
           id:
-            type: string
-            example: "42"
+            $ref: '#/components/schemas/LicenseResourceId'
           type:
-            pattern: ^License$
-            type: string
-            example: License
+            $ref: '#/components/schemas/LicenseResourceType'
     ResourceIdentifier:
       required:
       - id
@@ -302,6 +299,19 @@ components:
       description: Used to describe resource objects that share common attributes
         and relationships.
       example: ResourceOject
+    LicenseResourceId:
+      type: object
+      properties:
+        Id:
+          type: string
+          example: "42"
+    LicenseResourceType:
+      type: object
+      properties:
+        type:
+          pattern: ^License$
+          type: string
+          example: License
     Attributes:
       type: object
       additionalProperties: true
@@ -559,7 +569,9 @@ components:
       type: object
       properties:
         data:
-          $ref: '#/components/schemas/ManagementLicenseResource'
+          allOf:
+          - $ref: '#/components/schemas/LicenseResource'
+          - $ref: '#/components/schemas/ManagementLicenseResource'
     inline_response_201:
       required:
       - data
