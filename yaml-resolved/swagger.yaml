@@ -195,7 +195,6 @@ components:
     ManagementLicenseResource:
       allOf:
       - $ref: '#/components/schemas/LicenseResourceIdentifier'
-      - $ref: '#/components/schemas/LicenseResourceAttributes'
       - $ref: '#/components/schemas/ManagementLicenseResourceAttributes'
       - $ref: '#/components/schemas/LicenseResourceRelationships'
     ProductResource:
