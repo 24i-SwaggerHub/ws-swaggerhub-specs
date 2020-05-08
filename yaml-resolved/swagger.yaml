@@ -527,11 +527,6 @@ components:
             type: object
             properties:
               data:
-                required:
-                - attributes
-                - meta
-                - relationships
-                - type
                 type: object
                 allOf:
                 - $ref: '#/components/schemas/CreateLicenseResourceIdentifier'
