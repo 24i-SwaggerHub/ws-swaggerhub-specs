@@ -130,7 +130,6 @@ components:
       allOf:
       - $ref: '#/components/schemas/LicenseResourceIdentifier'
       - $ref: '#/components/schemas/LicenseResourceProperties'
-      - $ref: '#/components/schemas/LicenseResourceRelationships'
     LicenseResourceIdentifier:
       allOf:
       - $ref: '#/components/schemas/ResourceIdentifier'
@@ -174,9 +173,6 @@ components:
       properties:
         attributes:
           $ref: '#/components/schemas/LicenseResourceProperties_attributes'
-    LicenseResourceRelationships:
-      type: object
-      properties:
         relationships:
           allOf:
           - $ref: '#/components/schemas/Relationships'
@@ -518,7 +514,6 @@ components:
                 allOf:
                 - $ref: '#/components/schemas/CreateLicenseResourceIdentifier'
                 - $ref: '#/components/schemas/LicenseResourceProperties'
-                - $ref: '#/components/schemas/LicenseResourceRelationships'
                 - properties:
                     attributes:
                       required:
