@@ -196,6 +196,7 @@ components:
       - $ref: '#/components/schemas/LicenseResourceIdentifier'
       - $ref: '#/components/schemas/LicenseResourceProperties'
       - $ref: '#/components/schemas/ManagementLicenseResourceProperties'
+      - $ref: '#/components/schemas/LicenseResourceRelationships'
     ProductResource:
       allOf:
       - $ref: '#/components/schemas/ProductResourceIdentifier'
@@ -421,6 +422,44 @@ components:
       properties:
         attributes:
           $ref: '#/components/schemas/LicenseResourceProperties_attributes'
+    LicenseResourceRelationships:
+      type: object
+      properties:
+        relationships:
+          allOf:
+          - $ref: '#/components/schemas/Relationships'
+          - required:
+            - product
+            - user
+            type: object
+            properties:
+              user:
+                required:
+                - data
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/UserResourceIdentifier'
+              product:
+                required:
+                - data
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ProductResourceIdentifier'
+            additionalProperties: false
+    UserResourceIdentifier:
+      allOf:
+      - $ref: '#/components/schemas/ResourceIdentifier'
+      - type: object
+        properties:
+          id:
+            type: string
+            example: "41"
+          type:
+            pattern: ^User$
+            type: string
+            example: User
     inline_response_200:
       required:
       - data
