@@ -183,19 +183,18 @@ components:
       properties:
         attributes:
           $ref: '#/components/schemas/ManagementProductResource_attributes'
-    ManagementLicenseResourceProperties:
+    ManagementLicenseResourceAttributes:
       required:
       - attributes
-      - relationships
       type: object
       properties:
         attributes:
-          $ref: '#/components/schemas/ManagementLicenseResourceProperties_attributes'
+          $ref: '#/components/schemas/ManagementLicenseResourceAttributes_attributes'
     ManagementLicenseResource:
       allOf:
       - $ref: '#/components/schemas/LicenseResourceIdentifier'
       - $ref: '#/components/schemas/LicenseResourceAttributes'
-      - $ref: '#/components/schemas/ManagementLicenseResourceProperties'
+      - $ref: '#/components/schemas/ManagementLicenseResourceAttributes'
       - $ref: '#/components/schemas/LicenseResourceRelationships'
     ProductResource:
       allOf:
@@ -589,7 +588,7 @@ components:
           description: Whether the product can be bought
           example: true
           default: true
-    ManagementLicenseResourceProperties_attributes_renew_record:
+    ManagementLicenseResourceAttributes_attributes_renew_record:
       type: object
       properties:
         recurring:
@@ -604,7 +603,7 @@ components:
           nullable: true
           readOnly: false
           example: 1523268698
-    ManagementLicenseResourceProperties_attributes_purchase_record:
+    ManagementLicenseResourceAttributes_attributes_purchase_record:
       type: object
       properties:
         price_currency_amount:
@@ -631,7 +630,7 @@ components:
           nullable: true
           readOnly: false
           example: credit card
-    ManagementLicenseResourceProperties_attributes:
+    ManagementLicenseResourceAttributes_attributes:
       required:
       - start_date
       - status
@@ -663,9 +662,9 @@ components:
           readOnly: true
           example: 1adc0dbe-3c65-4248-896c-78c049e276c8
         renew_record:
-          $ref: '#/components/schemas/ManagementLicenseResourceProperties_attributes_renew_record'
+          $ref: '#/components/schemas/ManagementLicenseResourceAttributes_attributes_renew_record'
         purchase_record:
-          $ref: '#/components/schemas/ManagementLicenseResourceProperties_attributes_purchase_record'
+          $ref: '#/components/schemas/ManagementLicenseResourceAttributes_attributes_purchase_record'
       description: Management license resource attributes
     LicenseResourceAttributes_attributes:
       required:
@@ -714,7 +713,7 @@ components:
                 allOf:
                 - $ref: '#/components/schemas/CreateLicenseResourceIdentifier'
                 - $ref: '#/components/schemas/LicenseResourceAttributes'
-                - $ref: '#/components/schemas/ManagementLicenseResourceProperties'
+                - $ref: '#/components/schemas/ManagementLicenseResourceAttributes'
                 - $ref: '#/components/schemas/LicenseResourceRelationships'
       required: true
     BatchDeleteLicensesRequestBody:
