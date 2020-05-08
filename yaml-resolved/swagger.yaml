@@ -175,9 +175,6 @@ components:
         attributes:
           $ref: '#/components/schemas/LicenseResourceProperties_attributes'
     LicenseResourceRelationships:
-      required:
-      - attributes
-      - relationships
       type: object
       properties:
         relationships:
@@ -521,6 +518,7 @@ components:
                 allOf:
                 - $ref: '#/components/schemas/CreateLicenseResourceIdentifier'
                 - $ref: '#/components/schemas/LicenseResourceProperties'
+                - $ref: '#/components/schemas/LicenseResourceRelationships'
                 - properties:
                     attributes:
                       required:
