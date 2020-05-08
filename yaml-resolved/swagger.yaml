@@ -518,21 +518,6 @@ components:
                 type: object
                 allOf:
                 - $ref: '#/components/schemas/CreateLicenseResource'
-                - properties:
-                    attributes:
-                      required:
-                      - purchase_record
-                      type: object
-                      properties:
-                        purchase_record:
-                          required:
-                          - payment_method
-                          type: object
-                          properties:
-                            payment_method:
-                              type: string
-                              description: License purcahse payment method
-                              example: billing
       required: true
   securitySchemes:
     bearerAuth:
