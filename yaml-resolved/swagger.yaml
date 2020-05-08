@@ -134,28 +134,6 @@ components:
       properties:
         attributes:
           $ref: '#/components/schemas/LicenseResourceProperties_attributes'
-        relationships:
-          allOf:
-          - required:
-            - product
-            - user
-            type: object
-            properties:
-              user:
-                required:
-                - data
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/UserResourceIdentifier'
-              product:
-                required:
-                - data
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/ProductResourceIdentifier'
-            additionalProperties: false
     LicenseResource:
       allOf:
       - $ref: '#/components/schemas/LicenseResourceIdentifier'
@@ -509,18 +487,6 @@ components:
           - EXPIRED
           - SUSPENDED
           - SUSPENDEDADMIN
-        start_date:
-          type: integer
-          description: The Unix epoch timestamp denoting the start date of the license
-          nullable: false
-          readOnly: true
-          example: 1523268666
-        stop_date:
-          type: integer
-          description: The Unix epoch timestamp denoting expiration date of the license
-          nullable: false
-          readOnly: true
-          example: 1523268698
     LicenseResourceProperties_2_attributes:
       required:
       - start_date
