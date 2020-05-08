@@ -188,13 +188,15 @@ components:
         attributes:
           $ref: '#/components/schemas/ManagementProductResource_attributes'
     ManagementLicenseResource:
-      required:
-      - attributes
-      - relationships
-      type: object
-      properties:
-        attributes:
-          $ref: '#/components/schemas/ManagementLicenseResource_attributes'
+      allOf:
+      - $ref: '#/components/schemas/LicenseResource'
+      - required:
+        - attributes
+        - relationships
+        type: object
+        properties:
+          attributes:
+            $ref: '#/components/schemas/ManagementLicenseResource_attributes'
     ProductResource:
       allOf:
       - $ref: '#/components/schemas/ProductResourceIdentifier'
