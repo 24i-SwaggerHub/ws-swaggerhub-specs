@@ -311,6 +311,73 @@ paths:
             application/vnd.api+json:
               schema:
                 $ref: '#/components/schemas/inline_response_401'
+  /users/{user_id}/licenses:
+    get:
+      tags:
+      - license
+      summary: Get all user licenses
+      description: |
+        NOT sure we need it, but this could be more convivinet way to fetch all user licenses with one call instead of using /licenses with filter
+        Returns all licenses for a given user. All related products are included in the response, which can be used for grouping.
+      operationId: GetLicensesByUser
+      parameters:
+      - name: user_id
+        in: path
+        description: The ID of the user to fetch licenses for.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_2'
+        "401":
+          description: Unauthorized
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_401'
+        "404":
+          description: User does not exist
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404_1'
+    delete:
+      tags:
+      - license
+      summary: Delete all user licenses
+      description: Deletes all licenses for specified user
+      operationId: BatchDeleteAllUserLicenses
+      parameters:
+      - name: user_id
+        in: path
+        description: The ID of the user to revoke all licenses for.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: number
+      responses:
+        "204":
+          description: The user licenses were deleted successfully descrition
+        "401":
+          description: Unauthorized
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_401'
+        "404":
+          description: User does not exist
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404_1'
 components:
   schemas:
     ManagementProductResource:
@@ -737,6 +804,35 @@ components:
                 code: "10201"
                 title: Bad Request
                 detail: Standart error descrition
+    inline_response_200_2:
+      required:
+      - data
+      - included
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ManagementLicenseResource'
+        included:
+          type: array
+          items:
+            $ref: '#/components/schemas/ManagementProductResource'
+    inline_response_404_1:
+      required:
+      - errors
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            allOf:
+            - $ref: '#/components/schemas/Error'
+            - example:
+                status: "404"
+                code: "10101"
+                title: Not Found
+                detail: The requested user does not exist
     ManagementProductResource_attributes_price_record:
       type: object
       properties:
