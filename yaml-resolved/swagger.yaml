@@ -198,115 +198,6 @@ components:
         properties:
           attributes:
             $ref: '#/components/schemas/ManagementLicenseResource_attributes'
-    ManagementLicenseResource_2:
-      allOf:
-      - $ref: '#/components/schemas/LicenseResourceIdentifier'
-      - $ref: '#/components/schemas/LicenseResourceProperties'
-    LicenseResourceIdentifier:
-      allOf:
-      - $ref: '#/components/schemas/ResourceIdentifier'
-      - type: object
-        properties:
-          id:
-            type: string
-            example: "42"
-          type:
-            $ref: '#/components/schemas/LicenseResourceType'
-    ResourceIdentifier:
-      required:
-      - id
-      - type
-      type: object
-      properties:
-        id:
-          $ref: '#/components/schemas/Id'
-        type:
-          $ref: '#/components/schemas/Type'
-      discriminator:
-        propertyName: type
-    Id:
-      type: string
-      description: The id of the resource being referenced
-      example: e022f021-11f5-4cd6-89f2-02535d89eed6
-    Type:
-      type: string
-      description: Used to describe resource objects that share common attributes
-        and relationships.
-      example: ResourceOject
-    LicenseResourceType:
-      pattern: ^License$
-      type: string
-      example: License
-    LicenseResourceProperties:
-      required:
-      - attributes
-      - relationships
-      type: object
-      properties:
-        attributes:
-          $ref: '#/components/schemas/LicenseResourceProperties_attributes'
-        relationships:
-          allOf:
-          - $ref: '#/components/schemas/Relationships'
-          - required:
-            - product
-            - user
-            type: object
-            properties:
-              user:
-                required:
-                - data
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/UserResourceIdentifier'
-              product:
-                required:
-                - data
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/ProductResourceIdentifier'
-            additionalProperties: false
-    Relationships:
-      type: object
-      additionalProperties:
-        required:
-        - data
-        type: object
-        properties:
-          data:
-            oneOf:
-            - $ref: '#/components/schemas/ResourceIdentifier'
-            - type: array
-              items:
-                $ref: '#/components/schemas/ResourceIdentifier'
-      description: A relationships object describing relationships between the resource
-        and other JSON:API resources.
-    UserResourceIdentifier:
-      allOf:
-      - $ref: '#/components/schemas/ResourceIdentifier'
-      - type: object
-        properties:
-          id:
-            type: string
-            example: "41"
-          type:
-            pattern: ^User$
-            type: string
-            example: User
-    ProductResourceIdentifier:
-      allOf:
-      - $ref: '#/components/schemas/ResourceIdentifier'
-      - type: object
-        properties:
-          id:
-            type: string
-            example: "41"
-          type:
-            pattern: ^Product$
-            type: string
-            example: Product
     ProductResource:
       allOf:
       - $ref: '#/components/schemas/ProductResourceIdentifier'
@@ -388,10 +279,58 @@ components:
                         $ref: '#/components/schemas/ChannelResourceIdentifier'
                   description: Items with startover service enabled
               additionalProperties: false
+    ProductResourceIdentifier:
+      allOf:
+      - $ref: '#/components/schemas/ResourceIdentifier'
+      - type: object
+        properties:
+          id:
+            type: string
+            example: "41"
+          type:
+            pattern: ^Product$
+            type: string
+            example: Product
+    ResourceIdentifier:
+      required:
+      - id
+      - type
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        type:
+          $ref: '#/components/schemas/Type'
+      discriminator:
+        propertyName: type
+    Id:
+      type: string
+      description: The id of the resource being referenced
+      example: e022f021-11f5-4cd6-89f2-02535d89eed6
+    Type:
+      type: string
+      description: Used to describe resource objects that share common attributes
+        and relationships.
+      example: ResourceOject
     Attributes:
       type: object
       additionalProperties: true
       description: An attributes object representing some of the resource’s data.
+    Relationships:
+      type: object
+      additionalProperties:
+        required:
+        - data
+        type: object
+        properties:
+          data:
+            oneOf:
+            - $ref: '#/components/schemas/ResourceIdentifier'
+            - type: array
+              items:
+                $ref: '#/components/schemas/ResourceIdentifier'
+      description: A relationships object describing relationships between the resource
+        and other JSON:API resources.
     ChannelResourceIdentifier:
       allOf:
       - $ref: '#/components/schemas/ResourceIdentifier'
@@ -441,6 +380,63 @@ components:
       allOf:
       - $ref: '#/components/schemas/LicenseResourceIdentifier'
       - $ref: '#/components/schemas/LicenseResourceProperties'
+    LicenseResourceIdentifier:
+      allOf:
+      - $ref: '#/components/schemas/ResourceIdentifier'
+      - type: object
+        properties:
+          id:
+            type: string
+            example: "42"
+          type:
+            $ref: '#/components/schemas/LicenseResourceType'
+    LicenseResourceType:
+      pattern: ^License$
+      type: string
+      example: License
+    LicenseResourceProperties:
+      required:
+      - attributes
+      - relationships
+      type: object
+      properties:
+        attributes:
+          $ref: '#/components/schemas/LicenseResourceProperties_attributes'
+        relationships:
+          allOf:
+          - $ref: '#/components/schemas/Relationships'
+          - required:
+            - product
+            - user
+            type: object
+            properties:
+              user:
+                required:
+                - data
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/UserResourceIdentifier'
+              product:
+                required:
+                - data
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ProductResourceIdentifier'
+            additionalProperties: false
+    UserResourceIdentifier:
+      allOf:
+      - $ref: '#/components/schemas/ResourceIdentifier'
+      - type: object
+        properties:
+          id:
+            type: string
+            example: "41"
+          type:
+            pattern: ^User$
+            type: string
+            example: User
     Error_2:
       type: object
       properties:
@@ -478,7 +474,7 @@ components:
         data:
           type: array
           items:
-            $ref: '#/components/schemas/ManagementLicenseResource_2'
+            $ref: '#/components/schemas/ManagementLicenseResource'
         included:
           type: array
           items:
