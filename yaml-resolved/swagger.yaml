@@ -520,6 +520,7 @@ components:
                 type: object
                 allOf:
                 - $ref: '#/components/schemas/CreateLicenseResourceIdentifier'
+                - $ref: '#/components/schemas/LicenseResourceProperties'
                 - $ref: '#/components/schemas/LicenseResourceRelationships'
                 - properties:
                     attributes:
