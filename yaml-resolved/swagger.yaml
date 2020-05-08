@@ -173,8 +173,11 @@ components:
       properties:
         attributes:
           allOf:
-          - $ref: '#/components/schemas/Attributes'
-          - type: object
+          - required:
+            - start_date
+            - status
+            - stop_date
+            type: object
             properties:
               status:
                 type: string
@@ -227,10 +230,6 @@ components:
                   data:
                     $ref: '#/components/schemas/ProductResourceIdentifier'
             additionalProperties: false
-    Attributes:
-      type: object
-      additionalProperties: true
-      description: An attributes object representing some of the resource’s data.
     Relationships:
       type: object
       additionalProperties:
@@ -351,6 +350,10 @@ components:
                         $ref: '#/components/schemas/ChannelResourceIdentifier'
                   description: Items with startover service enabled
               additionalProperties: false
+    Attributes:
+      type: object
+      additionalProperties: true
+      description: An attributes object representing some of the resource’s data.
     ChannelResourceIdentifier:
       allOf:
       - $ref: '#/components/schemas/ResourceIdentifier'
@@ -503,10 +506,18 @@ components:
             type: object
             properties:
               data:
+                required:
+                - attributes
+                - meta
+                - relationships
+                - type
                 type: object
                 allOf:
                 - $ref: '#/components/schemas/CreateLicenseResourceIdentifier'
                 - $ref: '#/components/schemas/LicenseResourceProperties'
+                - properties:
+                    attributes:
+                      type: object
       required: true
   securitySchemes:
     bearerAuth:
