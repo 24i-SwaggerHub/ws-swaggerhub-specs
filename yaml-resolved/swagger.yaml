@@ -536,6 +536,7 @@ components:
                 allOf:
                 - $ref: '#/components/schemas/CreateLicenseResourceIdentifier'
                 - $ref: '#/components/schemas/LicenseResourceAttributes'
+                - $ref: '#/components/schemas/LicenseResourceRelationships'
                 - properties:
                     attributes:
                       required:
