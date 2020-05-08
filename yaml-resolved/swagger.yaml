@@ -589,10 +589,6 @@ components:
           example: true
           default: true
     LicenseResourceProperties_attributes:
-      required:
-      - start_date
-      - status
-      - stop_date
       type: object
       properties:
         status:
@@ -697,7 +693,6 @@ components:
                 allOf:
                 - $ref: '#/components/schemas/CreateLicenseResourceIdentifier'
                 - $ref: '#/components/schemas/LicenseResourceProperties'
-                - $ref: '#/components/schemas/ManagementLicenseResourceProperties'
                 - type: object
                   properties:
                     start_date:
