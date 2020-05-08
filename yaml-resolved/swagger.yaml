@@ -399,6 +399,11 @@ components:
         code: "31201"
         title: Bad Request
         detail: Parameter 'Foo' is invalid
+    CreateLicenseResourceIdentifier:
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/LicenseResourceType'
     inline_response_200:
       required:
       - data
@@ -508,7 +513,7 @@ components:
                 - type
                 type: object
                 allOf:
-                - $ref: '#/components/schemas/LicenseResourceProperties'
+                - $ref: '#/components/schemas/CreateLicenseResourceIdentifier'
                 - properties:
                     attributes:
                       type: object
