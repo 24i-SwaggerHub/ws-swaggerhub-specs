@@ -126,10 +126,41 @@ paths:
                 $ref: '#/components/schemas/inline_response_200_1'
 components:
   schemas:
+    LicenseResourceProperties:
+      required:
+      - attributes
+      - relationships
+      type: object
+      properties:
+        attributes:
+          $ref: '#/components/schemas/LicenseResourceProperties_attributes'
+        relationships:
+          allOf:
+          - $ref: '#/components/schemas/Relationships'
+          - required:
+            - product
+            - user
+            type: object
+            properties:
+              user:
+                required:
+                - data
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/UserResourceIdentifier'
+              product:
+                required:
+                - data
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ProductResourceIdentifier'
+            additionalProperties: false
     LicenseResource:
       allOf:
       - $ref: '#/components/schemas/LicenseResourceIdentifier'
-      - $ref: '#/components/schemas/LicenseResourceProperties'
+      - $ref: '#/components/schemas/LicenseResourceProperties_2'
     LicenseResourceIdentifier:
       allOf:
       - $ref: '#/components/schemas/ResourceIdentifier'
@@ -165,7 +196,7 @@ components:
       pattern: ^License$
       type: string
       example: License
-    LicenseResourceProperties:
+    LicenseResourceProperties_2:
       required:
       - attributes
       - relationships
