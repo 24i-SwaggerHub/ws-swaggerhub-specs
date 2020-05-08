@@ -153,11 +153,7 @@ paths:
           type: string
         example: 518d5812-b8e8-43a4-b3b0-8f9c5cdc31b9
       requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/body'
-        required: true
+        $ref: '#/components/requestBodies/CreateManagementLicenseRequestBody'
       responses:
         "201":
           description: Successful response on created resource
@@ -435,10 +431,6 @@ components:
         code: "31201"
         title: Bad Request
         detail: Parameter 'Foo' is invalid
-    LicenseResource:
-      allOf:
-      - $ref: '#/components/schemas/LicenseResourceIdentifier'
-      - $ref: '#/components/schemas/LicenseResourceProperties'
     Error_2:
       type: object
       properties:
@@ -520,15 +512,6 @@ components:
                 title: Invalid api key
                 detail: 'Invalid authorization api key: Unauthorised Api key provided
                   in the header'
-    body:
-      required:
-      - data
-      type: object
-      properties:
-        data:
-          allOf:
-          - $ref: '#/components/schemas/LicenseResource'
-          - $ref: '#/components/schemas/ManagementLicenseResource'
     inline_response_201:
       required:
       - data
