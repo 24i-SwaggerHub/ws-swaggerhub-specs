@@ -180,7 +180,7 @@ components:
       type: object
       properties:
         attributes:
-          $ref: '#/components/schemas/LicenseResourceProperties_2_attributes'
+          $ref: '#/components/schemas/LicenseResourceProperties_attributes'
         relationships:
           allOf:
           - $ref: '#/components/schemas/Relationships'
@@ -471,27 +471,6 @@ components:
           items:
             $ref: '#/components/schemas/ProductResource'
     LicenseResourceProperties_attributes:
-      required:
-      - start_date
-      - status
-      - stop_date
-      type: object
-      properties:
-        status:
-          type: string
-          description: Current status of license
-          nullable: false
-          readOnly: true
-          example: ACTIVE
-          enum:
-          - PROCESSING
-          - CHECK_INVALID
-          - ORDER_ERROR
-          - ACTIVE
-          - EXPIRED
-          - SUSPENDED
-          - SUSPENDEDADMIN
-    LicenseResourceProperties_2_attributes:
       required:
       - start_date
       - status
