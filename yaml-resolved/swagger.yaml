@@ -155,7 +155,6 @@ components:
                 properties:
                   data:
                     $ref: '#/components/schemas/ProductResourceIdentifier'
-            additionalProperties: false
     LicenseResource:
       allOf:
       - $ref: '#/components/schemas/LicenseResourceIdentifier'
