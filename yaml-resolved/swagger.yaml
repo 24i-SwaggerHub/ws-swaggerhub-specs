@@ -136,7 +136,6 @@ components:
           $ref: '#/components/schemas/LicenseResourceProperties_attributes'
         relationships:
           allOf:
-          - $ref: '#/components/schemas/Relationships'
           - required:
             - product
             - user
