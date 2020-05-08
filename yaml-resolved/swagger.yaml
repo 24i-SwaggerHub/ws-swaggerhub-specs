@@ -190,6 +190,7 @@ components:
     ManagementLicenseResource:
       allOf:
       - $ref: '#/components/schemas/LicenseResourceIdentifier'
+      - $ref: '#/components/schemas/LicenseResourceProperties'
       - required:
         - attributes
         - relationships
