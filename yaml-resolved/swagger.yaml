@@ -149,6 +149,13 @@ components:
                 properties:
                   data:
                     $ref: '#/components/schemas/UserResourceIdentifier'
+              product:
+                required:
+                - data
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ProductResourceIdentifier'
             additionalProperties: false
     LicenseResource:
       allOf:
