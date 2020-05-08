@@ -666,10 +666,6 @@ components:
     ManagementLicenseResourceProperties_attributes:
       type: object
       properties:
-        start_date:
-          readOnly: false
-        stop_date:
-          readOnly: false
         order_id:
           type: string
           description: Application generated unique id of the order
@@ -702,6 +698,12 @@ components:
                 - $ref: '#/components/schemas/CreateLicenseResourceIdentifier'
                 - $ref: '#/components/schemas/LicenseResourceProperties'
                 - $ref: '#/components/schemas/ManagementLicenseResourceProperties'
+                - type: object
+                  properties:
+                    start_date:
+                      readOnly: false
+                    stop_date:
+                      readOnly: false
       required: true
     BatchDeleteLicensesRequestBody:
       description: A JSON object containing array of licenses identities data for  BatchDeleteLicenses
