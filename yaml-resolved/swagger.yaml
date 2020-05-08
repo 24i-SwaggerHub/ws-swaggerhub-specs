@@ -124,6 +124,12 @@ paths:
             application/vnd.api+json:
               schema:
                 $ref: '#/components/schemas/inline_response_200_1'
+        "400":
+          description: Bad Request
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400'
 components:
   schemas:
     LicenseResource:
@@ -462,6 +468,21 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ProductResource'
+    inline_response_400:
+      required:
+      - errors
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            allOf:
+            - $ref: '#/components/schemas/Error'
+            - example:
+                status: "400"
+                code: "10201"
+                title: Bad Request
+                detail: Requested page does not exist
     LicenseResourceProperties_attributes:
       required:
       - start_date
