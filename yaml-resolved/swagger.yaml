@@ -589,6 +589,10 @@ components:
           example: true
           default: true
     LicenseResourceProperties_attributes:
+      required:
+      - start_date
+      - status
+      - stop_date
       type: object
       properties:
         status:
@@ -657,6 +661,7 @@ components:
           type: string
           description: The purchase instrument
           nullable: true
+          readOnly: false
           example: credit card
     ManagementLicenseResourceProperties_attributes:
       type: object
@@ -699,15 +704,10 @@ components:
                       - purchase_record
                       type: object
                       properties:
-                        purchase_record:
-                          required:
-                          - payment_method
-                          type: object
-                          properties:
-                            payment_method:
-                              type: string
-                              description: License purcahse payment method
-                              example: billing
+                        start_date:
+                          readOnly: false
+                        stop_date:
+                          readOnly: false
       required: true
     BatchDeleteLicensesRequestBody:
       description: A JSON object containing array of licenses identities data for  BatchDeleteLicenses
