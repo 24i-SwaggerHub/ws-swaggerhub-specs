@@ -135,7 +135,8 @@ components:
     LicenseResource:
       allOf:
       - $ref: '#/components/schemas/LicenseResourceIdentifier'
-      - $ref: '#/components/schemas/LicenseResourceProperties'
+      - $ref: '#/components/schemas/LicenseResourceAttributes'
+      - $ref: '#/components/schemas/LicenseResourceRelationships'
     LicenseResourceIdentifier:
       allOf:
       - $ref: '#/components/schemas/ResourceIdentifier'
@@ -171,14 +172,14 @@ components:
       pattern: ^License$
       type: string
       example: License
-    LicenseResourceProperties:
-      required:
-      - attributes
-      - relationships
+    LicenseResourceAttributes:
       type: object
       properties:
         attributes:
-          $ref: '#/components/schemas/LicenseResourceProperties_attributes'
+          $ref: '#/components/schemas/LicenseResourceAttributes_attributes'
+    LicenseResourceRelationships:
+      type: object
+      properties:
         relationships:
           allOf:
           - $ref: '#/components/schemas/Relationships'
@@ -483,7 +484,7 @@ components:
                 code: "10201"
                 title: Bad Request
                 detail: Requested page does not exist
-    LicenseResourceProperties_attributes:
+    LicenseResourceAttributes_attributes:
       required:
       - start_date
       - status
@@ -534,7 +535,7 @@ components:
                 type: object
                 allOf:
                 - $ref: '#/components/schemas/CreateLicenseResourceIdentifier'
-                - $ref: '#/components/schemas/LicenseResourceProperties'
+                - $ref: '#/components/schemas/LicenseResourceAttributes'
                 - properties:
                     attributes:
                       required:
