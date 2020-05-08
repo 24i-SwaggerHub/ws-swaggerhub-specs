@@ -530,9 +530,22 @@ components:
                 type: object
                 allOf:
                 - $ref: '#/components/schemas/CreateLicenseResourceIdentifier'
-                - $ref: '#/components/schemas/LicenseResourceAttributes'
                 - $ref: '#/components/schemas/LicenseResourceRelationships'
                 - properties:
+                    attributes:
+                      required:
+                      - purchase_record
+                      type: object
+                      properties:
+                        purchase_record:
+                          required:
+                          - payment_method
+                          type: object
+                          properties:
+                            payment_method:
+                              type: string
+                              description: License purcahse payment method
+                              example: billing
                     meta:
                       required:
                       - authorization
