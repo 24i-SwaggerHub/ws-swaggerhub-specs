@@ -134,29 +134,6 @@ components:
       properties:
         attributes:
           $ref: '#/components/schemas/LicenseResourceProperties_attributes'
-        relationships:
-          allOf:
-          - $ref: '#/components/schemas/Relationships'
-          - required:
-            - product
-            - user
-            type: object
-            properties:
-              user:
-                required:
-                - data
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/UserResourceIdentifier'
-              product:
-                required:
-                - data
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/ProductResourceIdentifier'
-            additionalProperties: false
     LicenseResource:
       allOf:
       - $ref: '#/components/schemas/LicenseResourceIdentifier'
