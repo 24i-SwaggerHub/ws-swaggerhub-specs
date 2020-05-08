@@ -126,6 +126,10 @@ paths:
                 $ref: '#/components/schemas/inline_response_200_1'
 components:
   schemas:
+    CreateLicenseResource:
+      allOf:
+      - $ref: '#/components/schemas/CreateLicenseResourceIdentifier'
+      - $ref: '#/components/schemas/LicenseResourceProperties'
     LicenseResource:
       allOf:
       - $ref: '#/components/schemas/LicenseResourceIdentifier'
@@ -513,10 +517,22 @@ components:
                 - type
                 type: object
                 allOf:
-                - $ref: '#/components/schemas/CreateLicenseResourceIdentifier'
+                - $ref: '#/components/schemas/CreateLicenseResource'
                 - properties:
                     attributes:
+                      required:
+                      - purchase_record
                       type: object
+                      properties:
+                        purchase_record:
+                          required:
+                          - payment_method
+                          type: object
+                          properties:
+                            payment_method:
+                              type: string
+                              description: License purcahse payment method
+                              example: billing
       required: true
   securitySchemes:
     bearerAuth:
