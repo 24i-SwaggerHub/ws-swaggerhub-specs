@@ -275,6 +275,42 @@ paths:
             application/vnd.api+json:
               schema:
                 $ref: '#/components/schemas/inline_response_401'
+  /licenses/batch_delete:
+    post:
+      tags:
+      - license
+      summary: Delete specified licenses
+      description: Deletes all provided licenses
+      operationId: BatchDeleteLicenses
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        description: Client unique generated value for server to recognize subsequent
+          retries
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: 518d5812-b8e8-43a4-b3b0-8f9c5cdc31b9
+      requestBody:
+        $ref: '#/components/requestBodies/BatchDeleteLicensesRequestBody'
+      responses:
+        "204":
+          description: |
+            Licenses were deleted successfully
+        "400":
+          description: Bad Request
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400_3'
+        "401":
+          description: Unauthorized
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_401'
 components:
   schemas:
     ManagementProductResource:
@@ -686,6 +722,21 @@ components:
                 code: "10201"
                 title: Bad Request
                 detail: Error in client input
+    inline_response_400_3:
+      required:
+      - errors
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            allOf:
+            - $ref: '#/components/schemas/Error'
+            - example:
+                status: "400"
+                code: "10201"
+                title: Bad Request
+                detail: Standart error descrition
     ManagementProductResource_attributes_price_record:
       type: object
       properties:
