@@ -130,6 +130,7 @@ components:
       allOf:
       - $ref: '#/components/schemas/LicenseResourceIdentifier'
       - $ref: '#/components/schemas/LicenseResourceProperties'
+      - $ref: '#/components/schemas/LicenseResourceRelationships'
     LicenseResourceIdentifier:
       allOf:
       - $ref: '#/components/schemas/ResourceIdentifier'
@@ -173,6 +174,12 @@ components:
       properties:
         attributes:
           $ref: '#/components/schemas/LicenseResourceProperties_attributes'
+    LicenseResourceRelationships:
+      required:
+      - attributes
+      - relationships
+      type: object
+      properties:
         relationships:
           allOf:
           - $ref: '#/components/schemas/Relationships'
@@ -513,6 +520,7 @@ components:
                 type: object
                 allOf:
                 - $ref: '#/components/schemas/CreateLicenseResourceIdentifier'
+                - $ref: '#/components/schemas/LicenseResourceProperties'
                 - properties:
                     attributes:
                       required:
@@ -528,6 +536,43 @@ components:
                               type: string
                               description: License purcahse payment method
                               example: billing
+                    relationships:
+                      allOf:
+                      - $ref: '#/components/schemas/Relationships'
+                      - required:
+                        - product
+                        - user
+                        type: object
+                        properties:
+                          user:
+                            required:
+                            - data
+                            type: object
+                            properties:
+                              data:
+                                $ref: '#/components/schemas/UserResourceIdentifier'
+                          product:
+                            required:
+                            - data
+                            type: object
+                            properties:
+                              data:
+                                $ref: '#/components/schemas/ProductResourceIdentifier'
+                        additionalProperties: false
+                    meta:
+                      required:
+                      - authorization
+                      type: object
+                      properties:
+                        authorization:
+                          required:
+                          - pin_code
+                          type: object
+                          properties:
+                            pin_code:
+                              type: string
+                              description: User PIN code.
+                              example: "0000"
       required: true
   securitySchemes:
     bearerAuth:
