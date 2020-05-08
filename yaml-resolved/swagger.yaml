@@ -127,28 +127,10 @@ paths:
 components:
   schemas:
     LicenseResourceProperties:
-      required:
-      - attributes
-      - relationships
       type: object
       properties:
         attributes:
-          allOf:
-          - type: object
-            properties:
-              status:
-                type: string
-                description: Current status of license
-                readOnly: true
-                example: ACTIVE
-                enum:
-                - PROCESSING
-                - CHECK_INVALID
-                - ORDER_ERROR
-                - ACTIVE
-                - EXPIRED
-                - SUSPENDED
-                - SUSPENDEDADMIN
+          $ref: '#/components/schemas/LicenseResourceProperties_attributes'
     CreateLicenseResource:
       allOf:
       - $ref: '#/components/schemas/CreateLicenseResourceIdentifier'
@@ -523,6 +505,23 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ProductResource'
+    LicenseResourceProperties_attributes:
+      type: object
+      properties:
+        status:
+          type: string
+          description: Current status of license
+          nullable: false
+          readOnly: false
+          example: ACTIVE
+          enum:
+          - PROCESSING
+          - CHECK_INVALID
+          - ORDER_ERROR
+          - ACTIVE
+          - EXPIRED
+          - SUSPENDED
+          - SUSPENDEDADMIN
   requestBodies:
     CreateLicenseRequestBody:
       content:
@@ -540,7 +539,22 @@ components:
                 - type
                 type: object
                 allOf:
-                - $ref: '#/components/schemas/CreateLicenseResource'
+                - $ref: '#/components/schemas/LicenseResourceProperties'
+                - properties:
+                    attributes:
+                      required:
+                      - purchase_record
+                      type: object
+                      properties:
+                        purchase_record:
+                          required:
+                          - payment_method
+                          type: object
+                          properties:
+                            payment_method:
+                              type: string
+                              description: License purcahse payment method
+                              example: billing
       required: true
   securitySchemes:
     bearerAuth:
