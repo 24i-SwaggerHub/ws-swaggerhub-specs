@@ -194,7 +194,7 @@ components:
     ManagementLicenseResource:
       allOf:
       - $ref: '#/components/schemas/LicenseResourceIdentifier'
-      - $ref: '#/components/schemas/LicenseResourceProperties'
+      - $ref: '#/components/schemas/LicenseResourceAttributes'
       - $ref: '#/components/schemas/ManagementLicenseResourceProperties'
       - $ref: '#/components/schemas/LicenseResourceRelationships'
     ProductResource:
@@ -417,11 +417,11 @@ components:
       pattern: ^License$
       type: string
       example: License
-    LicenseResourceProperties:
+    LicenseResourceAttributes:
       type: object
       properties:
         attributes:
-          $ref: '#/components/schemas/LicenseResourceProperties_attributes'
+          $ref: '#/components/schemas/LicenseResourceAttributes_attributes'
     LicenseResourceRelationships:
       type: object
       properties:
@@ -667,7 +667,7 @@ components:
         purchase_record:
           $ref: '#/components/schemas/ManagementLicenseResourceProperties_attributes_purchase_record'
       description: Management license resource attributes
-    LicenseResourceProperties_attributes:
+    LicenseResourceAttributes_attributes:
       required:
       - start_date
       - status
@@ -713,7 +713,7 @@ components:
                 type: object
                 allOf:
                 - $ref: '#/components/schemas/CreateLicenseResourceIdentifier'
-                - $ref: '#/components/schemas/LicenseResourceProperties'
+                - $ref: '#/components/schemas/LicenseResourceAttributes'
                 - $ref: '#/components/schemas/ManagementLicenseResourceProperties'
                 - $ref: '#/components/schemas/LicenseResourceRelationships'
       required: true
