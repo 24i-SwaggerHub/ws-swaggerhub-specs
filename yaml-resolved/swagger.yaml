@@ -692,7 +692,6 @@ components:
                 allOf:
                 - $ref: '#/components/schemas/CreateLicenseResourceIdentifier'
                 - $ref: '#/components/schemas/LicenseResourceProperties'
-                - $ref: '#/components/schemas/ManagementLicenseResourceProperties'
       required: true
     BatchDeleteLicensesRequestBody:
       description: A JSON object containing array of licenses identities data for  BatchDeleteLicenses
