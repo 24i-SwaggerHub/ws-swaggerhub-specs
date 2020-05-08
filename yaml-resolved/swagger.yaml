@@ -195,169 +195,8 @@ components:
       properties:
         attributes:
           $ref: '#/components/schemas/ManagementLicenseResource_attributes'
-    LicenseResource:
       allOf:
-      - $ref: '#/components/schemas/LicenseResourceIdentifier'
-      - required:
-        - attributes
-        - relationships
-        type: object
-        properties:
-          attributes:
-            allOf:
-            - $ref: '#/components/schemas/Attributes'
-            - required:
-              - start_date
-              - status
-              - stop_date
-              type: object
-              properties:
-                status:
-                  type: string
-                  description: Current status of license
-                  nullable: false
-                  readOnly: true
-                  example: ACTIVE
-                  enum:
-                  - PROCESSING
-                  - CHECK_INVALID
-                  - ORDER_ERROR
-                  - ACTIVE
-                  - EXPIRED
-                  - SUSPENDED
-                  - SUSPENDEDADMIN
-                start_date:
-                  type: integer
-                  description: The Unix epoch timestamp denoting the start date of
-                    the license
-                  nullable: false
-                  example: 1523268666
-                stop_date:
-                  type: integer
-                  description: The Unix epoch timestamp denoting expiration date of
-                    the license
-                  nullable: false
-                  example: 1523268698
-          relationships:
-            allOf:
-            - $ref: '#/components/schemas/Relationships'
-            - required:
-              - product
-              - user
-              type: object
-              properties:
-                user:
-                  required:
-                  - data
-                  type: object
-                  properties:
-                    data:
-                      $ref: '#/components/schemas/UserResourceIdentifier'
-                product:
-                  required:
-                  - data
-                  type: object
-                  properties:
-                    data:
-                      $ref: '#/components/schemas/ProductResourceIdentifier'
-              additionalProperties: false
-          links:
-            allOf:
-            - $ref: '#/components/schemas/Links'
-            - type: object
-              properties:
-                self:
-                  type: string
-                  example: https://boox.fi/api/user/waqqas.jabbar@gmail.com/license/10
-    LicenseResourceIdentifier:
-      allOf:
-      - $ref: '#/components/schemas/ResourceIdentifier'
-      - type: object
-        properties:
-          id:
-            $ref: '#/components/schemas/LicenseResourceId'
-          type:
-            $ref: '#/components/schemas/LicenseResourceType'
-    ResourceIdentifier:
-      required:
-      - id
-      - type
-      type: object
-      properties:
-        id:
-          $ref: '#/components/schemas/Id'
-        type:
-          $ref: '#/components/schemas/Type'
-      discriminator:
-        propertyName: type
-    Id:
-      type: string
-      description: The id of the resource being referenced
-      example: e022f021-11f5-4cd6-89f2-02535d89eed6
-    Type:
-      type: string
-      description: Used to describe resource objects that share common attributes
-        and relationships.
-      example: ResourceOject
-    LicenseResourceId:
-      type: object
-      properties:
-        Id:
-          type: string
-          example: "42"
-    LicenseResourceType:
-      type: object
-      properties:
-        type:
-          pattern: ^License$
-          type: string
-          example: License
-    Attributes:
-      type: object
-      additionalProperties: true
-      description: An attributes object representing some of the resource’s data.
-    Relationships:
-      type: object
-      additionalProperties:
-        required:
-        - data
-        type: object
-        properties:
-          data:
-            oneOf:
-            - $ref: '#/components/schemas/ResourceIdentifier'
-            - type: array
-              items:
-                $ref: '#/components/schemas/ResourceIdentifier'
-      description: A relationships object describing relationships between the resource
-        and other JSON:API resources.
-    UserResourceIdentifier:
-      allOf:
-      - $ref: '#/components/schemas/ResourceIdentifier'
-      - type: object
-        properties:
-          id:
-            type: string
-            example: "41"
-          type:
-            pattern: ^User$
-            type: string
-            example: User
-    ProductResourceIdentifier:
-      allOf:
-      - $ref: '#/components/schemas/ResourceIdentifier'
-      - type: object
-        properties:
-          id:
-            type: string
-            example: "41"
-          type:
-            pattern: ^Product$
-            type: string
-            example: Product
-    Links:
-      type: object
-      description: A links object containing links related to the resource.
+      - $ref: '#/components/schemas/LicenseResource'
     ProductResource:
       allOf:
       - $ref: '#/components/schemas/ProductResourceIdentifier'
@@ -439,6 +278,58 @@ components:
                         $ref: '#/components/schemas/ChannelResourceIdentifier'
                   description: Items with startover service enabled
               additionalProperties: false
+    ProductResourceIdentifier:
+      allOf:
+      - $ref: '#/components/schemas/ResourceIdentifier'
+      - type: object
+        properties:
+          id:
+            type: string
+            example: "41"
+          type:
+            pattern: ^Product$
+            type: string
+            example: Product
+    ResourceIdentifier:
+      required:
+      - id
+      - type
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        type:
+          $ref: '#/components/schemas/Type'
+      discriminator:
+        propertyName: type
+    Id:
+      type: string
+      description: The id of the resource being referenced
+      example: e022f021-11f5-4cd6-89f2-02535d89eed6
+    Type:
+      type: string
+      description: Used to describe resource objects that share common attributes
+        and relationships.
+      example: ResourceOject
+    Attributes:
+      type: object
+      additionalProperties: true
+      description: An attributes object representing some of the resource’s data.
+    Relationships:
+      type: object
+      additionalProperties:
+        required:
+        - data
+        type: object
+        properties:
+          data:
+            oneOf:
+            - $ref: '#/components/schemas/ResourceIdentifier'
+            - type: array
+              items:
+                $ref: '#/components/schemas/ResourceIdentifier'
+      description: A relationships object describing relationships between the resource
+        and other JSON:API resources.
     ChannelResourceIdentifier:
       allOf:
       - $ref: '#/components/schemas/ResourceIdentifier'
@@ -484,6 +375,68 @@ components:
         code: "31201"
         title: Bad Request
         detail: Parameter 'Foo' is invalid
+    LicenseResource:
+      allOf:
+      - $ref: '#/components/schemas/LicenseResourceIdentifier'
+      - $ref: '#/components/schemas/LicenseResourceProperties'
+    LicenseResourceIdentifier:
+      allOf:
+      - $ref: '#/components/schemas/ResourceIdentifier'
+      - type: object
+        properties:
+          id:
+            type: string
+            example: "42"
+          type:
+            $ref: '#/components/schemas/LicenseResourceType'
+    LicenseResourceType:
+      pattern: ^License$
+      type: string
+      example: License
+    LicenseResourceProperties:
+      required:
+      - attributes
+      - relationships
+      type: object
+      properties:
+        attributes:
+          $ref: '#/components/schemas/LicenseResourceProperties_attributes'
+        relationships:
+          allOf:
+          - $ref: '#/components/schemas/Relationships'
+          - required:
+            - product
+            - user
+            type: object
+            properties:
+              user:
+                required:
+                - data
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/UserResourceIdentifier'
+              product:
+                required:
+                - data
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ProductResourceIdentifier'
+            additionalProperties: false
+      additionalProperties: true
+    UserResourceIdentifier:
+      allOf:
+      - $ref: '#/components/schemas/ResourceIdentifier'
+      - type: object
+        properties:
+          id:
+            type: string
+            example: "41"
+          type:
+            pattern: ^User$
+            type: string
+            example: User
     Error_2:
       type: object
       properties:
@@ -521,10 +474,7 @@ components:
         data:
           type: array
           items:
-            type: object
-            allOf:
-            - $ref: '#/components/schemas/LicenseResource'
-            - $ref: '#/components/schemas/ManagementLicenseResource'
+            $ref: '#/components/schemas/ManagementLicenseResource'
         included:
           type: array
           items:
@@ -704,6 +654,39 @@ components:
         purchase_record:
           $ref: '#/components/schemas/ManagementLicenseResource_attributes_purchase_record'
       description: Management license resource attributes
+    LicenseResourceProperties_attributes:
+      required:
+      - start_date
+      - status
+      - stop_date
+      type: object
+      properties:
+        status:
+          type: string
+          description: Current status of license
+          nullable: false
+          readOnly: true
+          example: ACTIVE
+          enum:
+          - PROCESSING
+          - CHECK_INVALID
+          - ORDER_ERROR
+          - ACTIVE
+          - EXPIRED
+          - SUSPENDED
+          - SUSPENDEDADMIN
+        start_date:
+          type: integer
+          description: The Unix epoch timestamp denoting the start date of the license
+          nullable: false
+          readOnly: true
+          example: 1523268666
+        stop_date:
+          type: integer
+          description: The Unix epoch timestamp denoting expiration date of the license
+          nullable: false
+          readOnly: true
+          example: 1523268698
   requestBodies:
     BatchDeleteLicensesRequestBody:
       description: A JSON object containing array of licenses identities data for  BatchDeleteLicenses
