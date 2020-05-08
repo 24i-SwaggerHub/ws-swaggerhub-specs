@@ -195,8 +195,6 @@ components:
       properties:
         attributes:
           $ref: '#/components/schemas/ManagementLicenseResource_attributes'
-      allOf:
-      - $ref: '#/components/schemas/LicenseResource'
     ProductResource:
       allOf:
       - $ref: '#/components/schemas/ProductResourceIdentifier'
