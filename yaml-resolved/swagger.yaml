@@ -126,19 +126,10 @@ paths:
                 $ref: '#/components/schemas/inline_response_200_1'
 components:
   schemas:
-    LicenseResourceProperties:
-      type: object
-      properties:
-        attributes:
-          $ref: '#/components/schemas/LicenseResourceProperties_attributes'
-    CreateLicenseResource:
-      allOf:
-      - $ref: '#/components/schemas/CreateLicenseResourceIdentifier'
-      - $ref: '#/components/schemas/LicenseResourceProperties'
     LicenseResource:
       allOf:
       - $ref: '#/components/schemas/LicenseResourceIdentifier'
-      - $ref: '#/components/schemas/LicenseResourceProperties_2'
+      - $ref: '#/components/schemas/LicenseResourceProperties'
     LicenseResourceIdentifier:
       allOf:
       - $ref: '#/components/schemas/ResourceIdentifier'
@@ -174,48 +165,14 @@ components:
       pattern: ^License$
       type: string
       example: License
-    LicenseResourceProperties_2:
+    LicenseResourceProperties:
       required:
       - attributes
       - relationships
       type: object
       properties:
         attributes:
-          allOf:
-          - required:
-            - start_date
-            - status
-            - stop_date
-            type: object
-            properties:
-              status:
-                type: string
-                description: Current status of license
-                nullable: false
-                readOnly: true
-                example: ACTIVE
-                enum:
-                - PROCESSING
-                - CHECK_INVALID
-                - ORDER_ERROR
-                - ACTIVE
-                - EXPIRED
-                - SUSPENDED
-                - SUSPENDEDADMIN
-              start_date:
-                type: integer
-                description: The Unix epoch timestamp denoting the start date of the
-                  license
-                nullable: false
-                readOnly: true
-                example: 1523268666
-              stop_date:
-                type: integer
-                description: The Unix epoch timestamp denoting expiration date of
-                  the license
-                nullable: false
-                readOnly: true
-                example: 1523268698
+          $ref: '#/components/schemas/LicenseResourceProperties_attributes'
         relationships:
           allOf:
           - $ref: '#/components/schemas/Relationships'
@@ -506,13 +463,17 @@ components:
           items:
             $ref: '#/components/schemas/ProductResource'
     LicenseResourceProperties_attributes:
+      required:
+      - start_date
+      - status
+      - stop_date
       type: object
       properties:
         status:
           type: string
           description: Current status of license
           nullable: false
-          readOnly: false
+          readOnly: true
           example: ACTIVE
           enum:
           - PROCESSING
@@ -522,6 +483,18 @@ components:
           - EXPIRED
           - SUSPENDED
           - SUSPENDEDADMIN
+        start_date:
+          type: integer
+          description: The Unix epoch timestamp denoting the start date of the license
+          nullable: false
+          readOnly: true
+          example: 1523268666
+        stop_date:
+          type: integer
+          description: The Unix epoch timestamp denoting expiration date of the license
+          nullable: false
+          readOnly: true
+          example: 1523268698
   requestBodies:
     CreateLicenseRequestBody:
       content:
@@ -539,6 +512,7 @@ components:
                 - type
                 type: object
                 allOf:
+                - $ref: '#/components/schemas/CreateLicenseResourceIdentifier'
                 - $ref: '#/components/schemas/LicenseResourceProperties'
                 - properties:
                     attributes:
