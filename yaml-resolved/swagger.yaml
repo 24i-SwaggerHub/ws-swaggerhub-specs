@@ -208,6 +208,73 @@ paths:
             application/vnd.api+json:
               schema:
                 $ref: '#/components/schemas/inline_response_404'
+    delete:
+      tags:
+      - license
+      summary: Delete license
+      description: Deletes license by id
+      operationId: DeleteLicenseById
+      parameters:
+      - name: license_id
+        in: path
+        description: The ID of the license to delete.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: number
+      responses:
+        "204":
+          description: |
+            The user license was deleted successfully
+        "401":
+          description: Unauthorized
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_401'
+        "404":
+          description: License does not exist
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404'
+  /licenses/batch_create:
+    post:
+      tags:
+      - license
+      summary: Grant multiple licenses to multiple users
+      description: Creates multiple licenses
+      operationId: BatchCreateLicenses
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        description: Client unique generated value for server to recognize subsequent
+          retries
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: 518d5812-b8e8-43a4-b3b0-8f9c5cdc31b9
+      requestBody:
+        $ref: '#/components/requestBodies/BatchCreateManagementLicensesRequestBody'
+      responses:
+        "204":
+          description: |
+            The user licenses were created successfully
+        "400":
+          description: Bad Request
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400_2'
+        "401":
+          description: Unauthorized
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_401'
 components:
   schemas:
     ManagementProductResource:
@@ -230,6 +297,12 @@ components:
     ManagementLicenseResource:
       allOf:
       - $ref: '#/components/schemas/LicenseResourceIdentifier'
+      - $ref: '#/components/schemas/ManagementLicenseResourceAttributes'
+      - $ref: '#/components/schemas/LicenseResourceRelationships'
+    CreateManagementLicenseResource:
+      type: object
+      allOf:
+      - $ref: '#/components/schemas/CreateLicenseResourceIdentifier'
       - $ref: '#/components/schemas/ManagementLicenseResourceAttributes'
       - $ref: '#/components/schemas/LicenseResourceRelationships'
     ProductResource:
@@ -598,6 +671,21 @@ components:
                 code: "10101"
                 title: Not Found
                 detail: The requested license does not exist
+    inline_response_400_2:
+      required:
+      - errors
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            allOf:
+            - $ref: '#/components/schemas/Error'
+            - example:
+                status: "400"
+                code: "10201"
+                title: Bad Request
+                detail: Error in client input
     ManagementProductResource_attributes_price_record:
       type: object
       properties:
@@ -676,19 +764,19 @@ components:
           type: number
           description: License price in cents
           nullable: true
-          readOnly: true
+          readOnly: false
           example: 1223
         price_currency_iso4217:
           type: string
           description: The ISO-4217 code of the currency
           nullable: true
-          readOnly: true
+          readOnly: false
           example: EUR
         purchase_timestamp:
           type: integer
           description: The Unix timestamp at which this license was purchased
           nullable: true
-          readOnly: true
+          readOnly: false
           example: 1526648593
         payment_method:
           type: string
@@ -725,7 +813,7 @@ components:
           description: Application generated unique id of the order
           format: uuid
           nullable: true
-          readOnly: true
+          readOnly: false
           example: 1adc0dbe-3c65-4248-896c-78c049e276c8
         renew_record:
           $ref: '#/components/schemas/ManagementLicenseResourceAttributes_attributes_renew_record'
@@ -775,11 +863,22 @@ components:
             type: object
             properties:
               data:
-                type: object
-                allOf:
-                - $ref: '#/components/schemas/CreateLicenseResourceIdentifier'
-                - $ref: '#/components/schemas/ManagementLicenseResourceAttributes'
-                - $ref: '#/components/schemas/LicenseResourceRelationships'
+                $ref: '#/components/schemas/CreateManagementLicenseResource'
+      required: true
+    BatchCreateManagementLicensesRequestBody:
+      description: A JSON object containing array of licenses data for BatchCreateLicenses
+        request
+      content:
+        application/vnd.api+json; ext=bulk:
+          schema:
+            required:
+            - data
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CreateManagementLicenseResource'
       required: true
     BatchDeleteLicensesRequestBody:
       description: A JSON object containing array of licenses identities data for  BatchDeleteLicenses
