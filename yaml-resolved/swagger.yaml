@@ -813,7 +813,7 @@ components:
           description: Application generated unique id of the order
           format: uuid
           nullable: true
-          readOnly: false
+          readOnly: true
           example: 1adc0dbe-3c65-4248-896c-78c049e276c8
         renew_record:
           $ref: '#/components/schemas/ManagementLicenseResourceAttributes_attributes_renew_record'
