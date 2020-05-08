@@ -195,6 +195,7 @@ components:
       allOf:
       - $ref: '#/components/schemas/LicenseResourceIdentifier'
       - $ref: '#/components/schemas/LicenseResourceProperties'
+      - $ref: '#/components/schemas/ManagementLicenseResourceProperties'
     ProductResource:
       allOf:
       - $ref: '#/components/schemas/ProductResourceIdentifier'
