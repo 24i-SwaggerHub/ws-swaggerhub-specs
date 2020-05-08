@@ -459,11 +459,6 @@ components:
             pattern: ^User$
             type: string
             example: User
-    CreateLicenseResourceIdentifier:
-      type: object
-      properties:
-        type:
-          $ref: '#/components/schemas/LicenseResourceType'
     inline_response_200:
       required:
       - data
@@ -714,8 +709,6 @@ components:
                 - relationships
                 - type
                 type: object
-                allOf:
-                - $ref: '#/components/schemas/CreateLicenseResourceIdentifier'
       required: true
     BatchDeleteLicensesRequestBody:
       description: A JSON object containing array of licenses identities data for  BatchDeleteLicenses
