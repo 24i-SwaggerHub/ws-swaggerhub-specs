@@ -129,7 +129,6 @@ components:
     CreateLicenseResource:
       allOf:
       - $ref: '#/components/schemas/CreateLicenseResourceIdentifier'
-      - $ref: '#/components/schemas/LicenseResourceProperties'
     LicenseResource:
       allOf:
       - $ref: '#/components/schemas/LicenseResourceIdentifier'
