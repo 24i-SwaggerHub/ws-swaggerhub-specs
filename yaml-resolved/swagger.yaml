@@ -626,6 +626,10 @@ components:
           readOnly: false
           example: credit card
     ManagementLicenseResourceProperties_attributes:
+      required:
+      - start_date
+      - status
+      - stop_date
       type: object
       properties:
         status:
