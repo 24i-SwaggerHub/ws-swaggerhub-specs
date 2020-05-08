@@ -514,6 +514,7 @@ components:
                 type: object
                 allOf:
                 - $ref: '#/components/schemas/CreateLicenseResourceIdentifier'
+                - $ref: '#/components/schemas/LicenseResourceProperties'
                 - properties:
                     attributes:
                       type: object
