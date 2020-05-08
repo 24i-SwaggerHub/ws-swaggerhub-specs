@@ -184,12 +184,14 @@ components:
         attributes:
           $ref: '#/components/schemas/ManagementProductResource_attributes'
     ManagementLicenseResourceAttributes:
-      required:
-      - attributes
-      type: object
-      properties:
-        attributes:
-          $ref: '#/components/schemas/ManagementLicenseResourceAttributes_attributes'
+      allOf:
+      - $ref: '#/components/schemas/LicenseResourceAttributes'
+      - required:
+        - attributes
+        type: object
+        properties:
+          attributes:
+            $ref: '#/components/schemas/ManagementLicenseResourceAttributes_attributes'
     ManagementLicenseResource:
       allOf:
       - $ref: '#/components/schemas/LicenseResourceIdentifier'
@@ -402,6 +404,11 @@ components:
         code: 4INZEX
         title: Method not allowed
         details: This method is not supported for this resource
+    LicenseResourceAttributes:
+      type: object
+      properties:
+        attributes:
+          $ref: '#/components/schemas/LicenseResourceAttributes_attributes'
     LicenseResourceIdentifier:
       allOf:
       - $ref: '#/components/schemas/ResourceIdentifier'
@@ -416,11 +423,6 @@ components:
       pattern: ^License$
       type: string
       example: License
-    LicenseResourceAttributes:
-      type: object
-      properties:
-        attributes:
-          $ref: '#/components/schemas/LicenseResourceAttributes_attributes'
     LicenseResourceRelationships:
       type: object
       properties:
@@ -712,7 +714,6 @@ components:
                 type: object
                 allOf:
                 - $ref: '#/components/schemas/CreateLicenseResourceIdentifier'
-                - $ref: '#/components/schemas/LicenseResourceAttributes'
                 - $ref: '#/components/schemas/ManagementLicenseResourceAttributes'
                 - $ref: '#/components/schemas/LicenseResourceRelationships'
       required: true
