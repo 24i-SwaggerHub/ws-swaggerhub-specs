@@ -4,6 +4,7 @@ info:
   description: 'License management API used for editing and managing user licenses
     and related products. This API supposed to be used privately and consumed by BSS
     and CMS. Only authorization with api key supported '
+  contact: {}
   version: 4.0.0
 servers:
 - url: https://virtserver.swaggerhub.com/24i-API/license/management/4.0.0
@@ -12,11 +13,16 @@ servers:
   description: Testing server
 security:
 - apiKeyAuth: []
+tags:
+- name: License
+  description: License related operations
+- name: Product
+  description: Product related operations
 paths:
   /licenses:
     get:
       tags:
-      - license
+      - License
       summary: Get licenses with filter
       description: |
         Returns a list of licenses for a given input set of filters. All related products and users are included in the response, which can be used for grouping.
@@ -27,8 +33,6 @@ paths:
         description: Page number if the results have more items than items per page.
           Default = 1.
         required: false
-        style: form
-        explode: true
         schema:
           minimum: 1
           type: number
@@ -136,7 +140,7 @@ paths:
                 $ref: '#/components/schemas/inline_response_401'
     post:
       tags:
-      - license
+      - License
       summary: Create new license
       description: |
         Create new license
@@ -147,8 +151,6 @@ paths:
         description: Client unique generated value for server to recognize subsequent
           retries
         required: true
-        style: simple
-        explode: false
         schema:
           type: string
         example: 518d5812-b8e8-43a4-b3b0-8f9c5cdc31b9
@@ -176,7 +178,7 @@ paths:
   /licenses/{license_id}:
     get:
       tags:
-      - license
+      - License
       summary: Get license
       description: Returns license by id
       operationId: GetLicenseById
@@ -210,7 +212,7 @@ paths:
                 $ref: '#/components/schemas/inline_response_404'
     delete:
       tags:
-      - license
+      - License
       summary: Delete license
       description: Deletes license by id
       operationId: DeleteLicenseById
@@ -242,7 +244,7 @@ paths:
   /licenses/batch_create:
     post:
       tags:
-      - license
+      - License
       summary: Grant multiple licenses to multiple users
       description: Creates multiple licenses
       operationId: BatchCreateLicenses
@@ -252,8 +254,6 @@ paths:
         description: Client unique generated value for server to recognize subsequent
           retries
         required: true
-        style: simple
-        explode: false
         schema:
           type: string
         example: 518d5812-b8e8-43a4-b3b0-8f9c5cdc31b9
@@ -278,7 +278,7 @@ paths:
   /licenses/batch_delete:
     post:
       tags:
-      - license
+      - License
       summary: Delete specified licenses
       description: Deletes all provided licenses
       operationId: BatchDeleteLicenses
@@ -288,8 +288,6 @@ paths:
         description: Client unique generated value for server to recognize subsequent
           retries
         required: true
-        style: simple
-        explode: false
         schema:
           type: string
         example: 518d5812-b8e8-43a4-b3b0-8f9c5cdc31b9
@@ -314,7 +312,7 @@ paths:
   /users/{user_id}/licenses:
     get:
       tags:
-      - license
+      - License
       summary: Get all user licenses
       description: |
         NOT sure we need it, but this could be more convivinet way to fetch all user licenses with one call instead of using /licenses with filter
@@ -350,7 +348,7 @@ paths:
                 $ref: '#/components/schemas/inline_response_404_1'
     delete:
       tags:
-      - license
+      - License
       summary: Delete all user licenses
       description: Deletes all licenses for specified user
       operationId: BatchDeleteAllUserLicenses
@@ -388,26 +386,41 @@ components:
       properties:
         attributes:
           $ref: '#/components/schemas/ManagementProductResource_attributes'
-    ManagementLicenseResourceAttributes:
-      allOf:
-      - $ref: '#/components/schemas/LicenseResourceAttributes'
-      - required:
-        - attributes
-        type: object
-        properties:
-          attributes:
-            $ref: '#/components/schemas/ManagementLicenseResourceAttributes_attributes'
+    ManagementLicenseResourceProperties:
+      required:
+      - attributes
+      - relationships
+      type: object
+      properties:
+        attributes:
+          $ref: '#/components/schemas/ManagementLicenseResourceProperties_attributes'
+        relationships:
+          allOf:
+          - $ref: '#/components/schemas/Relationships'
+          - required:
+            - product
+            - user
+            type: object
+            properties:
+              user:
+                required:
+                - data
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/UserResourceIdentifier'
+              product:
+                required:
+                - data
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/ProductResourceIdentifier'
+            additionalProperties: false
     ManagementLicenseResource:
       allOf:
       - $ref: '#/components/schemas/LicenseResourceIdentifier'
-      - $ref: '#/components/schemas/ManagementLicenseResourceAttributes'
-      - $ref: '#/components/schemas/LicenseResourceRelationships'
-    CreateManagementLicenseResource:
-      type: object
-      allOf:
-      - $ref: '#/components/schemas/CreateLicenseResourceIdentifier'
-      - $ref: '#/components/schemas/ManagementLicenseResourceAttributes'
-      - $ref: '#/components/schemas/LicenseResourceRelationships'
+      - $ref: '#/components/schemas/ManagementLicenseResourceProperties'
     ProductResource:
       allOf:
       - $ref: '#/components/schemas/ProductResourceIdentifier'
@@ -614,11 +627,26 @@ components:
         code: 4INZEX
         title: Method not allowed
         details: This method is not supported for this resource
-    LicenseResourceAttributes:
+    CreateLicenseResourceIdentifier:
+      allOf:
+      - $ref: '#/components/schemas/CreateResourceIdentifier'
+      - type: object
+        properties:
+          type:
+            $ref: '#/components/schemas/LicenseResourceType'
+    CreateResourceIdentifier:
+      required:
+      - type
       type: object
       properties:
-        attributes:
-          $ref: '#/components/schemas/LicenseResourceAttributes_attributes'
+        type:
+          $ref: '#/components/schemas/Type'
+      discriminator:
+        propertyName: type
+    LicenseResourceType:
+      pattern: ^License$
+      type: string
+      example: License
     LicenseResourceIdentifier:
       allOf:
       - $ref: '#/components/schemas/ResourceIdentifier'
@@ -629,36 +657,6 @@ components:
             example: "42"
           type:
             $ref: '#/components/schemas/LicenseResourceType'
-    LicenseResourceType:
-      pattern: ^License$
-      type: string
-      example: License
-    LicenseResourceRelationships:
-      type: object
-      properties:
-        relationships:
-          allOf:
-          - $ref: '#/components/schemas/Relationships'
-          - required:
-            - product
-            - user
-            type: object
-            properties:
-              user:
-                required:
-                - data
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/UserResourceIdentifier'
-              product:
-                required:
-                - data
-                type: object
-                properties:
-                  data:
-                    $ref: '#/components/schemas/ProductResourceIdentifier'
-            additionalProperties: false
     UserResourceIdentifier:
       allOf:
       - $ref: '#/components/schemas/ResourceIdentifier'
@@ -671,11 +669,6 @@ components:
             pattern: ^User$
             type: string
             example: User
-    CreateLicenseResourceIdentifier:
-      type: object
-      properties:
-        type:
-          $ref: '#/components/schemas/LicenseResourceType'
     inline_response_200:
       required:
       - data
@@ -857,7 +850,7 @@ components:
           description: License duration in seconds, means that license associated
             with this product and  given to user will have duration of time of creation
             plus this value
-          example: 518400.0
+          example: 518400
         type:
           type: string
           description: Type of the product
@@ -889,22 +882,26 @@ components:
           description: Whether the product can be bought
           example: true
           default: true
-    ManagementLicenseResourceAttributes_attributes_renew_record:
+    ManagementLicenseResourceProperties_attributes_renew_record:
       type: object
       properties:
         recurring:
           type: boolean
           description: Indicates whether the license will be scheduled for auto renew
-          example: false
+          nullable: true
+          readOnly: false
+          example: true
         expiry_date:
           type: integer
           description: The Unix epoch timestamp denoting the license expiration date.
             If 'recurring' is set for that record then renew script will handle auto
             renew few days before that date.
           nullable: true
-          readOnly: false
+          readOnly: true
           example: 1523268698
-    ManagementLicenseResourceAttributes_attributes_purchase_record:
+    ManagementLicenseResourceProperties_attributes_purchase_record:
+      required:
+      - payment_method
       type: object
       properties:
         price_currency_amount:
@@ -928,56 +925,20 @@ components:
         payment_method:
           type: string
           description: The purchase instrument
-          nullable: true
-          readOnly: false
-          example: credit card
-    ManagementLicenseResourceAttributes_attributes:
-      required:
-      - start_date
-      - status
-      - stop_date
-      type: object
-      properties:
-        status:
-          type: string
-          description: Current status of license
-          readOnly: false
-          example: ACTIVE
-          enum:
-          - PROCESSING
-          - CHECK_INVALID
-          - ORDER_ERROR
-          - ACTIVE
-          - EXPIRED
-          - SUSPENDED
-          - SUSPENDEDADMIN
-        start_date:
-          readOnly: false
-        stop_date:
-          readOnly: false
-        order_id:
-          type: string
-          description: Application generated unique id of the order
-          format: uuid
-          nullable: true
-          readOnly: true
-          example: 1adc0dbe-3c65-4248-896c-78c049e276c8
-        renew_record:
-          $ref: '#/components/schemas/ManagementLicenseResourceAttributes_attributes_renew_record'
-        purchase_record:
-          $ref: '#/components/schemas/ManagementLicenseResourceAttributes_attributes_purchase_record'
-      description: Management license resource attributes
-    LicenseResourceAttributes_attributes:
-      required:
-      - start_date
-      - status
-      - stop_date
-      type: object
-      properties:
-        status:
-          type: string
-          description: Current status of license
           nullable: false
+          example: credit card
+    ManagementLicenseResourceProperties_attributes:
+      required:
+      - purchase_record
+      - start_date
+      - status
+      - stop_date
+      type: object
+      properties:
+        status:
+          type: string
+          description: Current status of license
+          nullable: true
           readOnly: true
           example: ACTIVE
           enum:
@@ -991,15 +952,25 @@ components:
         start_date:
           type: integer
           description: The Unix epoch timestamp denoting the start date of the license
-          nullable: false
-          readOnly: true
+          nullable: true
           example: 1523268666
         stop_date:
           type: integer
           description: The Unix epoch timestamp denoting expiration date of the license
-          nullable: false
-          readOnly: true
+          nullable: true
           example: 1523268698
+        order_id:
+          type: string
+          description: Application generated unique id of the order
+          format: uuid
+          nullable: true
+          readOnly: true
+          example: 1adc0dbe-3c65-4248-896c-78c049e276c8
+        renew_record:
+          $ref: '#/components/schemas/ManagementLicenseResourceProperties_attributes_renew_record'
+        purchase_record:
+          $ref: '#/components/schemas/ManagementLicenseResourceProperties_attributes_purchase_record'
+      description: Management license resource attributes
   requestBodies:
     CreateManagementLicenseRequestBody:
       content:
@@ -1010,7 +981,9 @@ components:
             type: object
             properties:
               data:
-                $ref: '#/components/schemas/CreateManagementLicenseResource'
+                allOf:
+                - $ref: '#/components/schemas/CreateLicenseResourceIdentifier'
+                - $ref: '#/components/schemas/ManagementLicenseResourceProperties'
       required: true
     BatchCreateManagementLicensesRequestBody:
       description: A JSON object containing array of licenses data for BatchCreateLicenses
@@ -1025,7 +998,9 @@ components:
               data:
                 type: array
                 items:
-                  $ref: '#/components/schemas/CreateManagementLicenseResource'
+                  allOf:
+                  - $ref: '#/components/schemas/CreateLicenseResourceIdentifier'
+                  - $ref: '#/components/schemas/ManagementLicenseResourceProperties'
       required: true
     BatchDeleteLicensesRequestBody:
       description: A JSON object containing array of licenses identities data for  BatchDeleteLicenses
