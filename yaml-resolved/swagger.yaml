@@ -9,6 +9,11 @@ servers:
   description: SwaggerHub API Auto Mocking
 - url: https://testing.booxmedia.xyz/api/license/v4
   description: Testing server
+tags:
+- name: license
+  description: Pets operations
+- name: product
+  description: Pets operations
 paths:
   /users/{user_id}/licenses:
     get:
@@ -101,6 +106,7 @@ paths:
     get:
       tags:
       - license
+      - product
       summary: Get all user-visible products.
       description: |
         Returns all products which are visible and byable by user. All related product items are included in the response, which can be used for grouping, sorting and showing product details.
@@ -111,8 +117,6 @@ paths:
         description: Page number if the results have more items than items per page.
           Default = 1.
         required: false
-        style: form
-        explode: true
         schema:
           minimum: 1
           type: number
@@ -135,8 +139,7 @@ components:
     LicenseResource:
       allOf:
       - $ref: '#/components/schemas/LicenseResourceIdentifier'
-      - $ref: '#/components/schemas/LicenseResourceAttributes'
-      - $ref: '#/components/schemas/LicenseResourceRelationships'
+      - $ref: '#/components/schemas/LicenseResourceProperties'
     LicenseResourceIdentifier:
       allOf:
       - $ref: '#/components/schemas/ResourceIdentifier'
@@ -172,14 +175,11 @@ components:
       pattern: ^License$
       type: string
       example: License
-    LicenseResourceAttributes:
+    LicenseResourceProperties:
       type: object
       properties:
         attributes:
-          $ref: '#/components/schemas/LicenseResourceAttributes_attributes'
-    LicenseResourceRelationships:
-      type: object
-      properties:
+          $ref: '#/components/schemas/LicenseResourceProperties_attributes'
         relationships:
           allOf:
           - $ref: '#/components/schemas/Relationships'
@@ -484,7 +484,7 @@ components:
                 code: "10201"
                 title: Bad Request
                 detail: Requested page does not exist
-    LicenseResourceAttributes_attributes:
+    LicenseResourceProperties_attributes:
       required:
       - start_date
       - status
@@ -530,6 +530,7 @@ components:
                 type: object
                 allOf:
                 - $ref: '#/components/schemas/CreateLicenseResourceIdentifier'
+                - $ref: '#/components/schemas/LicenseResourceProperties'
                 - properties:
                     attributes:
                       required:
@@ -559,7 +560,6 @@ components:
                               type: string
                               description: User PIN code.
                               example: "0000"
-                - $ref: '#/components/schemas/LicenseResourceRelationships'
       required: true
   securitySchemes:
     bearerAuth:
