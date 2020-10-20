@@ -1,0 +1,366 @@
+openapi: 3.0.0
+info:
+  title: User Preferences
+  description: API to view and manage several user preferences.
+  version: v2.0.0
+servers:
+- url: https://testing.booxmedia.xyz/api/users/v2/
+  description: Testing server
+- url: https://virtserver.swaggerhub.com/24i-API/User_Preferences_API/v2.0.0
+  description: SwaggerHub API Auto Mocking
+tags:
+- name: User Sessions
+  description: User sessions represent active sessions initiated by the User by logging
+    in.
+paths:
+  /users/{user_id}/user_sessions:
+    get:
+      tags:
+      - User Sessions
+      summary: Get a list of active user sessions
+      operationId: getUserSessions
+      parameters:
+      - name: user_id
+        in: path
+        description: The user identity (please do not use an email address to identify
+          the user)
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Successful response with an array of active user sessions
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200'
+        "401":
+          description: User authentication failed.
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_401'
+      security:
+      - bearerAuth: []
+    post:
+      tags:
+      - User Sessions
+      summary: Log out a session by refresh token
+      operationId: deleteUserSessionByRefreshToken
+      parameters:
+      - name: user_id
+        in: path
+        description: The user identity (please do not use an email address to identify
+          the user)
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/vnd.api+json:
+            schema:
+              $ref: '#/components/schemas/body'
+        required: true
+      responses:
+        "204":
+          description: User session successfully terminated, the session's refresh
+            token is revoked.
+        "401":
+          description: User authentication failed.
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_401'
+      security:
+      - bearerAuth: []
+    delete:
+      tags:
+      - User Sessions
+      summary: Log out all sessions for the user
+      operationId: deleteUserSessions
+      parameters:
+      - name: user_id
+        in: path
+        description: The user identity (please do not use an email address to identify
+          the user)
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "204":
+          description: All active user sessions successfully terminated, all session's
+            refresh tokens revoked. User will need to login to the service again.
+        "401":
+          description: User authentication failed.
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_401'
+      security:
+      - bearerAuth: []
+  /users/{user_id}/user_sessions/{session_id}:
+    delete:
+      tags:
+      - User Sessions
+      summary: Log out given session for the user
+      operationId: deleteUserSession
+      parameters:
+      - name: user_id
+        in: path
+        description: The user identity (please do not use an email address to identify
+          the user)
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: session_id
+        in: path
+        description: The id of the session
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "204":
+          description: User session successfully terminated, the session's refresh
+            token is revoked.
+        "401":
+          description: User authentication failed.
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_401'
+        "404":
+          description: The specified session ID with the specified user was not found.
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404'
+      security:
+      - bearerAuth: []
+components:
+  schemas:
+    UserSessionResourceIdentifier:
+      allOf:
+      - $ref: '#/components/schemas/ResourceIdentifier'
+      - type: object
+        properties:
+          id:
+            pattern: uuid
+            type: string
+            example: 530a08c0-3fd7-4d0d-b799-712ed9c07573
+          type:
+            pattern: ^UserSession$
+            type: string
+            example: UserSession
+    UserSessionResource:
+      allOf:
+      - $ref: '#/components/schemas/UserSessionResourceIdentifier'
+      - required:
+        - attributes
+        - relationships
+        type: object
+        properties:
+          attributes:
+            allOf:
+            - $ref: '#/components/schemas/Attributes'
+            - required:
+              - created_at
+              - device_info
+              - expires_at
+              - updated_at
+              type: object
+              properties:
+                device_info:
+                  required:
+                  - description
+                  - type
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                      description: Describes the type of device that this session
+                        was initialized with
+                      example: Web
+                    description:
+                      type: string
+                      description: A description of the device that this session was
+                        initalized with
+                      example: Google Chrome on Linux
+                created_at:
+                  type: integer
+                  description: Unix timestamp describing when the session was first
+                    initialized
+                  example: 1601021993
+                updated_at:
+                  type: integer
+                  description: Unix timestamp describing when the session was last
+                    refreshed
+                  example: 1601021993
+                expires_at:
+                  type: integer
+                  description: Unix timestamp describing when the session will expire
+                    unless refreshed
+                  example: 1601108393
+              additionalProperties: false
+          relationships:
+            allOf:
+            - $ref: '#/components/schemas/Relationships'
+            - required:
+              - user
+              type: object
+              properties:
+                user:
+                  required:
+                  - data
+                  type: object
+                  properties:
+                    data:
+                      $ref: '#/components/schemas/UserResourceIdentifier'
+              additionalProperties: false
+    Error:
+      required:
+      - code
+      - details
+      - id
+      - status
+      - title
+      type: object
+      properties:
+        id:
+          type: string
+          description: A unique identifier for this particular occurrence of the problem.
+        status:
+          type: string
+          description: The HTTP status code applicable to this problem, expressed
+            as a string value.
+        code:
+          type: string
+          description: An application-specific error code, expressed as a string value.
+        title:
+          type: string
+          description: A short, human-readable summary of the problem that SHOULD
+            NOT change from occurrence to occurrence of the problem.
+        details:
+          type: string
+          description: A human-readable explanation specific to this occurrence of
+            the problem.
+      example:
+        id: 6de7da3e-8877-4f2b-a670-16e18e5d79a0
+        status: "400"
+        code: "31201"
+        title: Bad Request
+        detail: Parameter 'Foo' is invalid
+    ResourceIdentifier:
+      required:
+      - id
+      - type
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        type:
+          $ref: '#/components/schemas/Type'
+      discriminator:
+        propertyName: type
+    Id:
+      type: string
+      description: The id of the resource being referenced
+      example: e022f021-11f5-4cd6-89f2-02535d89eed6
+    Type:
+      type: string
+      description: Used to describe resource objects that share common attributes
+        and relationships.
+      example: ResourceOject
+    Attributes:
+      type: object
+      additionalProperties: true
+      description: An attributes object representing some of the resource’s data.
+    Relationships:
+      type: object
+      additionalProperties:
+        required:
+        - data
+        type: object
+        properties:
+          data:
+            oneOf:
+            - $ref: '#/components/schemas/ResourceIdentifier'
+            - type: array
+              items:
+                $ref: '#/components/schemas/ResourceIdentifier'
+      description: A relationships object describing relationships between the resource
+        and other JSON:API resources.
+    UserResourceIdentifier:
+      allOf:
+      - $ref: '#/components/schemas/ResourceIdentifier'
+      - type: object
+        properties:
+          id:
+            type: string
+            example: "41"
+          type:
+            pattern: ^User$
+            type: string
+            example: User
+    inline_response_200:
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserSessionResource'
+    inline_response_401:
+      required:
+      - errors
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            allOf:
+            - $ref: '#/components/schemas/Error'
+            - example:
+                status: "401"
+                code: nnnn
+                title: Unauthorized
+                detail: Authentication failed
+    body:
+      required:
+      - refresh_token
+      type: object
+      properties:
+        refresh_token:
+          type: string
+          description: The refresh token of the session to log out
+          example: b984aef3aee1fd98d060253e69fcabc128f84477
+    inline_response_404:
+      required:
+      - errors
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            allOf:
+            - $ref: '#/components/schemas/Error'
+            - example:
+                status: "404"
+                code: nnnn
+                title: Not found
+                detail: The session ID was not found with the specified user
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
