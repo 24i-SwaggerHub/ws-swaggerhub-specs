@@ -57,7 +57,6 @@ paths:
       - Channels
       summary: Get a specific channel.
       description: |
-        * NOTE: the inclusion of related program is controlled by 'include' parameter.
         * **Available since:** 2020-11 (BPLAT-14149)
       operationId: GetChannelById
       parameters:
