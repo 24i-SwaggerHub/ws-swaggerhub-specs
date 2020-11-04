@@ -10,6 +10,94 @@ servers:
 - url: https://virtserver.swaggerhub.com/24i-API/Metadata_API/v1.0.0
   description: SwaggerHub API Auto Mocking
 paths:
+  /channels:
+    get:
+      tags:
+      - Channels
+      summary: Get an index of channels.
+      description: |
+        * We do not support including related resources in the index view.
+        * **Available since:**
+      operationId: GetChannelsIndex
+      parameters:
+      - name: page[number]
+        in: query
+        description: Page number if the results have more items than items per page.
+          Default = 1.
+        required: false
+        schema:
+          minimum: 1
+          type: number
+        example: 1
+      - name: language
+        in: query
+        description: 'The PK of the language to use, which will be a 3 character ISO
+          639-2 string (e.g.: fin). If this is omitted the system defined default
+          will be used. If the requested language is not available then the system
+          will return translations in order of the system defined preferences'
+        required: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200'
+        "400":
+          description: Bad request
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400'
+  /channels/{channel_id}:
+    get:
+      tags:
+      - Channels
+      summary: Get a specific channel.
+      description: |
+        * NOTE: the inclusion of related program is controlled by 'include' parameter.
+        * **Available since:** 2020-11 (BPLAT-14149)
+      operationId: GetChannelById
+      parameters:
+      - name: channel_id
+        in: path
+        description: The identifier of the channel.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: 1234
+      - name: language
+        in: query
+        description: 'The PK of the language to use, which will be a 3 character ISO
+          639-2 string (e.g.: fin). If this is omitted the system defined default
+          will be used. If the requested language is not available then the system
+          will return translations in order of the system defined preferences'
+        required: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_1'
+        "400":
+          description: Error response
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400'
+        "404":
+          description: Not Found
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404'
   /channels/{channel_id}/{yyyy-mm-dd}/broadcast_slots:
     get:
       tags:
@@ -54,7 +142,7 @@ paths:
           content:
             application/vnd.api+json:
               schema:
-                $ref: '#/components/schemas/inline_response_200'
+                $ref: '#/components/schemas/inline_response_200_2'
         "400":
           description: Error response
           content:
@@ -66,7 +154,7 @@ paths:
           content:
             application/vnd.api+json:
               schema:
-                $ref: '#/components/schemas/inline_response_404'
+                $ref: '#/components/schemas/inline_response_404_1'
   /broadcast_slots/{broadcast_slot_id}:
     get:
       tags:
@@ -113,94 +201,6 @@ paths:
           content:
             application/vnd.api+json:
               schema:
-                $ref: '#/components/schemas/inline_response_200_1'
-        "400":
-          description: Error response
-          content:
-            application/vnd.api+json:
-              schema:
-                $ref: '#/components/schemas/inline_response_400'
-        "404":
-          description: Not Found
-          content:
-            application/vnd.api+json:
-              schema:
-                $ref: '#/components/schemas/inline_response_404_1'
-  /channels:
-    get:
-      tags:
-      - Channels
-      summary: Get an index of channels.
-      description: |
-        Return all channels. Sorted by channel id by default.
-        * We do not support including related resources in the index view.
-        * **Available since:**
-      operationId: GetChannelsIndex
-      parameters:
-      - name: page[number]
-        in: query
-        description: Page number if the results have more items than items per page.
-          Default = 1.
-        required: false
-        schema:
-          minimum: 1
-          type: number
-        example: 1
-      - name: language
-        in: query
-        description: 'The PK of the language to use, which will be a 3 character ISO
-          639-2 string (e.g.: fin). If this is omitted the system defined default
-          will be used. If the requested language is not available then the system
-          will return translations in order of the system defined preferences'
-        required: false
-        schema:
-          type: string
-      responses:
-        "200":
-          description: Successful response
-          content:
-            application/vnd.api+json:
-              schema:
-                $ref: '#/components/schemas/inline_response_200_2'
-        "400":
-          description: Bad request
-          content:
-            application/vnd.api+json:
-              schema:
-                $ref: '#/components/schemas/inline_response_400'
-  /channels/{channel_id}:
-    get:
-      tags:
-      - Channels
-      summary: Get a specific channel.
-      description: "* NOTE: the inclusion of related program is controlled by 'include'\
-        \ parameter.\n* **Available since:** \n"
-      operationId: GetChannelById
-      parameters:
-      - name: channel_id
-        in: path
-        description: The identifier of the channel.
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: string
-        example: 1234
-      - name: language
-        in: query
-        description: 'The PK of the language to use, which will be a 3 character ISO
-          639-2 string (e.g.: fin). If this is omitted the system defined default
-          will be used. If the requested language is not available then the system
-          will return translations in order of the system defined preferences'
-        required: false
-        schema:
-          type: string
-      responses:
-        "200":
-          description: Successful response
-          content:
-            application/vnd.api+json:
-              schema:
                 $ref: '#/components/schemas/inline_response_200_3'
         "400":
           description: Error response
@@ -216,6 +216,159 @@ paths:
                 $ref: '#/components/schemas/inline_response_404_2'
 components:
   schemas:
+    ChannelResource:
+      allOf:
+      - $ref: '#/components/schemas/ChannelResourceIdentifier'
+      - required:
+        - attributes
+        - relationships
+        type: object
+        properties:
+          attributes:
+            $ref: '#/components/schemas/ChannelResource_attributes'
+          relationships:
+            allOf:
+            - $ref: '#/components/schemas/Relationships'
+            - type: object
+              properties:
+                stream:
+                  required:
+                  - data
+                  type: object
+                  properties:
+                    data:
+                      allOf:
+                      - nullable: true
+                      - $ref: '#/components/schemas/LiveStreamResourceIdentifier'
+              additionalProperties: false
+    ChannelResourceIdentifier:
+      allOf:
+      - $ref: '#/components/schemas/ResourceIdentifier'
+      - type: object
+        properties:
+          id:
+            type: string
+            example: "42"
+          type:
+            pattern: ^Channel$
+            type: string
+            example: Channel
+    ResourceIdentifier:
+      required:
+      - id
+      - type
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        type:
+          $ref: '#/components/schemas/Type'
+      discriminator:
+        propertyName: type
+    Id:
+      type: string
+      description: The id of the resource being referenced
+      example: e022f021-11f5-4cd6-89f2-02535d89eed6
+    Type:
+      type: string
+      description: Used to describe resource objects that share common attributes
+        and relationships.
+      example: ResourceOject
+    Image:
+      required:
+      - alternate_access_description
+      - height_pixels
+      - image_type
+      - iso3_language
+      - url
+      - width_pixels
+      type: object
+      properties:
+        image_type:
+          type: string
+          description: This is part of the PK and forms an identifying relationship
+            with the ImageType sub-table
+          nullable: true
+          example: Thumbnail
+        alternate_access_description:
+          type: string
+          nullable: true
+          example: Bruce Willis shooting a big gun at some bad guys, pew pew pew
+        width_pixels:
+          type: integer
+          nullable: true
+          example: 320
+        height_pixels:
+          type: integer
+          nullable: true
+          example: 200
+        iso_639-2_lang:
+          type: string
+          nullable: true
+          example: fin
+        url:
+          type: string
+          example: https://www.demo.com/assets/img/thumbnails/movies/diehard.png
+    Relationships:
+      type: object
+      additionalProperties:
+        required:
+        - data
+        type: object
+        properties:
+          data:
+            oneOf:
+            - $ref: '#/components/schemas/ResourceIdentifier'
+            - type: array
+              items:
+                $ref: '#/components/schemas/ResourceIdentifier'
+      description: A relationships object describing relationships between the resource
+        and other JSON:API resources.
+    LiveStreamResourceIdentifier:
+      allOf:
+      - $ref: '#/components/schemas/ResourceIdentifier'
+      - type: object
+        properties:
+          id:
+            type: string
+            example: "24"
+          type:
+            pattern: ^LiveStream$
+            type: string
+            example: LiveStream
+    Error:
+      required:
+      - code
+      - details
+      - id
+      - status
+      - title
+      type: object
+      properties:
+        id:
+          type: string
+          description: A unique identifier for this particular occurrence of the problem.
+        status:
+          type: string
+          description: The HTTP status code applicable to this problem, expressed
+            as a string value.
+        code:
+          type: string
+          description: An application-specific error code, expressed as a string value.
+        title:
+          type: string
+          description: A short, human-readable summary of the problem that SHOULD
+            NOT change from occurrence to occurrence of the problem.
+        details:
+          type: string
+          description: A human-readable explanation specific to this occurrence of
+            the problem.
+      example:
+        id: 6de7da3e-8877-4f2b-a670-16e18e5d79a0
+        status: "400"
+        code: "31201"
+        title: Bad Request
+        detail: Parameter 'Foo' is invalid
     BroadcastSlotResource:
       allOf:
       - $ref: '#/components/schemas/BroadcastSlotResourceIdentifier'
@@ -379,66 +532,10 @@ components:
             pattern: ^BroadcastSlot$
             type: string
             example: BroadcastSlot
-    ResourceIdentifier:
-      required:
-      - id
-      - type
-      type: object
-      properties:
-        id:
-          $ref: '#/components/schemas/Id'
-        type:
-          $ref: '#/components/schemas/Type'
-      discriminator:
-        propertyName: type
-    Id:
-      type: string
-      description: The id of the resource being referenced
-      example: e022f021-11f5-4cd6-89f2-02535d89eed6
-    Type:
-      type: string
-      description: Used to describe resource objects that share common attributes
-        and relationships.
-      example: ResourceOject
     Attributes:
       type: object
       additionalProperties: true
       description: An attributes object representing some of the resource’s data.
-    Image:
-      required:
-      - alternate_access_description
-      - height_pixels
-      - image_type
-      - iso3_language
-      - url
-      - width_pixels
-      type: object
-      properties:
-        image_type:
-          type: string
-          description: This is part of the PK and forms an identifying relationship
-            with the ImageType sub-table
-          nullable: true
-          example: Thumbnail
-        alternate_access_description:
-          type: string
-          nullable: true
-          example: Bruce Willis shooting a big gun at some bad guys, pew pew pew
-        width_pixels:
-          type: integer
-          nullable: true
-          example: 320
-        height_pixels:
-          type: integer
-          nullable: true
-          example: 200
-        iso_639-2_lang:
-          type: string
-          nullable: true
-          example: fin
-        url:
-          type: string
-          example: https://www.demo.com/assets/img/thumbnails/movies/diehard.png
     ContentFlag:
       required:
       - content_rating_flag
@@ -465,33 +562,6 @@ components:
             compute whether the flag being used is adult or not to standardize this
             for clients
           example: false
-    Relationships:
-      type: object
-      additionalProperties:
-        required:
-        - data
-        type: object
-        properties:
-          data:
-            oneOf:
-            - $ref: '#/components/schemas/ResourceIdentifier'
-            - type: array
-              items:
-                $ref: '#/components/schemas/ResourceIdentifier'
-      description: A relationships object describing relationships between the resource
-        and other JSON:API resources.
-    ChannelResourceIdentifier:
-      allOf:
-      - $ref: '#/components/schemas/ResourceIdentifier'
-      - type: object
-        properties:
-          id:
-            type: string
-            example: "42"
-          type:
-            pattern: ^Channel$
-            type: string
-            example: Channel
     ProgramResourceIdentifier:
       allOf:
       - $ref: '#/components/schemas/ResourceIdentifier'
@@ -531,85 +601,12 @@ components:
             pattern: ^Series$
             type: string
             example: Series
-    ChannelResource:
-      allOf:
-      - $ref: '#/components/schemas/ChannelResourceIdentifier'
-      - required:
-        - attributes
-        - relationships
-        type: object
-        properties:
-          attributes:
-            $ref: '#/components/schemas/ChannelResource_attributes'
-          relationships:
-            allOf:
-            - $ref: '#/components/schemas/Relationships'
-            - type: object
-              properties:
-                stream:
-                  required:
-                  - data
-                  type: object
-                  properties:
-                    data:
-                      $ref: '#/components/schemas/LiveStreamResourceIdentifier'
-              additionalProperties: false
-    LiveStreamResourceIdentifier:
-      allOf:
-      - $ref: '#/components/schemas/ResourceIdentifier'
-      - type: object
-        properties:
-          id:
-            type: string
-            example: "24"
-          type:
-            pattern: ^LiveStream$
-            type: string
-            example: LiveStream
-    Error:
-      required:
-      - code
-      - details
-      - id
-      - status
-      - title
-      type: object
-      properties:
-        id:
-          type: string
-          description: A unique identifier for this particular occurrence of the problem.
-        status:
-          type: string
-          description: The HTTP status code applicable to this problem, expressed
-            as a string value.
-        code:
-          type: string
-          description: An application-specific error code, expressed as a string value.
-        title:
-          type: string
-          description: A short, human-readable summary of the problem that SHOULD
-            NOT change from occurrence to occurrence of the problem.
-        details:
-          type: string
-          description: A human-readable explanation specific to this occurrence of
-            the problem.
-      example:
-        id: 6de7da3e-8877-4f2b-a670-16e18e5d79a0
-        status: "400"
-        code: "31201"
-        title: Bad Request
-        detail: Parameter 'Foo' is invalid
     inline_response_200:
       required:
       - data
-      - included
       type: object
       properties:
         data:
-          type: array
-          items:
-            $ref: '#/components/schemas/BroadcastSlotResource'
-        included:
           type: array
           items:
             $ref: '#/components/schemas/ChannelResource'
@@ -628,6 +625,13 @@ components:
                 code: "10100"
                 title: Bad Request
                 detail: language must be a 3 character ISO 639-2 string
+    inline_response_200_1:
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ChannelResource'
     inline_response_404:
       required:
       - errors
@@ -642,8 +646,37 @@ components:
                 status: "404"
                 code: "30301"
                 title: Not found
+                detail: Channel ID 1234 not found
+    inline_response_200_2:
+      required:
+      - data
+      - included
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/BroadcastSlotResource'
+        included:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChannelResource'
+    inline_response_404_1:
+      required:
+      - errors
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            allOf:
+            - $ref: '#/components/schemas/Error'
+            - example:
+                status: "404"
+                code: "30301"
+                title: Not found
                 detail: Channel with ID "3333" not found
-    inline_response_200_1:
+    inline_response_200_3:
       required:
       - data
       - included
@@ -651,7 +684,7 @@ components:
       properties:
         data:
           $ref: '#/components/schemas/BroadcastSlotResource'
-    inline_response_404_1:
+    inline_response_404_2:
       required:
       - errors
       type: object
@@ -667,67 +700,6 @@ components:
                 title: Not found
                 detail: Broadcast slot with ID "f50a8a6b-e96a-4eb7-8d87-a14c1a991b96"
                   not found
-    inline_response_200_2:
-      required:
-      - data
-      - included
-      type: object
-      properties:
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/ChannelResource'
-    inline_response_200_3:
-      required:
-      - data
-      - included
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/ChannelResource'
-    inline_response_404_2:
-      required:
-      - errors
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            allOf:
-            - $ref: '#/components/schemas/Error'
-            - example:
-                status: "404"
-                code: "30301"
-                title: Not found
-                detail: Channel ID 1234 not found
-    ChannelResource_attributes_images:
-      required:
-      - alternate_access_description
-      - height_pixels
-      - image_type
-      - iso_639-2_lang
-      - url
-      - width_pixels
-      type: object
-      properties:
-        image_type:
-          type: string
-          example: Logo_dark
-        alternate_access_description:
-          type: string
-          example: YLE 1
-        width_pixels:
-          type: integer
-          example: 48
-        height_pixels:
-          type: integer
-          example: 48
-        iso_639-2_lang:
-          type: string
-          example: YLE 1
-        url:
-          type: string
-          example: https://www.demo.com/assets/img/thumbnails/movies/diehard.svg
     ChannelResource_attributes_channel_number:
       required:
       - default
@@ -736,20 +708,6 @@ components:
         default:
           type: integer
           example: 1
-    ChannelResource_attributes_enabled_services:
-      required:
-      - trickplay
-      - type
-      type: object
-      properties:
-        type:
-          type: string
-          example: Live
-        startover:
-          type: boolean
-          example: false
-        trickplay:
-          type: boolean
     ChannelResource_attributes_dvb_info:
       required:
       - onid
@@ -762,6 +720,10 @@ components:
         type:
           type: string
           example: C|T|T2
+          enum:
+          - C
+          - T
+          - T2
         onid:
           type: integer
           example: 123
@@ -772,13 +734,34 @@ components:
           type: integer
           example: 4324
         quality:
-          type: integer
+          type: string
+          example: SD|HD|UHD
+          enum:
+          - SD
+          - HD
+          - UHD
+    ChannelResource_attributes_metadata_provider_information:
+      required:
+      - external_id
+      - provider
+      type: object
+      properties:
+        provider:
+          type: string
+          example: ERICSSON
+        external_id:
+          type: string
+          description: This is used by recommendation engines (like xroadmedia)
+          example: "724693092"
     ChannelResource_attributes:
       required:
+      - channel_domains
       - channel_number
+      - description
       - dvb_info
       - enabled_services
       - images
+      - media_type
       - name
       - published
       type: object
@@ -793,33 +776,80 @@ components:
           example: Lozente
         images:
           type: array
-          description: An array of images' description and properties
           items:
-            $ref: '#/components/schemas/ChannelResource_attributes_images'
+            $ref: '#/components/schemas/Image'
         channel_number:
           $ref: '#/components/schemas/ChannelResource_attributes_channel_number'
         media_type:
           type: string
           example: video|audio
+          enum:
+          - video
+          - audio
         enabled_services:
           type: array
           description: An array of the service types that are available for this channel.
           items:
-            $ref: '#/components/schemas/ChannelResource_attributes_enabled_services'
+            anyOf:
+            - required:
+              - pause
+              - startover
+              - trickplay
+              - type
+              type: object
+              properties:
+                type:
+                  type: string
+                  example: Live
+                startover:
+                  type: boolean
+                  example: false
+                pause:
+                  type: boolean
+                  example: false
+                trickplay:
+                  type: boolean
+                  example: false
+            - required:
+              - trickplay
+              - type
+              - viewOngoing
+              type: object
+              properties:
+                type:
+                  type: string
+                  example: nPVR
+                watch_ongoing:
+                  type: boolean
+                  example: true
+                trickplay:
+                  type: boolean
+                  example: true
+            - required:
+              - trickplay
+              - type
+              type: object
+              properties:
+                type:
+                  type: string
+                  example: CatchUp
+                trickplay:
+                  type: boolean
+                  example: false
         channel_domains:
           type: array
-          description: An array of the domains that are available for this channel.
+          description: An array of the domains this channel belongs to.
           example:
           - foo
           - bar
           items:
             type: string
-        published:
-          type: boolean
-          description: describe a channle whether to be ready to be published or not
-          example: true
         dvb_info:
           type: array
           description: An array of dvb infos for channel.
           items:
             $ref: '#/components/schemas/ChannelResource_attributes_dvb_info'
+        metadata_provider_information:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChannelResource_attributes_metadata_provider_information'
