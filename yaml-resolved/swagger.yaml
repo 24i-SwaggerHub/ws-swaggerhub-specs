@@ -1,126 +1,1116 @@
 openapi: 3.0.0
 info:
-  title: Simple Inventory API
+  title: Channel management API
   description: This is a simple API
-  contact:
-    email: you@your-company.com
-  license:
-    name: Apache 2.0
-    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  contact: {}
   version: 4.0.0
 servers:
-- url: https://virtserver.swaggerhub.com/24i-API/ChannelManagement/1.0.0
+- url: https://virtserver.swaggerhub.com/24i-API/ChannelManagement/4.0.0
   description: SwaggerHub API Auto Mocking
+- url: https://testing.booxmedia.xyz/api/channel/management/v4
+  description: Testing server
+security:
+- apiKeyAuth: []
 tags:
-- name: admins
-  description: Secured Admin-only calls
-- name: developers
-  description: Operations available to regular developers
+- name: Channel
+  description: Channel related operations
+- name: OperatorChannel
+  description: Channel related operations
 paths:
-  /inventory:
+  /channels:
     get:
       tags:
-      - developers
-      summary: searches inventory
+      - Channel
+      summary: Get an index of channels.
       description: |
-        By passing in the appropriate options, you can search for
-        available inventory in the system
-      operationId: searchInventory
+        * **Available since:** INSERT_AVAILABLE_SINCE_DATE (BPLAT-13592)
+      operationId: GetChannelsIndex
       parameters:
-      - name: searchString
+      - name: page[number]
         in: query
-        description: pass an optional search string for looking up inventory
+        description: Page number if the results have more items than items per page.
+          Default = 1.
         required: false
-        style: form
-        explode: true
         schema:
-          type: string
-      - name: skip
-        in: query
-        description: number of records to skip for pagination
-        required: false
-        style: form
-        explode: true
-        schema:
-          minimum: 0
-          type: integer
-          format: int32
-      - name: limit
-        in: query
-        description: maximum number of records to return
-        required: false
-        style: form
-        explode: true
-        schema:
-          maximum: 50
-          minimum: 0
-          type: integer
-          format: int32
+          minimum: 1
+          type: number
+        example: 1
       responses:
         "200":
-          description: search results matching criteria
+          description: Successful response
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200'
+        "400":
+          description: Bad Request
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400'
+        "401":
+          description: Unauthorized
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_401'
+    post:
+      tags:
+      - Channel
+      summary: Create new channel
+      description: |
+        Create new channel
+        * **Available since:** INSERT_AVAILABLE_SINCE_DATE (BPLAT-13592)
+      operationId: CreateChannel
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        description: Client unique generated value for server to recognize subsequent
+          retries
+        required: true
+        schema:
+          type: string
+        example: 518d5812-b8e8-43a4-b3b0-8f9c5cdc31b9
+      requestBody:
+        $ref: '#/components/requestBodies/CreateChannelRequestBody'
+      responses:
+        "201":
+          description: Successful response on created resource
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_201'
+        "400":
+          description: Standard error response
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/InventoryItem'
-        "400":
-          description: bad input parameter
-    post:
+                $ref: '#/components/schemas/inline_response_400_1'
+        "401":
+          description: Unauthorized
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_401'
+  /channels/{channel_id}:
+    get:
       tags:
-      - admins
-      summary: adds an inventory item
-      description: Adds an item to the system
-      operationId: addInventory
+      - Channel
+      summary: Get channel
+      description: |
+        Returns channel by id
+        * **Available since:** INSERT_AVAILABLE_SINCE_DATE (BPLAT-13592)
+      operationId: GetChannelById
+      parameters:
+      - name: channel_id
+        in: path
+        description: The ID of the channel to fetch.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: number
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_1'
+        "401":
+          description: Unauthorized
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_401'
+        "404":
+          description: Channel does not exist
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404'
+    delete:
+      tags:
+      - Channel
+      summary: Delete channel
+      description: |
+        Deletes channel by id
+        * **Available since:** INSERT_AVAILABLE_SINCE_DATE (BPLAT-13592)
+      operationId: DeleteChannelById
+      parameters:
+      - name: channel_id
+        in: path
+        description: The ID of the channel to delete.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: number
+      responses:
+        "204":
+          description: |
+            The channel was deleted successfully
+        "401":
+          description: Unauthorized
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_401'
+        "404":
+          description: Channel does not exist
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404'
+    patch:
+      tags:
+      - Channel
+      summary: Update channel
+      description: |
+        Updates channel specified by channel id
+        * **Available since:** INSERT_AVAILABLE_SINCE_DATE (BPLAT-13592)
+      operationId: UpdateChannel
+      parameters:
+      - name: channel_id
+        in: path
+        description: The ID of the channel to update.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: number
       requestBody:
-        description: Inventory item to add
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/InventoryItem'
+        $ref: '#/components/requestBodies/UpdateChannelRequestBody'
+      responses:
+        "200":
+          description: Successful response on updated resource
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_2'
+        "400":
+          description: Standard error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400_1'
+        "401":
+          description: Unauthorized
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_401'
+        "404":
+          description: Channel does not exist
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404'
+  /channels/{channel_id}/operator_channels:
+    get:
+      tags:
+      - OperatorChannel
+      summary: Get an channel operator channels
+      description: |
+        * **Available since:** INSERT_AVAILABLE_SINCE_DATE (BPLAT-13592)
+      operationId: GetChannelsOperatorChannels
+      parameters:
+      - name: channel_id
+        in: path
+        description: The ID of the channel to fetch.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: number
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200_3'
+        "400":
+          description: Bad Request
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400'
+        "401":
+          description: Unauthorized
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_401'
+  /channels/{channel_id}/operator_channels/{operator_id}:
+    put:
+      tags:
+      - OperatorChannel
+      summary: Create or replace operator channel
+      description: |
+        Create or replace operator channel
+        * **Available since:** INSERT_AVAILABLE_SINCE_DATE (BPLAT-13592)
+      operationId: CreateOperatorChannel
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        description: Client unique generated value for server to recognize subsequent
+          retries
+        required: true
+        schema:
+          type: string
+        example: 518d5812-b8e8-43a4-b3b0-8f9c5cdc31b9
+      - name: channel_id
+        in: path
+        description: The ID of the channel to fetch.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: number
+      - name: operator_id
+        in: path
+        description: The ID of the operator channel to create/update.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          pattern: uuid
+          type: string
+          example: 530a08c0-3fd7-4d0d-b799-712ed9c07573
+      requestBody:
+        $ref: '#/components/requestBodies/CreateOperatorChannelRequestBody'
       responses:
         "201":
-          description: item created
+          description: Successful response on created or replaced resource
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_201_1'
         "400":
-          description: invalid input, object invalid
-        "409":
-          description: an existing item already exists
+          description: Standard error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400_1'
+        "401":
+          description: Unauthorized
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_401'
+    delete:
+      tags:
+      - OperatorChannel
+      summary: Delete channel operator channel
+      description: |
+        Deletes channel by id
+        * **Available since:** INSERT_AVAILABLE_SINCE_DATE (BPLAT-13592)
+      operationId: DeleteOperatorChannelById
+      parameters:
+      - name: channel_id
+        in: path
+        description: The ID of the channel to delete.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: number
+      - name: operator_id
+        in: path
+        description: The ID of the operator channel to delete
+        required: true
+        style: simple
+        explode: false
+        schema:
+          pattern: uuid
+          type: string
+          example: 530a08c0-3fd7-4d0d-b799-712ed9c07573
+      responses:
+        "204":
+          description: |
+            The operator channel was deleted successfully
+        "401":
+          description: Unauthorized
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_401'
+        "404":
+          description: Operator channel does not exist
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404'
 components:
   schemas:
-    InventoryItem:
+    ChannelResourceProperties:
       required:
+      - attributes
+      type: object
+      properties:
+        attributes:
+          $ref: '#/components/schemas/ChannelResourceProperties_attributes'
+    ChannelResourceRequiredProperties:
+      required:
+      - attributes
+      type: object
+      properties:
+        attributes:
+          required:
+          - media_type
+          - name
+          type: object
+    ChannelResource:
+      allOf:
+      - $ref: '#/components/schemas/ChannelResourceIdentifier'
+      - $ref: '#/components/schemas/ChannelResourceProperties'
+      - $ref: '#/components/schemas/ChannelResourceRequiredProperties'
+    CreateChannelResourceIdentifier:
+      allOf:
+      - $ref: '#/components/schemas/CreateResourceIdentifier'
+      - type: object
+        properties:
+          type:
+            $ref: '#/components/schemas/ChannelResourceType'
+    OperatorChannelResourceRequiredProperties:
+      required:
+      - attributes
+      - relationships
+      type: object
+      properties:
+        attributes:
+          required:
+          - channel_number
+          type: object
+        relationships:
+          required:
+          - channel
+          type: object
+    OperatorChannelResourceProperties:
+      type: object
+      properties:
+        attributes:
+          $ref: '#/components/schemas/OperatorChannelResourceProperties_attributes'
+    OperatorChannelResource:
+      allOf:
+      - $ref: '#/components/schemas/OperatorChannelResourceIdentifier'
+      - $ref: '#/components/schemas/OperatorChannelResourceProperties'
+      - $ref: '#/components/schemas/OperatorChannelResourceRequiredProperties'
+      - type: object
+        properties:
+          relationships:
+            allOf:
+            - $ref: '#/components/schemas/Relationships'
+            - type: object
+              properties:
+                channel:
+                  required:
+                  - data
+                  type: object
+                  properties:
+                    data:
+                      $ref: '#/components/schemas/ChannelResourceIdentifier'
+              additionalProperties: false
+    CreateOperatorChannelResourceIdentifier:
+      allOf:
+      - $ref: '#/components/schemas/CreateResourceIdentifier'
+      - type: object
+        properties:
+          type:
+            $ref: '#/components/schemas/OperatorChannelResourceType'
+    Error:
+      required:
+      - code
+      - details
       - id
-      - manufacturer
-      - name
-      - releaseDate
+      - status
+      - title
       type: object
       properties:
         id:
           type: string
-          format: uuid
-          example: d290f1ee-6c54-4b01-90e6-d701748f0851
-        name:
+          description: A unique identifier for this particular occurrence of the problem.
+        status:
           type: string
-          example: Widget Adapter
-        releaseDate:
+          description: The HTTP status code applicable to this problem, expressed
+            as a string value.
+        code:
           type: string
-          format: date-time
-          example: 2016-08-29T09:12:33.001Z
-        manufacturer:
-          $ref: '#/components/schemas/Manufacturer'
-    Manufacturer:
+          description: An application-specific error code, expressed as a string value.
+        title:
+          type: string
+          description: A short, human-readable summary of the problem that SHOULD
+            NOT change from occurrence to occurrence of the problem.
+        details:
+          type: string
+          description: A human-readable explanation specific to this occurrence of
+            the problem.
+      example:
+        id: 6de7da3e-8877-4f2b-a670-16e18e5d79a0
+        status: "400"
+        code: "31201"
+        title: Bad Request
+        detail: Parameter 'Foo' is invalid
+    Error_2:
+      type: object
+      properties:
+        id:
+          type: string
+          description: A unique identifier for this instance of error (allows tracking
+            in logs)
+        href:
+          type: string
+          description: The url where you can find documentation about this class of
+            error
+        code:
+          type: string
+          description: A static 7 character code that is associated with this family
+            of errors
+        title:
+          type: string
+          description: A human readable and user friendly (no implementation details)
+            description of the general condition of the error
+        details:
+          type: string
+          description: A human readable and user friendly description of the specific
+            details of the error
+      example:
+      - id: 5941163294aef
+        code: 4INZEX
+        title: Method not allowed
+        details: This method is not supported for this resource
+    Relationships:
+      type: object
+      additionalProperties:
+        required:
+        - data
+        type: object
+        properties:
+          data:
+            oneOf:
+            - $ref: '#/components/schemas/ResourceIdentifier'
+            - type: array
+              items:
+                $ref: '#/components/schemas/ResourceIdentifier'
+      description: A relationships object describing relationships between the resource
+        and other JSON:API resources.
+    ChannelResourceIdentifier:
+      allOf:
+      - $ref: '#/components/schemas/ResourceIdentifier'
+      - type: object
+        properties:
+          id:
+            type: string
+            example: "42"
+          type:
+            $ref: '#/components/schemas/ChannelResourceType'
+    ResourceIdentifier:
       required:
-      - name
+      - id
+      - type
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        type:
+          $ref: '#/components/schemas/Type'
+      discriminator:
+        propertyName: type
+    Id:
+      type: string
+      description: The id of the resource being referenced
+      example: e022f021-11f5-4cd6-89f2-02535d89eed6
+    Type:
+      type: string
+      description: Used to describe resource objects that share common attributes
+        and relationships.
+      example: ResourceOject
+    ChannelResourceType:
+      pattern: ^Channel
+      type: string
+      example: Channel
+    LocalizedString:
+      required:
+      - lang
+      - value
+      type: object
+      properties:
+        lang:
+          type: string
+          description: The ISO 639-2 three letter code of the language
+          example: eng
+        value:
+          type: string
+          example: English string
+      description: Representation of localized string format consumed by API
+    Image:
+      required:
+      - alternate_access_description
+      - height_pixels
+      - image_type
+      - iso3_language
+      - url
+      - width_pixels
+      type: object
+      properties:
+        image_type:
+          type: string
+          description: This is part of the PK and forms an identifying relationship
+            with the ImageType sub-table
+          nullable: true
+          example: Thumbnail
+        alternate_access_description:
+          type: string
+          nullable: true
+          example: Bruce Willis shooting a big gun at some bad guys, pew pew pew
+        width_pixels:
+          type: integer
+          nullable: true
+          example: 320
+        height_pixels:
+          type: integer
+          nullable: true
+          example: 200
+        iso_639-2_lang:
+          type: string
+          nullable: true
+          example: fin
+        url:
+          type: string
+          example: https://www.demo.com/assets/img/thumbnails/movies/diehard.png
+    CreateResourceIdentifier:
+      required:
+      - type
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/Type'
+      discriminator:
+        propertyName: type
+    OperatorChannelResourceIdentifier:
+      allOf:
+      - $ref: '#/components/schemas/ResourceIdentifier'
+      - type: object
+        properties:
+          id:
+            pattern: uuid
+            type: string
+            example: abdf8785-cb23-445b-946f-69e8770500a1
+          type:
+            $ref: '#/components/schemas/OperatorChannelResourceType'
+    OperatorChannelResourceType:
+      pattern: ^OperatorChannel
+      type: string
+      example: OperatorChannel
+    inline_response_200:
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            allOf:
+            - $ref: '#/components/schemas/ChannelResource'
+            - required:
+              - attributes
+              type: object
+              properties:
+                attributes:
+                  required:
+                  - channel_domains
+                  - channel_number
+                  - description
+                  - dvb_info
+                  - enabled_services
+                  - images
+                  - media_type
+                  - metadata_provider_information
+                  - name
+                  - restrictions
+                  - visibility
+                  type: object
+    inline_response_400:
+      required:
+      - errors
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            allOf:
+            - $ref: '#/components/schemas/Error'
+            - example:
+                status: "400"
+                code: "10201"
+                title: Bad Request
+                detail: Standard error response
+    inline_response_401:
+      required:
+      - errors
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            allOf:
+            - $ref: '#/components/schemas/Error'
+            - example:
+                status: "401"
+                code: "10201"
+                title: Invalid api key
+                detail: 'Invalid authorization api key: Unauthorised Api key provided
+                  in the header'
+    inline_response_201:
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ChannelResource'
+    inline_response_400_1:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/Error_2'
+    inline_response_200_1:
+      required:
+      - data
+      - included
+      type: object
+      properties:
+        data:
+          allOf:
+          - $ref: '#/components/schemas/ChannelResource'
+          - required:
+            - attributes
+            type: object
+            properties:
+              attributes:
+                required:
+                - channel_domains
+                - channel_number
+                - description
+                - dvb_info
+                - enabled_services
+                - images
+                - media_type
+                - metadata_provider_information
+                - name
+                - restrictions
+                - visibility
+                type: object
+    inline_response_404:
+      required:
+      - errors
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            allOf:
+            - $ref: '#/components/schemas/Error'
+            - example:
+                status: "404"
+                code: "10101"
+                title: Not Found
+                detail: The requested channel does not exist
+    inline_response_200_2:
+      required:
+      - data
+      - included
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ChannelResource'
+    inline_response_200_3:
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            allOf:
+            - $ref: '#/components/schemas/OperatorChannelResource'
+            - required:
+              - attributes
+              type: object
+              properties:
+                attributes:
+                  required:
+                  - channel_number
+                  - description
+                  - images
+                  - name
+                  type: object
+    inline_response_201_1:
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/OperatorChannelResource'
+    ChannelResourceProperties_attributes_channel_number:
+      required:
+      - default
+      type: object
+      properties:
+        default:
+          type: integer
+          example: 1
+      description: Optional channel number
+    ChannelResourceProperties_attributes_restrictions:
+      type: object
+      properties:
+        geoblocking:
+          type: boolean
+          description: This option defines whether geoblocking feature enabled for
+            channel
+          example: true
+          default: false
+      description: Set of possible restricions, only 'geoblocking' is supported for
+        now.
+    ChannelResourceProperties_attributes_visibility:
+      required:
+      - end
+      - start
+      type: object
+      properties:
+        start:
+          type: integer
+          description: Timestamp of channel availability start
+          nullable: true
+          example: 1605090698
+        end:
+          type: integer
+          description: Timestamp of channel availability end
+          nullable: true
+          example: 1605095698
+    ChannelResourceProperties_attributes_dvb_info:
+      required:
+      - onid
+      - quality
+      - sid
+      - tsid
+      - type
+      type: object
+      properties:
+        type:
+          type: string
+          example: C
+          enum:
+          - C
+          - T
+          - T2
+        onid:
+          type: integer
+          example: 123
+        tsid:
+          type: integer
+          example: 123
+        sid:
+          type: integer
+          example: 4324
+        quality:
+          type: string
+          example: SD
+          enum:
+          - SD
+          - HD
+          - UHD
+    ChannelResourceProperties_attributes_metadata_provider_information:
+      required:
+      - external_id
+      - provider
+      type: object
+      properties:
+        provider:
+          type: string
+          example: ERICSSON
+        external_id:
+          type: string
+          description: This is used by recommendation engines (like xroadmedia)
+          nullable: true
+          example: "724693092"
+    ChannelResourceProperties_attributes:
       type: object
       properties:
         name:
+          type: array
+          description: Name of the channel, array of LocalizedString pairs
+          items:
+            $ref: '#/components/schemas/LocalizedString'
+        description:
+          type: array
+          description: Optional channel description, array of LocalizedString pairs
+          nullable: true
+          items:
+            $ref: '#/components/schemas/LocalizedString'
+        images:
+          type: array
+          description: Array of variouse channel images
+          items:
+            $ref: '#/components/schemas/Image'
+        channel_number:
+          $ref: '#/components/schemas/ChannelResourceProperties_attributes_channel_number'
+        media_type:
           type: string
-          example: ACME Corporation
-        homePage:
-          type: string
-          format: url
-          example: https://www.acme-corp.com
-        phone:
-          type: string
-          example: 408-867-5309
+          description: Mandatory type of media the channel broadcasts
+          example: video
+          enum:
+          - video
+          - audio
+        enabled_services:
+          type: array
+          description: |
+            An array of the services types that are available for this channel. There are 3 types of services supported now: Live, Catchup and nPVR
+          items:
+            anyOf:
+            - required:
+              - type
+              type: object
+              properties:
+                type:
+                  type: string
+                  description: Live service defines are users allowed to watch the
+                    channel ongoing streams and related configurations.
+                  example: Live
+                  enum:
+                  - Live
+                startover:
+                  type: boolean
+                  description: The option defines whether users are allowed to start
+                    watching currently airing program from the beginning.
+                  nullable: true
+                  example: false
+                  default: false
+                pause:
+                  type: boolean
+                  description: The option defines whether users are allowed pause
+                    ongoing program.
+                  nullable: true
+                  example: false
+                  default: false
+                trickplay:
+                  type: boolean
+                  description: The option defines whether users are allowed to skip
+                    back and forth within the boundaries of the currently available
+                    live stream buffer.
+                  nullable: true
+                  example: false
+                  default: false
+                restrictions:
+                  type: object
+                  properties:
+                    out_of_home:
+                      type: boolean
+                      description: This option defines whether users are allowed to
+                        watch this channel streams when out of home network.
+                      default: false
+                  description: Set of possible restricions, only 'out_of_home' is
+                    supported for now.
+                  nullable: true
+            - required:
+              - type
+              type: object
+              properties:
+                type:
+                  type: string
+                  description: Catchup service defines are users allowed to watch
+                    the channel aired programs and related configurations.
+                  example: Catchup
+                  enum:
+                  - Catchup
+                boundary_offset:
+                  type: integer
+                  description: The length of the catchup window in seconds
+                  nullable: true
+                  example: 360
+                  default: 0
+                trickplay:
+                  type: boolean
+                  description: The option defines whether users are allowed to skip
+                    back and forth within the boundaries of the currently available
+                    live stream buffer.
+                  nullable: true
+                  example: false
+                  default: false
+                restrictions:
+                  type: object
+                  properties:
+                    out_of_home:
+                      type: boolean
+                      description: This option defines whether users are allowed use
+                        catchup feature when out of home network.
+                      example: true
+                      default: false
+                  description: Set of possible restricions, only 'out_of_home' is
+                    supported for now.
+                  nullable: true
+            - required:
+              - type
+              type: object
+              properties:
+                type:
+                  type: string
+                  description: nPVR service defines are users allowed to record channel
+                    programs and related configurations.
+                  example: nPVR
+                  enum:
+                  - nPVR
+                retention_time:
+                  type: integer
+                  description: Duration in days during which user recorder programs
+                    will be stored.
+                  nullable: true
+                  example: 30
+                  default: 0
+                watch_ongoing:
+                  type: boolean
+                  description: Defines whither nPVR is enabled for ongoing channel
+                    programs
+                  nullable: true
+                  example: false
+                  default: false
+                boundary_offset:
+                  type: integer
+                  description: The length of the recording window in seconds
+                  nullable: true
+                  example: 360
+                  default: 0
+                trickplay:
+                  type: boolean
+                  description: The option defines whether users are allowed to skip
+                    back and forth within the boundaries of the currently available
+                    recording.
+                  nullable: true
+                  example: false
+                  default: false
+                restrictions:
+                  type: object
+                  properties:
+                    out_of_home:
+                      type: boolean
+                      description: This option defines whether users are allowed use
+                        nPVR feature when out of home network.
+                      example: true
+                      default: false
+                  description: Set of possible restricions, only 'out_of_home' is
+                    supported for now.
+                  nullable: true
+        restrictions:
+          $ref: '#/components/schemas/ChannelResourceProperties_attributes_restrictions'
+        channel_domains:
+          type: array
+          description: An array of the domains this channel belongs to.
+          items:
+            type: string
+            example: '["foo"|"bar"]'
+          default: []
+        visibility:
+          $ref: '#/components/schemas/ChannelResourceProperties_attributes_visibility'
+        dvb_info:
+          type: array
+          description: An array of dvb infos for channel.
+          items:
+            $ref: '#/components/schemas/ChannelResourceProperties_attributes_dvb_info'
+        metadata_provider_information:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChannelResourceProperties_attributes_metadata_provider_information'
+    OperatorChannelResourceProperties_attributes:
+      type: object
+      properties:
+        name:
+          type: array
+          description: Name of the channel, array of LocalizedString pairs
+          items:
+            $ref: '#/components/schemas/LocalizedString'
+        description:
+          type: array
+          description: Optional channel description, array of LocalizedString pairs
+          nullable: true
+          items:
+            $ref: '#/components/schemas/LocalizedString'
+        images:
+          type: array
+          description: Array of variouse channel images
+          items:
+            $ref: '#/components/schemas/Image'
+        channel_number:
+          $ref: '#/components/schemas/ChannelResourceProperties_attributes_channel_number'
+  requestBodies:
+    CreateChannelRequestBody:
+      content:
+        application/json:
+          schema:
+            required:
+            - data
+            type: object
+            properties:
+              data:
+                allOf:
+                - $ref: '#/components/schemas/CreateChannelResourceIdentifier'
+                - $ref: '#/components/schemas/ChannelResourceProperties'
+                - $ref: '#/components/schemas/ChannelResourceRequiredProperties'
+      required: true
+    UpdateChannelRequestBody:
+      content:
+        application/json:
+          schema:
+            required:
+            - data
+            type: object
+            properties:
+              data:
+                allOf:
+                - $ref: '#/components/schemas/CreateChannelResourceIdentifier'
+                - $ref: '#/components/schemas/ChannelResourceProperties'
+                - required:
+                  - id
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      description: The id of the resource being referenced
+                      example: "41"
+      required: true
+    CreateOperatorChannelRequestBody:
+      content:
+        application/json:
+          schema:
+            required:
+            - data
+            type: object
+            properties:
+              data:
+                allOf:
+                - $ref: '#/components/schemas/CreateOperatorChannelResourceIdentifier'
+                - $ref: '#/components/schemas/OperatorChannelResourceProperties'
+                - $ref: '#/components/schemas/OperatorChannelResourceRequiredProperties'
+                - type: object
+                  properties:
+                    relationships:
+                      allOf:
+                      - $ref: '#/components/schemas/Relationships'
+                      - type: object
+                        properties:
+                          channel:
+                            required:
+                            - data
+                            type: object
+                            properties:
+                              data:
+                                $ref: '#/components/schemas/ChannelResourceIdentifier'
+                        additionalProperties: false
+      required: true
+  securitySchemes:
+    apiKeyAuth:
+      type: apiKey
+      description: Internal API key, format "Apikey 1a2b3c4d".
+      name: Authorization
+      in: header
