@@ -1,0 +1,87 @@
+openapi: 3.0.0
+info:
+  title: EZDRM authorization API
+  description: Callback endpoint for EZDRM server to verify client is authorized to
+    play a stream
+  version: 1.0.0
+servers:
+- url: https://testing.booxmedia.xyz/api/drm/v1
+  description: Testing server
+tags:
+- name: EZDRM
+  description: EZDRM playback authorization
+paths:
+  /ezdrm/verify/{drm_type}:
+    get:
+      tags:
+      - EZDRM
+      summary: Verify a stream playback request
+      description: |
+        * **Available since:** 2020-10 (BPLAT-13656)
+      operationId: verify
+      parameters:
+      - name: drm_type
+        in: path
+        description: The DRM technolory.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          example: playready
+          enum:
+          - playready
+          - widevine
+          - fairplay
+      - name: CustomData
+        in: query
+        description: Signed JWT for client playback authorization
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+        example: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJjbGllbnRJcCI6IjE5Mi4xNjguMC4wIiwiY29udGVudElkIjoiMDljYzAzNzctNmRkNC00MGNiIiwic3RyZWFtVHlwZSI6IlBsYXlSZWFkeSIsImV4cGlyeSI6MTExMjIyMzMzNH0.j-C5oQjCO-TGqktGjy8uGJqEktx1mzDteZjPlHZ4cLY
+      - name: ClientIP
+        in: query
+        description: IP address of the end client
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+        example: 100.10.10.1
+      - name: AssetID
+        in: query
+        description: EZDRM asset id. Changes per the asset
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+        example: 3aXXXXXXXXXX6Kf8ky5c2fHWXXX3d3d2c
+      - name: content_id
+        in: query
+        description: EZDRM content id. Changes per the asset
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+        example: 3aXXXXXXXXXX6Kf8ky5c2fHWXXX3d3d2c
+      responses:
+        "200":
+          description: Successful response
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Play=True
+        "401":
+          description: Unauthorized
+          content:
+            text/html:
+              schema:
+                type: string
+                example: Play=False
+components: {}
