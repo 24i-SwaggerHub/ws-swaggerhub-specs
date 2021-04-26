@@ -1,0 +1,577 @@
+openapi: 3.0.0
+info:
+  title: User management API
+  description: User management API used for editing and managing user. This API supposed
+    to be used privately and consumed by BSS and CMS. Only authorization with api
+    key supported
+  version: 4.0.0
+servers:
+- url: https://testing.booxmedia.xyz/api/user/management/v4
+  description: Testing server
+- url: https://virtserver.swaggerhub.com/24i-API/UserManagement/4.0.0
+  description: SwaggerHub API Auto Mocking
+security:
+- apiKeyAuth: []
+tags:
+- name: User
+  description: User related operations
+paths:
+  /users:
+    get:
+      tags:
+      - User
+      summary: Get all users
+      description: |
+        Returns a list of users. Default page size is 100 items.
+        * **Available since:** NOT YET AVAILABLE
+      operationId: GetAllUsers
+      parameters:
+      - name: filter
+        in: query
+        description: "Please see http://jsonapi.org/recommendations/#filtering The\
+          \ following are attributes to filter on: [user.registration_status|user.email]"
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: "page[number]"
+        in: query
+        description: Page number if the results have more items than items per page.
+          Default = 1.
+        required: false
+        schema:
+          minimum: 1
+          type: number
+        example: 1
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200'
+        "400":
+          description: Bad Request
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400'
+        "401":
+          description: Unauthorized
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_401'
+    post:
+      tags:
+      - User
+      summary: Create new user
+      description: |
+        Create new user
+        * **Available since:** NOT YET AVAILABLE
+      operationId: CreateUser
+      requestBody:
+        $ref: '#/components/requestBodies/CreateUserRequestBody'
+      responses:
+        "201":
+          description: Successful response on created resource
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_201'
+        "400":
+          description: Standard error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400_1'
+        "401":
+          description: Unauthorized
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_401'
+        "409":
+          description: Conflict
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_409'
+  /users/{user_id}:
+    get:
+      tags:
+      - User
+      summary: Get user
+      description: |
+        Returns user by id
+        * **Available since:** NOT YET AVAILABLE
+      operationId: GetUserById
+      parameters:
+      - name: user_id
+        in: path
+        description: The ID of the user to fetch.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: number
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_201'
+        "401":
+          description: Unauthorized
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_401'
+        "404":
+          description: User does not exist
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404'
+    delete:
+      tags:
+      - User
+      summary: Delete user
+      description: |
+        Deletes user by id
+        * **Available since:** NOT YET AVAILABLE
+      operationId: DeleteUserById
+      parameters:
+      - name: user_id
+        in: path
+        description: The ID of the user to delete.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: number
+      responses:
+        "204":
+          description: |
+            The user was deleted successfully
+        "401":
+          description: Unauthorized
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_401'
+        "404":
+          description: User does not exist
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404'
+    patch:
+      tags:
+      - User
+      summary: Update user
+      description: |
+        Updates user specified by user id
+        * **Available since:** NOT YET AVAILABLE
+      operationId: UpdateUser
+      parameters:
+      - name: user_id
+        in: path
+        description: The ID of the user to update.
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: number
+      requestBody:
+        $ref: '#/components/requestBodies/UpdateUserRequestBody'
+      responses:
+        "200":
+          description: Successful response on updated resource
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_201'
+        "400":
+          description: Standard error response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400_1'
+        "401":
+          description: Unauthorized
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_401'
+        "409":
+          description: Conflict
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_409_1'
+components:
+  schemas:
+    UserResourceProperties:
+      required:
+      - attributes
+      - relationships
+      type: object
+      properties:
+        attributes:
+          $ref: '#/components/schemas/UserResourceProperties_attributes'
+    UserResource:
+      allOf:
+      - $ref: '#/components/schemas/UserResourceIdentifier_2'
+      - $ref: '#/components/schemas/UserResourceProperties'
+      - required:
+        - relationships
+        type: object
+        properties:
+          relationships:
+            allOf:
+            - required:
+              - default_user_profile
+              type: object
+              properties:
+                default_user_profile:
+                  required:
+                  - data
+                  type: object
+                  properties:
+                    data:
+                      $ref: '#/components/schemas/UserProfileResourceIdentifier'
+    UserResourceIdentifier:
+      allOf:
+      - $ref: '#/components/schemas/CreateResourceIdentifier'
+      - type: object
+        properties:
+          type:
+            $ref: '#/components/schemas/UserResourceType'
+    CreateUserResourceIdentifier:
+      allOf:
+      - required:
+        - type
+        type: object
+        properties:
+          type:
+            $ref: '#/components/schemas/UserResourceType'
+    Error:
+      required:
+      - code
+      - details
+      - id
+      - status
+      - title
+      type: object
+      properties:
+        id:
+          type: string
+          description: A unique identifier for this particular occurrence of the problem.
+        status:
+          type: string
+          description: "The HTTP status code applicable to this problem, expressed\
+            \ as a string value."
+        code:
+          type: string
+          description: "An application-specific error code, expressed as a string\
+            \ value."
+        title:
+          type: string
+          description: "A short, human-readable summary of the problem that SHOULD\
+            \ NOT change from occurrence to occurrence of the problem."
+        details:
+          type: string
+          description: A human-readable explanation specific to this occurrence of
+            the problem.
+      example:
+        id: 6de7da3e-8877-4f2b-a670-16e18e5d79a0
+        status: "400"
+        code: "31201"
+        title: Bad Request
+        detail: Parameter 'Foo' is invalid
+    Error_2:
+      type: object
+      properties:
+        id:
+          type: string
+          description: A unique identifier for this instance of error (allows tracking
+            in logs)
+        href:
+          type: string
+          description: The url where you can find documentation about this class of
+            error
+        code:
+          type: string
+          description: A static 7 character code that is associated with this family
+            of errors
+        title:
+          type: string
+          description: A human readable and user friendly (no implementation details)
+            description of the general condition of the error
+        details:
+          type: string
+          description: A human readable and user friendly description of the specific
+            details of the error
+      example:
+      - id: 5941163294aef
+        code: 4INZEX
+        title: Method not allowed
+        details: This method is not supported for this resource
+    UserResourceIdentifier_2:
+      allOf:
+      - $ref: '#/components/schemas/ResourceIdentifier'
+      - type: object
+        properties:
+          id:
+            type: string
+            example: "41"
+          type:
+            pattern: ^User$
+            type: string
+            example: User
+    ResourceIdentifier:
+      required:
+      - id
+      - type
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        type:
+          $ref: '#/components/schemas/Type'
+      discriminator:
+        propertyName: type
+    Id:
+      type: string
+      description: The id of the resource being referenced
+      example: e022f021-11f5-4cd6-89f2-02535d89eed6
+    Type:
+      type: string
+      description: Used to describe resource objects that share common attributes
+        and relationships.
+      example: ResourceOject
+    UserProfileResourceIdentifier:
+      allOf:
+      - $ref: '#/components/schemas/ResourceIdentifier'
+      - type: object
+        properties:
+          id:
+            type: string
+            example: dc11a654-882d-47cb-a971-bb1fc6f0ffd8
+          type:
+            pattern: ^UserProfile$
+            type: string
+            example: UserProfile
+    CreateResourceIdentifier:
+      required:
+      - type
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/Type'
+      discriminator:
+        propertyName: type
+    UserResourceType:
+      pattern: ^User$
+      type: string
+      example: User
+    inline_response_200:
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserResource'
+    inline_response_400:
+      required:
+      - errors
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            allOf:
+            - $ref: '#/components/schemas/Error'
+            - example:
+                status: "400"
+                code: "10201"
+                title: Bad Request
+                detail: Standard error response
+    inline_response_401:
+      required:
+      - errors
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            allOf:
+            - $ref: '#/components/schemas/Error'
+            - example:
+                status: "401"
+                code: "10201"
+                title: Invalid api key
+                detail: "Invalid authorization api key: Unauthorised Api key provided\
+                  \ in the header"
+    inline_response_201:
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/UserResource'
+    inline_response_400_1:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/Error_2'
+    inline_response_409:
+      required:
+      - errors
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            allOf:
+            - $ref: '#/components/schemas/Error'
+            - example:
+                status: "409"
+                code: "32101"
+                title: Conflicting data
+                detail: Could not create user due to attributes conflicting with existing
+                  data
+    inline_response_404:
+      required:
+      - errors
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            allOf:
+            - $ref: '#/components/schemas/Error'
+            - example:
+                status: "404"
+                code: "10101"
+                title: Not Found
+                detail: The requested user does not exist
+    inline_response_409_1:
+      required:
+      - errors
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            allOf:
+            - $ref: '#/components/schemas/Error'
+            - example:
+                status: "409"
+                code: "32101"
+                title: Conflicting data
+                detail: Could not update user due to attributes conflicting with existing
+                  data
+    UserResourceProperties_attributes_contact_details:
+      required:
+      - email
+      - telephone_number_E123
+      type: object
+      properties:
+        email:
+          type: string
+          description: Email address
+          example: john@doe.com
+        telephone_number_E123:
+          type: string
+          description: Telephone in E.123 notation
+          nullable: true
+          example: +226071234567
+    UserResourceProperties_attributes_registration_information:
+      required:
+      - registration_state
+      - registration_time
+      type: object
+      properties:
+        registration_time:
+          type: integer
+          description: User registration time in unix epoch timestamp
+          example: 1577840400
+        registration_state:
+          type: string
+          description: User registration state
+          example: REGISTERED
+          enum:
+          - REGISTERED
+          - SUSPENDED
+          - DISABLED
+          - DELETED
+    UserResourceProperties_attributes:
+      required:
+      - contact_details
+      - external_id
+      - name
+      - registration_information
+      - user_flags
+      type: object
+      properties:
+        name:
+          type: string
+          description: User name
+          nullable: true
+          example: John Doe
+        user_flags:
+          type: array
+          items:
+            type: string
+            description: User flags for features
+            example: flag_a
+        contact_details:
+          $ref: '#/components/schemas/UserResourceProperties_attributes_contact_details'
+        registration_information:
+          $ref: '#/components/schemas/UserResourceProperties_attributes_registration_information'
+        external_id:
+          type: string
+          description: Customer external id
+          nullable: true
+          example: C-000001
+  requestBodies:
+    CreateUserRequestBody:
+      content:
+        application/json:
+          schema:
+            required:
+            - data
+            type: object
+            properties:
+              data:
+                allOf:
+                - $ref: '#/components/schemas/CreateUserResourceIdentifier'
+                - $ref: '#/components/schemas/UserResourceProperties'
+      required: true
+    UpdateUserRequestBody:
+      content:
+        application/json:
+          schema:
+            required:
+            - data
+            type: object
+            properties:
+              data:
+                allOf:
+                - $ref: '#/components/schemas/UserResourceIdentifier'
+                - $ref: '#/components/schemas/UserResourceProperties'
+      required: true
+  securitySchemes:
+    apiKeyAuth:
+      type: apiKey
+      description: "Internal API key, format \"Apikey 1a2b3c4d\"."
+      name: Authorization
+      in: header
