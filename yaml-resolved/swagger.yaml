@@ -23,7 +23,7 @@ paths:
       summary: Get all users
       description: |
         Returns a list of users. Default page size is 100 items.
-        * **Available since:** NOT YET AVAILABLE
+        * **Available since:** NOT YET AVAILABLE (BPLAT-14346)
       operationId: GetAllUsers
       parameters:
       - name: filter
@@ -63,13 +63,19 @@ paths:
             application/vnd.api+json:
               schema:
                 $ref: '#/components/schemas/inline_response_401'
+        "403":
+          description: Forbidden
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_403'
     post:
       tags:
       - User
       summary: Create new user
       description: |
         Create new user
-        * **Available since:** NOT YET AVAILABLE
+        * **Available since:** NOT YET AVAILABLE (BPLAT-14347)
       operationId: CreateUser
       requestBody:
         $ref: '#/components/requestBodies/CreateUserRequestBody'
@@ -92,6 +98,12 @@ paths:
             application/vnd.api+json:
               schema:
                 $ref: '#/components/schemas/inline_response_401'
+        "403":
+          description: Forbidden
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_403'
         "409":
           description: Conflict
           content:
@@ -103,9 +115,7 @@ paths:
       tags:
       - User
       summary: Get user
-      description: |
-        Returns user by id
-        * **Available since:** NOT YET AVAILABLE
+      description: "Returns user by id\n* **Available since: 2021-05 (BPLAT-14345)\n"
       operationId: GetUserById
       parameters:
       - name: user_id
@@ -129,6 +139,12 @@ paths:
             application/vnd.api+json:
               schema:
                 $ref: '#/components/schemas/inline_response_401'
+        "403":
+          description: Forbidden
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_403'
         "404":
           description: User does not exist
           content:
@@ -141,7 +157,7 @@ paths:
       summary: Delete user
       description: |
         Deletes user by id
-        * **Available since:** NOT YET AVAILABLE
+        * **Available since:** NOT YET AVAILABLE (BPLAT-14349)
       operationId: DeleteUserById
       parameters:
       - name: user_id
@@ -162,6 +178,12 @@ paths:
             application/vnd.api+json:
               schema:
                 $ref: '#/components/schemas/inline_response_401'
+        "403":
+          description: Forbidden
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_403'
         "404":
           description: User does not exist
           content:
@@ -174,7 +196,7 @@ paths:
       summary: Update user
       description: |
         Updates user specified by user id
-        * **Available since:** NOT YET AVAILABLE
+        * **Available since:** NOT YET AVAILABLE (BPLAT-14348)
       operationId: UpdateUser
       parameters:
       - name: user_id
@@ -206,6 +228,12 @@ paths:
             application/vnd.api+json:
               schema:
                 $ref: '#/components/schemas/inline_response_401'
+        "403":
+          description: Forbidden
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_403'
         "409":
           description: Conflict
           content:
@@ -390,6 +418,21 @@ components:
                 title: Invalid api key
                 detail: "Invalid authorization api key: Unauthorised Api key provided\
                   \ in the header"
+    inline_response_403:
+      required:
+      - errors
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            allOf:
+            - $ref: '#/components/schemas/Error'
+            - example:
+                status: "403"
+                code: "9"
+                title: Action not permitted
+                detail: Your IP "10.20.30.40" is not allowed.
     inline_response_201:
       required:
       - data
