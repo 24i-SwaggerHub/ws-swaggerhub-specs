@@ -33,7 +33,7 @@ paths:
         style: form
         explode: true
         schema:
-          $ref: '#/components/schemas/RegisterationStatus'
+          $ref: '#/components/schemas/RegisterationState'
         example: REGISTERED
       - name: "filter[user.email]"
         in: query
@@ -282,9 +282,12 @@ components:
       - $ref: '#/components/schemas/UserResourceUpdateOnlyProperties'
       - $ref: '#/components/schemas/UserResourceReadOnlyProperties'
       - required:
+        - attributes
         - relationships
         type: object
         properties:
+          attributes:
+            $ref: '#/components/schemas/UserResource_attributes'
           relationships:
             allOf:
             - required:
@@ -313,7 +316,7 @@ components:
         properties:
           type:
             $ref: '#/components/schemas/UserResourceType'
-    RegisterationStatus:
+    RegisterationState:
       type: string
       description: User registration state
       enum:
@@ -523,9 +526,6 @@ components:
                 detail: Could not update user due to attributes conflicting with existing
                   data
     UserResourceProperties_attributes_contact_details:
-      required:
-      - email
-      - telephone_number_E123
       type: object
       properties:
         email:
@@ -537,11 +537,6 @@ components:
           description: Telephone in E.123 notation
           example: +226071234567
     UserResourceProperties_attributes:
-      required:
-      - contact_details
-      - external_id
-      - name
-      - user_flags
       type: object
       properties:
         name:
@@ -562,8 +557,6 @@ components:
           nullable: true
           example: C-000001
     UserResourceReadOnlyProperties_attributes_registration_information:
-      required:
-      - registration_time
       type: object
       properties:
         registration_time:
@@ -571,26 +564,39 @@ components:
           description: User registration time in unix epoch timestamp
           example: 1577840400
     UserResourceReadOnlyProperties_attributes:
-      required:
-      - registration_information
       type: object
       properties:
         registration_information:
           $ref: '#/components/schemas/UserResourceReadOnlyProperties_attributes_registration_information'
     UserResourceUpdateOnlyProperties_attributes_registration_information:
-      required:
-      - registration_state
       type: object
       properties:
         registration_state:
-          $ref: '#/components/schemas/RegisterationStatus'
+          $ref: '#/components/schemas/RegisterationState'
     UserResourceUpdateOnlyProperties_attributes:
-      required:
-      - registration_information
       type: object
       properties:
         registration_information:
           $ref: '#/components/schemas/UserResourceUpdateOnlyProperties_attributes_registration_information'
+    UserResource_attributes:
+      required:
+      - contact_details
+      - external_id
+      - name
+      - registration_information
+      - user_flags
+      type: object
+      properties:
+        contact_details:
+          required:
+          - email
+          - telephone_number_E123
+          type: object
+        registration_information:
+          required:
+          - registration_state
+          - registration_time
+          type: object
   requestBodies:
     CreateUserRequestBody:
       content:
