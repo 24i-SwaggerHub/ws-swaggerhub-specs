@@ -610,6 +610,23 @@ components:
                 allOf:
                 - $ref: '#/components/schemas/CreateUserResourceIdentifier'
                 - $ref: '#/components/schemas/UserResourceProperties'
+                - required:
+                  - attributes
+                  type: object
+                  properties:
+                    attributes:
+                      required:
+                      - contact_details
+                      - external_id
+                      - name
+                      - user_flags
+                      type: object
+                      properties:
+                        contact_details:
+                          required:
+                          - email
+                          - telephone_number_E123
+                          type: object
       required: true
     UpdateUserRequestBody:
       content:
