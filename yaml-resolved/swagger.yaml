@@ -261,10 +261,26 @@ components:
       properties:
         attributes:
           $ref: '#/components/schemas/UserResourceProperties_attributes'
+    UserResourceReadOnlyProperties:
+      required:
+      - attributes
+      type: object
+      properties:
+        attributes:
+          $ref: '#/components/schemas/UserResourceReadOnlyProperties_attributes'
+    UserResourceUpdateOnlyProperties:
+      required:
+      - attributes
+      type: object
+      properties:
+        attributes:
+          $ref: '#/components/schemas/UserResourceUpdateOnlyProperties_attributes'
     UserResource:
       allOf:
       - $ref: '#/components/schemas/UserResourceIdentifier_2'
       - $ref: '#/components/schemas/UserResourceProperties'
+      - $ref: '#/components/schemas/UserResourceUpdateOnlyProperties'
+      - $ref: '#/components/schemas/UserResourceReadOnlyProperties'
       - required:
         - relationships
         type: object
@@ -520,24 +536,11 @@ components:
           type: string
           description: Telephone in E.123 notation
           example: +226071234567
-    UserResourceProperties_attributes_registration_information:
-      required:
-      - registration_state
-      - registration_time
-      type: object
-      properties:
-        registration_time:
-          type: integer
-          description: User registration time in unix epoch timestamp
-          example: 1577840400
-        registration_state:
-          $ref: '#/components/schemas/RegisterationStatus'
     UserResourceProperties_attributes:
       required:
       - contact_details
       - external_id
       - name
-      - registration_information
       - user_flags
       type: object
       properties:
@@ -553,13 +556,41 @@ components:
             example: flag_a
         contact_details:
           $ref: '#/components/schemas/UserResourceProperties_attributes_contact_details'
-        registration_information:
-          $ref: '#/components/schemas/UserResourceProperties_attributes_registration_information'
         external_id:
           type: string
           description: Customer external id
           nullable: true
           example: C-000001
+    UserResourceReadOnlyProperties_attributes_registration_information:
+      required:
+      - registration_time
+      type: object
+      properties:
+        registration_time:
+          type: integer
+          description: User registration time in unix epoch timestamp
+          example: 1577840400
+    UserResourceReadOnlyProperties_attributes:
+      required:
+      - registration_information
+      type: object
+      properties:
+        registration_information:
+          $ref: '#/components/schemas/UserResourceReadOnlyProperties_attributes_registration_information'
+    UserResourceUpdateOnlyProperties_attributes_registration_information:
+      required:
+      - registration_state
+      type: object
+      properties:
+        registration_state:
+          $ref: '#/components/schemas/RegisterationStatus'
+    UserResourceUpdateOnlyProperties_attributes:
+      required:
+      - registration_information
+      type: object
+      properties:
+        registration_information:
+          $ref: '#/components/schemas/UserResourceUpdateOnlyProperties_attributes_registration_information'
   requestBodies:
     CreateUserRequestBody:
       content:
@@ -586,6 +617,7 @@ components:
                 allOf:
                 - $ref: '#/components/schemas/UserResourceIdentifier'
                 - $ref: '#/components/schemas/UserResourceProperties'
+                - $ref: '#/components/schemas/UserResourceUpdateOnlyProperties'
       required: true
   securitySchemes:
     apiKeyAuth:
