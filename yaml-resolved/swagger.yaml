@@ -23,12 +23,12 @@ paths:
       summary: Get all users
       description: |
         Returns a list of users. Default page size is 100 items.
-        * **Available since:** NOT YET AVAILABLE (BPLAT-14346)
+        * **Available since:** 2021-05 (BPLAT-14346)
       operationId: GetAllUsers
       parameters:
-      - name: "filter[user.registration_status]"
+      - name: "filter[user.registration_state]"
         in: query
-        description: Return only users which have specified registration status.
+        description: Return only users which have specified registration state.
         required: false
         style: form
         explode: true
@@ -268,18 +268,23 @@ components:
       properties:
         attributes:
           $ref: '#/components/schemas/UserResourceReadOnlyProperties_attributes'
-    UserResourceUpdateOnlyProperties:
+    UserResourceMetaProperties:
+      type: object
+      properties:
+        meta:
+          $ref: '#/components/schemas/UserResourceMetaProperties_meta'
+    UserResourceOptionalProperties:
       required:
       - attributes
       type: object
       properties:
         attributes:
-          $ref: '#/components/schemas/UserResourceUpdateOnlyProperties_attributes'
+          $ref: '#/components/schemas/UserResourceOptionalProperties_attributes'
     UserResource:
       allOf:
       - $ref: '#/components/schemas/UserResourceIdentifier_2'
       - $ref: '#/components/schemas/UserResourceProperties'
-      - $ref: '#/components/schemas/UserResourceUpdateOnlyProperties'
+      - $ref: '#/components/schemas/UserResourceOptionalProperties'
       - $ref: '#/components/schemas/UserResourceReadOnlyProperties'
       - required:
         - attributes
@@ -568,16 +573,30 @@ components:
       properties:
         registration_information:
           $ref: '#/components/schemas/UserResourceReadOnlyProperties_attributes_registration_information'
-    UserResourceUpdateOnlyProperties_attributes_registration_information:
+    UserResourceMetaProperties_meta_security:
+      type: object
+      properties:
+        user_password:
+          type: string
+          description: "User password. \n_Note: For security reasons, it is discouraged\
+            \ to set user password with management API. See client guideline alternative\
+            \ to set user password._\n"
+          example: password
+    UserResourceMetaProperties_meta:
+      type: object
+      properties:
+        security:
+          $ref: '#/components/schemas/UserResourceMetaProperties_meta_security'
+    UserResourceOptionalProperties_attributes_registration_information:
       type: object
       properties:
         registration_state:
           $ref: '#/components/schemas/RegisterationState'
-    UserResourceUpdateOnlyProperties_attributes:
+    UserResourceOptionalProperties_attributes:
       type: object
       properties:
         registration_information:
-          $ref: '#/components/schemas/UserResourceUpdateOnlyProperties_attributes_registration_information'
+          $ref: '#/components/schemas/UserResourceOptionalProperties_attributes_registration_information'
     UserResource_attributes:
       required:
       - contact_details
@@ -610,6 +629,8 @@ components:
                 allOf:
                 - $ref: '#/components/schemas/CreateUserResourceIdentifier'
                 - $ref: '#/components/schemas/UserResourceProperties'
+                - $ref: '#/components/schemas/UserResourceOptionalProperties'
+                - $ref: '#/components/schemas/UserResourceMetaProperties'
                 - required:
                   - attributes
                   type: object
@@ -640,7 +661,8 @@ components:
                 allOf:
                 - $ref: '#/components/schemas/UserResourceIdentifier'
                 - $ref: '#/components/schemas/UserResourceProperties'
-                - $ref: '#/components/schemas/UserResourceUpdateOnlyProperties'
+                - $ref: '#/components/schemas/UserResourceOptionalProperties'
+                - $ref: '#/components/schemas/UserResourceMetaProperties'
       required: true
   securitySchemes:
     apiKeyAuth:
