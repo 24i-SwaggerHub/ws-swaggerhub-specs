@@ -114,7 +114,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/inline_response_403'
         "409":
-          description: Conflict
+          description: Forbidden
           content:
             application/vnd.api+json:
               schema:
@@ -157,7 +157,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/inline_response_403'
         "404":
-          description: User does not exist
+          description: Forbidden
           content:
             application/vnd.api+json:
               schema:
@@ -196,7 +196,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/inline_response_403'
         "404":
-          description: User does not exist
+          description: Forbidden
           content:
             application/vnd.api+json:
               schema:
@@ -232,7 +232,7 @@ paths:
           content:
             application/vnd.api+json:
               schema:
-                $ref: '#/components/schemas/inline_response_400_1'
+                $ref: '#/components/schemas/inline_response_400'
         "401":
           description: Unauthorized
           content:
@@ -246,7 +246,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/inline_response_403'
         "409":
-          description: Conflict
+          description: Forbidden
           content:
             application/vnd.api+json:
               schema:
@@ -311,83 +311,6 @@ components:
       - REGISTERED
       - DISABLED
       - DELETED
-    inline_response_401:
-      required:
-      - errors
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            allOf:
-            - $ref: '#/components/schemas/Error'
-            - example:
-                status: "401"
-                code: "10201"
-                title: Invalid api key
-                detail: "Invalid authorization api key: Unauthorised Api key provided\
-                  \ in the header"
-    inline_response_400:
-      required:
-      - errors
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            allOf:
-            - $ref: '#/components/schemas/Error'
-            - example:
-                status: "400"
-                code: "10201"
-                title: Bad Request
-                detail: Standard error response
-    inline_response_403:
-      required:
-      - errors
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            allOf:
-            - $ref: '#/components/schemas/Error'
-            - example:
-                status: "403"
-                code: "9"
-                title: Action not permitted
-                detail: Your IP "10.20.30.40" is not allowed.
-    inline_response_404:
-      required:
-      - errors
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            allOf:
-            - $ref: '#/components/schemas/Error'
-            - example:
-                status: "404"
-                code: "32100"
-                title: Not Found
-                detail: The requested user does not exist
-    inline_response_409:
-      required:
-      - errors
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            allOf:
-            - $ref: '#/components/schemas/Error'
-            - example:
-                status: "409"
-                code: "32101"
-                title: Conflicting data
-                detail: Could not update user due to attributes conflicting with existing
-                  data
     Error:
       required:
       - code
@@ -489,14 +412,7 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/UserResource'
-    inline_response_201:
-      required:
-      - data
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/UserResource'
-    inline_response_400_1:
+    inline_response_400:
       required:
       - errors
       type: object
@@ -511,6 +427,75 @@ components:
                 code: "10201"
                 title: Bad Request
                 detail: Standard error response
+    inline_response_401:
+      required:
+      - errors
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            allOf:
+            - $ref: '#/components/schemas/Error'
+            - example:
+                status: "401"
+                code: "10201"
+                title: Invalid api key
+                detail: "Invalid authorization api key: Unauthorised Api key provided\
+                  \ in the header"
+    inline_response_403:
+      required:
+      - errors
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            allOf:
+            - $ref: '#/components/schemas/Error'
+            - example:
+                status: "403"
+                code: "9"
+                title: Action not permitted
+                detail: Your IP "10.20.30.40" is not allowed.
+    inline_response_201:
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/UserResource'
+    inline_response_409:
+      required:
+      - errors
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            allOf:
+            - $ref: '#/components/schemas/Error'
+            - example:
+                status: "409"
+                code: "32101"
+                title: Conflicting data
+                detail: Could not update user due to attributes conflicting with existing
+                  data
+    inline_response_404:
+      required:
+      - errors
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            allOf:
+            - $ref: '#/components/schemas/Error'
+            - example:
+                status: "404"
+                code: "32100"
+                title: Not Found
+                detail: The requested user does not exist
     UserResourceProperties_attributes_contact_details:
       type: object
       properties:
@@ -587,6 +572,37 @@ components:
           - registration_state
           - registration_time
           type: object
+  responses:
+    "400":
+      description: Bad Request
+      content:
+        application/vnd.api+json:
+          schema:
+            $ref: '#/components/schemas/inline_response_400'
+    "401":
+      description: Unauthorized
+      content:
+        application/vnd.api+json:
+          schema:
+            $ref: '#/components/schemas/inline_response_401'
+    "403":
+      description: Forbidden
+      content:
+        application/vnd.api+json:
+          schema:
+            $ref: '#/components/schemas/inline_response_403'
+    "404":
+      description: Forbidden
+      content:
+        application/vnd.api+json:
+          schema:
+            $ref: '#/components/schemas/inline_response_404'
+    "409":
+      description: Forbidden
+      content:
+        application/vnd.api+json:
+          schema:
+            $ref: '#/components/schemas/inline_response_409'
   requestBodies:
     CreateUserRequestBody:
       content:
