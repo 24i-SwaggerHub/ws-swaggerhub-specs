@@ -261,31 +261,12 @@ components:
       properties:
         attributes:
           $ref: '#/components/schemas/UserResourceProperties_attributes'
-    UserResourceReadOnlyProperties:
-      required:
-      - attributes
-      type: object
-      properties:
-        attributes:
-          $ref: '#/components/schemas/UserResourceReadOnlyProperties_attributes'
-    UserResourceMetaProperties:
-      type: object
-      properties:
         meta:
-          $ref: '#/components/schemas/UserResourceMetaProperties_meta'
-    UserResourceOptionalProperties:
-      required:
-      - attributes
-      type: object
-      properties:
-        attributes:
-          $ref: '#/components/schemas/UserResourceOptionalProperties_attributes'
+          $ref: '#/components/schemas/UserResourceProperties_meta'
     UserResource:
       allOf:
       - $ref: '#/components/schemas/UserResourceIdentifier_2'
       - $ref: '#/components/schemas/UserResourceProperties'
-      - $ref: '#/components/schemas/UserResourceOptionalProperties'
-      - $ref: '#/components/schemas/UserResourceReadOnlyProperties'
       - required:
         - attributes
         - relationships
@@ -541,6 +522,16 @@ components:
           type: string
           description: Telephone in E.123 notation
           example: +226071234567
+    UserResourceProperties_attributes_registration_information:
+      type: object
+      properties:
+        registration_state:
+          $ref: '#/components/schemas/RegisterationState'
+        registration_time:
+          type: integer
+          description: User registration time in unix epoch timestamp
+          readOnly: true
+          example: 1577840400
     UserResourceProperties_attributes:
       type: object
       properties:
@@ -556,24 +547,14 @@ components:
             example: flag_a
         contact_details:
           $ref: '#/components/schemas/UserResourceProperties_attributes_contact_details'
+        registration_information:
+          $ref: '#/components/schemas/UserResourceProperties_attributes_registration_information'
         external_id:
           type: string
           description: Customer external id
           nullable: true
           example: C-000001
-    UserResourceReadOnlyProperties_attributes_registration_information:
-      type: object
-      properties:
-        registration_time:
-          type: integer
-          description: User registration time in unix epoch timestamp
-          example: 1577840400
-    UserResourceReadOnlyProperties_attributes:
-      type: object
-      properties:
-        registration_information:
-          $ref: '#/components/schemas/UserResourceReadOnlyProperties_attributes_registration_information'
-    UserResourceMetaProperties_meta_security:
+    UserResourceProperties_meta_security:
       type: object
       properties:
         user_password:
@@ -582,21 +563,11 @@ components:
             \ to set user password with management API. See client guideline alternative\
             \ to set user password._\n"
           example: password
-    UserResourceMetaProperties_meta:
+    UserResourceProperties_meta:
       type: object
       properties:
         security:
-          $ref: '#/components/schemas/UserResourceMetaProperties_meta_security'
-    UserResourceOptionalProperties_attributes_registration_information:
-      type: object
-      properties:
-        registration_state:
-          $ref: '#/components/schemas/RegisterationState'
-    UserResourceOptionalProperties_attributes:
-      type: object
-      properties:
-        registration_information:
-          $ref: '#/components/schemas/UserResourceOptionalProperties_attributes_registration_information'
+          $ref: '#/components/schemas/UserResourceProperties_meta_security'
     UserResource_attributes:
       required:
       - contact_details
@@ -629,8 +600,6 @@ components:
                 allOf:
                 - $ref: '#/components/schemas/CreateUserResourceIdentifier'
                 - $ref: '#/components/schemas/UserResourceProperties'
-                - $ref: '#/components/schemas/UserResourceOptionalProperties'
-                - $ref: '#/components/schemas/UserResourceMetaProperties'
                 - required:
                   - attributes
                   type: object
@@ -661,8 +630,6 @@ components:
                 allOf:
                 - $ref: '#/components/schemas/UserResourceIdentifier'
                 - $ref: '#/components/schemas/UserResourceProperties'
-                - $ref: '#/components/schemas/UserResourceOptionalProperties'
-                - $ref: '#/components/schemas/UserResourceMetaProperties'
       required: true
   securitySchemes:
     apiKeyAuth:
