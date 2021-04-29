@@ -232,7 +232,7 @@ paths:
           content:
             application/vnd.api+json:
               schema:
-                $ref: '#/components/schemas/inline_response_400'
+                $ref: '#/components/schemas/inline_response_400_1'
         "401":
           description: Unauthorized
           content:
@@ -250,7 +250,7 @@ paths:
           content:
             application/vnd.api+json:
               schema:
-                $ref: '#/components/schemas/inline_response_409_1'
+                $ref: '#/components/schemas/inline_response_409'
 components:
   schemas:
     UserResourceProperties:
@@ -304,12 +304,90 @@ components:
             $ref: '#/components/schemas/UserResourceType'
     RegisterationState:
       type: string
-      description: User registration state
+      description: User registration state.
+      default: UNREGISTERED
       enum:
       - UNREGISTERED
       - REGISTERED
       - DISABLED
       - DELETED
+    inline_response_401:
+      required:
+      - errors
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            allOf:
+            - $ref: '#/components/schemas/Error'
+            - example:
+                status: "401"
+                code: "10201"
+                title: Invalid api key
+                detail: "Invalid authorization api key: Unauthorised Api key provided\
+                  \ in the header"
+    inline_response_400:
+      required:
+      - errors
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            allOf:
+            - $ref: '#/components/schemas/Error'
+            - example:
+                status: "400"
+                code: "10201"
+                title: Bad Request
+                detail: Standard error response
+    inline_response_403:
+      required:
+      - errors
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            allOf:
+            - $ref: '#/components/schemas/Error'
+            - example:
+                status: "403"
+                code: "9"
+                title: Action not permitted
+                detail: Your IP "10.20.30.40" is not allowed.
+    inline_response_404:
+      required:
+      - errors
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            allOf:
+            - $ref: '#/components/schemas/Error'
+            - example:
+                status: "404"
+                code: "32100"
+                title: Not Found
+                detail: The requested user does not exist
+    inline_response_409:
+      required:
+      - errors
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            allOf:
+            - $ref: '#/components/schemas/Error'
+            - example:
+                status: "409"
+                code: "32101"
+                title: Conflicting data
+                detail: Could not update user due to attributes conflicting with existing
+                  data
     Error:
       required:
       - code
@@ -411,7 +489,14 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/UserResource'
-    inline_response_400:
+    inline_response_201:
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/UserResource'
+    inline_response_400_1:
       required:
       - errors
       type: object
@@ -426,91 +511,6 @@ components:
                 code: "10201"
                 title: Bad Request
                 detail: Standard error response
-    inline_response_401:
-      required:
-      - errors
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            allOf:
-            - $ref: '#/components/schemas/Error'
-            - example:
-                status: "401"
-                code: "10201"
-                title: Invalid api key
-                detail: "Invalid authorization api key: Unauthorised Api key provided\
-                  \ in the header"
-    inline_response_403:
-      required:
-      - errors
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            allOf:
-            - $ref: '#/components/schemas/Error'
-            - example:
-                status: "403"
-                code: "9"
-                title: Action not permitted
-                detail: Your IP "10.20.30.40" is not allowed.
-    inline_response_201:
-      required:
-      - data
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/UserResource'
-    inline_response_409:
-      required:
-      - errors
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            allOf:
-            - $ref: '#/components/schemas/Error'
-            - example:
-                status: "409"
-                code: "32101"
-                title: Conflicting data
-                detail: Could not create user due to attributes conflicting with existing
-                  data
-    inline_response_404:
-      required:
-      - errors
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            allOf:
-            - $ref: '#/components/schemas/Error'
-            - example:
-                status: "404"
-                code: "10101"
-                title: Not Found
-                detail: The requested user does not exist
-    inline_response_409_1:
-      required:
-      - errors
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            allOf:
-            - $ref: '#/components/schemas/Error'
-            - example:
-                status: "409"
-                code: "32101"
-                title: Conflicting data
-                detail: Could not update user due to attributes conflicting with existing
-                  data
     UserResourceProperties_attributes_contact_details:
       type: object
       properties:
