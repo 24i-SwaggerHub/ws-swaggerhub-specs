@@ -529,7 +529,7 @@ components:
           items:
             type: string
             description: User flags for features
-            example: flag_a
+            example: LICENSE_PURCHASE_RESTRICTED
         contact_details:
           $ref: '#/components/schemas/UserResourceProperties_attributes_contact_details'
         registration_information:
@@ -631,7 +631,6 @@ components:
                         contact_details:
                           required:
                           - email
-                          - telephone_number_E123
                           type: object
       required: true
     UpdateUserRequestBody:
