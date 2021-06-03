@@ -75,14 +75,14 @@ paths:
           content:
             text/html:
               schema:
-                type: string
-                example: Play=True
+                $ref: '#/components/schemas/inline_response_200'
         "401":
           description: Unauthorized
           content:
             text/html:
               schema:
-                $ref: '#/components/schemas/inline_response_401'
+                type: string
+                example: Play=False
 components:
   schemas:
     widevine_success_response:
@@ -91,9 +91,9 @@ components:
       example: Play=False
     playready_success_response:
       type: string
-      description: playready success response
+      description: widevine and fairplay success response
       example: p1=5&p2=&p3=&p4=1&p5=0&p6=1&p7=0&p8=0&token=&CustomData=
-    inline_response_401:
+    inline_response_200:
       oneOf:
       - $ref: '#/components/schemas/widevine_success_response'
       - $ref: '#/components/schemas/playready_success_response'
