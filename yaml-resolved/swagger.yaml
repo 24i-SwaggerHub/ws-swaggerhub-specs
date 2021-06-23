@@ -157,7 +157,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/inline_response_403'
         "404":
-          description: Forbidden
+          description: Not Found
           content:
             application/vnd.api+json:
               schema:
@@ -196,7 +196,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/inline_response_403'
         "404":
-          description: Forbidden
+          description: Not Found
           content:
             application/vnd.api+json:
               schema:
@@ -207,7 +207,7 @@ paths:
       summary: Update user
       description: |
         Updates user specified by user id
-        * **Available since:** 2021-05 (BPLAT-14348)
+        * **Available since:** 2021-06 (BPLAT-14348)
       operationId: UpdateUser
       parameters:
       - name: user_id
@@ -246,7 +246,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/inline_response_403'
         "404":
-          description: Forbidden
+          description: Not Found
           content:
             application/vnd.api+json:
               schema:
@@ -295,11 +295,19 @@ components:
                       $ref: '#/components/schemas/UserProfileResourceIdentifier'
     UserResourceIdentifier:
       allOf:
-      - $ref: '#/components/schemas/CreateResourceIdentifier'
+      - $ref: '#/components/schemas/ResourceIdentifier'
       - type: object
         properties:
           type:
             $ref: '#/components/schemas/UserResourceType'
+      - required:
+        - id
+        type: object
+        properties:
+          id:
+            type: string
+            description: The id of the resource being referenced
+            example: "41"
     CreateUserResourceIdentifier:
       allOf:
       - required:
@@ -396,15 +404,6 @@ components:
             pattern: ^UserProfile$
             type: string
             example: UserProfile
-    CreateResourceIdentifier:
-      required:
-      - type
-      type: object
-      properties:
-        type:
-          $ref: '#/components/schemas/Type'
-      discriminator:
-        propertyName: type
     UserResourceType:
       pattern: ^User$
       type: string
@@ -599,7 +598,7 @@ components:
           schema:
             $ref: '#/components/schemas/inline_response_403'
     "404":
-      description: Forbidden
+      description: Not Found
       content:
         application/vnd.api+json:
           schema:
