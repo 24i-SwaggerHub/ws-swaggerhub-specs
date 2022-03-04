@@ -1,0 +1,342 @@
+openapi: 3.0.0
+info:
+  title: Streams API
+  version: 4.0.0
+servers:
+- url: https://testing.booxmedia.xyz/api
+  description: Testing server
+- url: https://virtserver.swaggerhub.com/24i-API/Streams/4.0.0
+  description: SwaggerHub API Auto Mocking
+security:
+- apiKeyAuth: []
+tags:
+- name: Live
+  description: |
+    This API provides information about playback streams which belong to an Channel Entity.
+- name: Recording
+  description: |
+    This API provides information about playback streams which belong to an Epg Entity.
+paths:
+  /streams/v4/live:
+    get:
+      tags:
+      - Live
+      summary: Returns a collection of live stream entities
+      description: |
+        * **Available since:** 2022-03 (BPLAT-16138)
+      operationId: getChannelStreams
+      parameters:
+      - name: "filter[tv_channel_id]"
+        in: query
+        description: The id of the channel that you want to retrieve playback streams
+          for
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200'
+        "400":
+          description: Bad Request
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400'
+        "401":
+          description: Unauthorized
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_401'
+        "404":
+          description: Not Found
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404'
+  /streams/v4/recording:
+    get:
+      tags:
+      - Recording
+      summary: Returns a collection of recording stream entities
+      description: |
+        * **Available since:** 2022-03 (BPLAT-16139)
+      operationId: getRecordingStreams
+      parameters:
+      - name: "filter[external_epg_id]"
+        in: query
+        description: The external epg id of the recording that you want to retrieve
+          playback streams for
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Successful response
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200'
+        "400":
+          description: Bad Request
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_400'
+        "401":
+          description: Unauthorized
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_401'
+        "404":
+          description: Not Found
+          content:
+            application/vnd.api+json:
+              schema:
+                $ref: '#/components/schemas/inline_response_404'
+components:
+  schemas:
+    StreamResourceProperties:
+      required:
+      - attributes
+      type: object
+      properties:
+        attributes:
+          $ref: '#/components/schemas/StreamResourceProperties_attributes'
+    StreamType:
+      type: string
+      description: Streaming protocol
+      enum:
+      - hls
+      - dash
+      - mss
+    StreamResource:
+      allOf:
+      - $ref: '#/components/schemas/StreamResourceIdentifier'
+      - $ref: '#/components/schemas/StreamResourceProperties'
+    StreamResourceIdentifier:
+      allOf:
+      - $ref: '#/components/schemas/ResourceIdentifier'
+      - type: object
+        properties:
+          type:
+            pattern: ^Stream$
+            type: string
+            example: Stream
+      - required:
+        - id
+        type: object
+        properties:
+          id:
+            type: string
+            description: The id of the resource being referenced
+            example: live-100001-hls
+    Error:
+      required:
+      - code
+      - details
+      - id
+      - status
+      - title
+      type: object
+      properties:
+        id:
+          type: string
+          description: A unique identifier for this particular occurrence of the problem.
+        status:
+          type: string
+          description: "The HTTP status code applicable to this problem, expressed\
+            \ as a string value."
+        code:
+          type: string
+          description: "An application-specific error code, expressed as a string\
+            \ value."
+        title:
+          type: string
+          description: "A short, human-readable summary of the problem that SHOULD\
+            \ NOT change from occurrence to occurrence of the problem."
+        details:
+          type: string
+          description: A human-readable explanation specific to this occurrence of
+            the problem.
+      example:
+        id: 6de7da3e-8877-4f2b-a670-16e18e5d79a0
+        status: "400"
+        code: "31201"
+        title: Bad Request
+        detail: Parameter 'Foo' is invalid
+    ResourceIdentifier:
+      required:
+      - id
+      - type
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/Id'
+        type:
+          $ref: '#/components/schemas/Type'
+      discriminator:
+        propertyName: type
+    Id:
+      type: string
+      description: The id of the resource being referenced
+      example: e022f021-11f5-4cd6-89f2-02535d89eed6
+    Type:
+      type: string
+      description: Used to describe resource objects that share common attributes
+        and relationships.
+      example: ResourceOject
+    inline_response_200:
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/StreamResource'
+    inline_response_400:
+      required:
+      - errors
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            allOf:
+            - $ref: '#/components/schemas/Error'
+            - example:
+                status: "400"
+                code: "10201"
+                title: Bad Request
+                detail: Standard error response
+    inline_response_401:
+      required:
+      - errors
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            allOf:
+            - $ref: '#/components/schemas/Error'
+            - example:
+                status: "401"
+                code: "10201"
+                title: Invalid api key
+                detail: "Invalid authorization api key: Unauthorised Api key provided\
+                  \ in the header"
+    inline_response_404:
+      required:
+      - errors
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            allOf:
+            - $ref: '#/components/schemas/Error'
+            - example:
+                status: "404"
+                code: "30805"
+                title: Not Found
+                detail: The requested content does not exist
+    StreamResourceProperties_attributes_drm_fairplay:
+      type: object
+      properties:
+        content_id:
+          type: string
+          example: 2484bd14-0000-0000-0000-5c89a289d7c5
+        la_url:
+          type: string
+          example: https://fps.ezdrm.com/api/licenses/2484bd14-0000-0000-0000-5c89a289d7c5
+        cert:
+          type: string
+          example: https://org-01.amino.tv/fairplay.cer
+      example: null
+    StreamResourceProperties_attributes_drm_widevine:
+      type: object
+      properties:
+        content_id:
+          type: string
+          example: WTJoaGJtNWxiweE53PT0=
+        la_url:
+          type: string
+          example: https://widevine-dash.ezdrm.com/proxy?pX=000000
+      example: null
+    StreamResourceProperties_attributes_drm_playready:
+      type: object
+      properties:
+        content_id:
+          type: string
+          example: WTJoaGJtNWxiweE53PT0=
+        la_url:
+          type: string
+          example: https://playready.ezdrm.com/cency/preauth.aspx?pX=000000
+      example: null
+    StreamResourceProperties_attributes_drm:
+      required:
+      - provider
+      type: object
+      properties:
+        provider:
+          type: string
+          description: DRM provider
+          enum:
+          - EZDRM
+        fairplay:
+          $ref: '#/components/schemas/StreamResourceProperties_attributes_drm_fairplay'
+        widevine:
+          $ref: '#/components/schemas/StreamResourceProperties_attributes_drm_widevine'
+        playready:
+          $ref: '#/components/schemas/StreamResourceProperties_attributes_drm_playready'
+      example: null
+    StreamResourceProperties_attributes:
+      required:
+      - type
+      - url
+      type: object
+      properties:
+        type:
+          $ref: '#/components/schemas/StreamType'
+        url:
+          type: string
+          description: Stream URL
+          example: https://org-01.amino.tv/drm/ezdrm.isml/playlist.m3u8
+        drm:
+          $ref: '#/components/schemas/StreamResourceProperties_attributes_drm'
+      example: null
+  responses:
+    "400":
+      description: Bad Request
+      content:
+        application/vnd.api+json:
+          schema:
+            $ref: '#/components/schemas/inline_response_400'
+    "401":
+      description: Unauthorized
+      content:
+        application/vnd.api+json:
+          schema:
+            $ref: '#/components/schemas/inline_response_401'
+    "404":
+      description: Not Found
+      content:
+        application/vnd.api+json:
+          schema:
+            $ref: '#/components/schemas/inline_response_404'
+  securitySchemes:
+    apiKeyAuth:
+      type: apiKey
+      description: "Internal API key, format \"Apikey 1a2b3c4d\"."
+      name: Authorization
+      in: header
