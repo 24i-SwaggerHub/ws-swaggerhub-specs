@@ -1,12 +1,13 @@
 openapi: 3.0.0
 info:
   title: Streams API
+  description: The API provides information about playback streams
   version: 4.0.0
 servers:
-- url: https://testing.booxmedia.xyz/api
-  description: Testing server
 - url: https://virtserver.swaggerhub.com/24i-API/Streams/4.0.0
   description: SwaggerHub API Auto Mocking
+- url: https://testing.booxmedia.xyz
+  description: Testing server
 security:
 - apiKeyAuth: []
 tags:
@@ -17,7 +18,7 @@ tags:
   description: |
     This API provides information about playback streams which belong to an Epg Entity.
 paths:
-  /streams/v4/live:
+  /api/streams/v4/live:
     get:
       tags:
       - Live
@@ -60,7 +61,7 @@ paths:
             application/vnd.api+json:
               schema:
                 $ref: '#/components/schemas/inline_response_404'
-  /streams/v4/recording:
+  /api/streams/v4/recording:
     get:
       tags:
       - Recording
@@ -290,7 +291,7 @@ components:
       properties:
         provider:
           type: string
-          description: DRM provider
+          description: (Multi)DRM provider
           enum:
           - EZDRM
         fairplay:
