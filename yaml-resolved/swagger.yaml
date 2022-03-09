@@ -22,20 +22,28 @@ paths:
     get:
       tags:
       - Live
-      summary: Returns a collection of live stream entities
-      description: |
-        * **Available since:** 2022-03 (BPLAT-16138)
+      summary: Returns a collection of live stream entities. Default page size is
+        100 items.
       operationId: getChannelStreams
       parameters:
       - name: "filter[tv_channel_id]"
         in: query
         description: The id of the channel that you want to retrieve playback streams
           for
-        required: true
+        required: false
         style: form
         explode: true
         schema:
           type: string
+      - name: "page[number]"
+        in: query
+        description: Page number if the results have more items than items per page.
+          Default = 1.
+        required: false
+        schema:
+          minimum: 1
+          type: number
+        example: 1
       responses:
         "200":
           description: Successful response
@@ -65,27 +73,35 @@ paths:
     get:
       tags:
       - Recording
-      summary: Returns a collection of recording stream entities
-      description: |
-        * **Available since:** 2022-03 (BPLAT-16139)
+      summary: Returns a collection of recording stream entities. Default page size
+        is 100 items.
       operationId: getRecordingStreams
       parameters:
       - name: "filter[external_epg_id]"
         in: query
         description: The external epg id of the recording that you want to retrieve
           playback streams for
-        required: true
+        required: false
         style: form
         explode: true
         schema:
           type: string
+      - name: "page[number]"
+        in: query
+        description: Page number if the results have more items than items per page.
+          Default = 1.
+        required: false
+        schema:
+          minimum: 1
+          type: number
+        example: 1
       responses:
         "200":
           description: Successful response
           content:
             application/vnd.api+json:
               schema:
-                $ref: '#/components/schemas/inline_response_200'
+                $ref: '#/components/schemas/inline_response_200_1'
         "400":
           description: Bad Request
           content:
@@ -140,7 +156,7 @@ components:
           id:
             type: string
             description: The id of the resource being referenced
-            example: live-100001-hls
+            example: assetType-100001-hls
     Error:
       required:
       - code
@@ -204,7 +220,16 @@ components:
         data:
           type: array
           items:
-            $ref: '#/components/schemas/StreamResource'
+            allOf:
+            - $ref: '#/components/schemas/StreamResource'
+            - required:
+              - id
+              type: object
+              properties:
+                id:
+                  type: string
+                  description: The id of the resource being referenced
+                  example: live-100001-hls
     inline_response_400:
       required:
       - errors
@@ -251,6 +276,24 @@ components:
                 code: "30805"
                 title: Not Found
                 detail: The requested content does not exist
+    inline_response_200_1:
+      required:
+      - data
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            allOf:
+            - $ref: '#/components/schemas/StreamResource'
+            - required:
+              - id
+              type: object
+              properties:
+                id:
+                  type: string
+                  description: The id of the resource being referenced
+                  example: recording-100001-hls
     StreamResourceProperties_attributes_drm_fairplay:
       type: object
       properties:
