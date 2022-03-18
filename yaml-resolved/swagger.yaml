@@ -4,10 +4,10 @@ info:
   description: The API provides information about playback streams
   version: 4.0.0
 servers:
-- url: https://virtserver.swaggerhub.com/24i-API/Streams/4.0.0
-  description: SwaggerHub API Auto Mocking
 - url: https://testing.booxmedia.xyz
   description: Testing server
+- url: https://virtserver.swaggerhub.com/24i-API/Streams/4.0.0
+  description: SwaggerHub API Auto Mocking
 security:
 - apiKeyAuth: []
 tags:
@@ -30,20 +30,11 @@ paths:
         in: query
         description: The id of the channel that you want to retrieve playback streams
           for
-        required: false
+        required: true
         style: form
         explode: true
         schema:
           type: string
-      - name: "page[number]"
-        in: query
-        description: Page number if the results have more items than items per page.
-          Default = 1.
-        required: false
-        schema:
-          minimum: 1
-          type: number
-        example: 1
       responses:
         "200":
           description: Successful response
@@ -75,26 +66,16 @@ paths:
       - Recording
       summary: Returns a collection of recording stream entities. Default page size
         is 100 items.
-      operationId: getRecordingStreams
       parameters:
       - name: "filter[external_epg_id]"
         in: query
         description: The external epg id of the recording that you want to retrieve
           playback streams for
-        required: false
+        required: true
         style: form
         explode: true
         schema:
           type: string
-      - name: "page[number]"
-        in: query
-        description: Page number if the results have more items than items per page.
-          Default = 1.
-        required: false
-        schema:
-          minimum: 1
-          type: number
-        example: 1
       responses:
         "200":
           description: Successful response
