@@ -66,6 +66,7 @@ paths:
       - Recording
       summary: Returns a collection of recording stream entities. Default page size
         is 100 items.
+      operationId: getRecordingStreams
       parameters:
       - name: "filter[external_epg_id]"
         in: query
