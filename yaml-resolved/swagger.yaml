@@ -54,12 +54,6 @@ paths:
             application/vnd.api+json:
               schema:
                 $ref: '#/components/schemas/inline_response_401'
-        "404":
-          description: Not Found
-          content:
-            application/vnd.api+json:
-              schema:
-                $ref: '#/components/schemas/inline_response_404'
   /api/streams/v4/recording:
     get:
       tags:
@@ -96,12 +90,6 @@ paths:
             application/vnd.api+json:
               schema:
                 $ref: '#/components/schemas/inline_response_401'
-        "404":
-          description: Not Found
-          content:
-            application/vnd.api+json:
-              schema:
-                $ref: '#/components/schemas/inline_response_404'
 components:
   schemas:
     StreamResourceProperties:
@@ -243,21 +231,6 @@ components:
                 title: Invalid api key
                 detail: "Invalid authorization api key: Unauthorised Api key provided\
                   \ in the header"
-    inline_response_404:
-      required:
-      - errors
-      type: object
-      properties:
-        errors:
-          type: array
-          items:
-            allOf:
-            - $ref: '#/components/schemas/Error'
-            - example:
-                status: "404"
-                code: "30805"
-                title: Not Found
-                detail: The requested content does not exist
     inline_response_200_1:
       required:
       - data
@@ -359,7 +332,20 @@ components:
       content:
         application/vnd.api+json:
           schema:
-            $ref: '#/components/schemas/inline_response_404'
+            required:
+            - errors
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  allOf:
+                  - $ref: '#/components/schemas/Error'
+                  - example:
+                      status: "404"
+                      code: "30805"
+                      title: Not Found
+                      detail: The requested content does not exist
   securitySchemes:
     apiKeyAuth:
       type: apiKey
